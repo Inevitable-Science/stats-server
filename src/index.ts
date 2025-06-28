@@ -27,7 +27,7 @@ const app = express();
 app.use(express.json())
 const PORT = process.env.PORT || 3001;
 
-const allowedOrigins = ['http://localhost:3000'];
+/*const allowedOrigins = ['http://localhost:3000'];
 
 app.use(cors({
   origin: (
@@ -43,6 +43,12 @@ app.use(cors({
   methods: 'GET',
   credentials: true,
   optionsSuccessStatus: 200,
+}));*/
+
+app.use(cors({
+  origin: '*', // allow any origin
+  methods: ['GET', 'POST'], // allow GET and POST requests
+  credentials: false, // do not allow credentials (cookies, auth headers, etc.)
 }));
 
 const connectDB = async () => {
