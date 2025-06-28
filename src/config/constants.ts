@@ -60,6 +60,7 @@ export interface IPT {
 
 export interface DAO {
   name: string;
+  alternative_names?: string[];
   id: number;
   ticker: string;
   tag: string;
@@ -81,6 +82,10 @@ export interface DAO {
 export const daos: DAO[] = [
   {
     name: 'CryoDAO',
+    alternative_names: [
+      "cryodao",
+      "daocryo"
+    ],
     id: 1,
     ticker: 'CRYO',
     tag: 'Cryopreservation',
@@ -181,6 +186,9 @@ export const daos: DAO[] = [
   },
   {
     name: 'HydraDAO',
+    alternative_names: [
+      "daohydra"
+    ],
     id: 2,
     ticker: 'HYDRA',
     tag: 'Replacement Research',

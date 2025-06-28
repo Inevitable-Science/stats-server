@@ -169,8 +169,15 @@ router.get('/:dao', async (req: Request, res: Response): Promise<void> => {
   }
 
   // Find the DAO by name or ticker (case-insensitive)
-  const foundDao = daos.find(
+  /*const foundDao = daos.find(
     (d) => d.name.toLowerCase() === dao.toLowerCase() || d.ticker.toLowerCase() === dao.toLowerCase()
+  );*/
+  const foundDao = daos.find((d: DAO) =>
+    d.name.toLowerCase() === dao.toLowerCase() ||
+    d.ticker.toLowerCase() === dao.toLowerCase() ||
+    d.alternative_names?.some(
+      (alt) => alt.toLowerCase() === dao.toLowerCase()
+    )
   );
 
   if (!foundDao) {

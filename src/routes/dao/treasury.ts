@@ -129,16 +129,24 @@ router.get('/:dao', async (req: Request, res: Response): Promise<void> => {
   }
 
   // Find the DAO by name or ticker (case-insensitive)
-  const foundDao = daos.find(
+  /*const foundDao = daos.find(
     (d: DAO) => d.name.toLowerCase() === dao.toLowerCase() || d.ticker.toLowerCase() === dao.toLowerCase()
+  );*/
+  const foundDao = daos.find((d: DAO) =>
+    d.name.toLowerCase() === dao.toLowerCase() ||
+    d.ticker.toLowerCase() === dao.toLowerCase() ||
+    d.alternative_names?.some(
+      (alt) => alt.toLowerCase() === dao.toLowerCase()
+    )
   );
+
 
   if (!foundDao) {
     res.status(404).json({ error: 'DAO not found' });
     return;
   }
 
-  const sanitizedName = sanitizeName(dao)?.toLowerCase();
+  const sanitizedName = sanitizeName(foundDao.name)?.toLowerCase();
   if (!sanitizedName) {
     res.status(400).json({ error: 'Invalid name format' });
     return;
