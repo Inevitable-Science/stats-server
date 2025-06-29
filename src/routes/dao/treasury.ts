@@ -96,6 +96,7 @@ function sanitizeName(name: string): string | null {
   return /^[a-zA-Z0-9]+$/.test(name) ? name : null;
 }
 
+/*
 // Helper function to get treasury value closest to a target timestamp
 function getClosestValue(historicalData: HistoricalTreasury[], targetTime: number): number | null {
   if (!historicalData || historicalData.length === 0) {
@@ -114,6 +115,40 @@ function getClosestValue(historicalData: HistoricalTreasury[], targetTime: numbe
   }
 
   return parseFloat(closestEntry.balance) || 0;
+}*/
+
+function getClosestValue(historicalData: HistoricalTreasury[], targetTime: number): number | null {
+  if (!historicalData || historicalData.length === 0) {
+    console.warn('historicalData is empty or invalid');
+    return null;
+  }
+
+  const closestEntry = historicalData.reduce((prev, curr) => {
+    const currTime = new Date(curr.date).getTime();
+    const prevTime = new Date(prev.date).getTime();
+    const currDiff = Math.abs(currTime - targetTime);
+    const prevDiff = Math.abs(prevTime - targetTime);
+    return currDiff < prevDiff ? curr : prev;
+  });
+
+  const closestTime = new Date(closestEntry.date).getTime();
+  const timeDiffHours = Math.abs(closestTime - targetTime) / (1000 * 60 * 60);
+  
+  // Optional: Add a threshold to avoid using overly distant data
+  const maxDiffHours = 48; // Allow entries within 48 hours
+  if (timeDiffHours > maxDiffHours) {
+    console.warn(`Closest entry (${closestEntry.date}) is ${timeDiffHours.toFixed(2)} hours from target, exceeding ${maxDiffHours} hours`);
+    return null;
+  }
+
+  const balance = parseFloat(closestEntry.balance);
+  if (isNaN(balance)) {
+    console.warn(`Invalid balance in closest entry: ${closestEntry.balance}`);
+    return null;
+  }
+
+  console.log(`Closest entry for ${targetTime} (${new Date(targetTime)}): ${closestEntry.date}, Balance: ${balance}`);
+  return balance;
 }
 
 let isRunning = false;
@@ -171,6 +206,7 @@ router.get('/:dao', async (req: Request, res: Response): Promise<void> => {
 
     // Get the current treasury balance
     const currentTreasuryValue = parseFloat(treasuryEntry.total_treasury_value) || 0;
+    // console.log('currentTreasuryValue:', currentTreasuryValue, 'treasuryEntry.total_treasury_value:', treasuryEntry.total_treasury_value);
 
     // Calculate historical treasury returns
     const now = new Date().getTime();
@@ -182,10 +218,12 @@ router.get('/:dao', async (req: Request, res: Response): Promise<void> => {
     };
 
     const historicalTreasury = treasuryEntry.historical_treasury || [];
+    // console.log('historicalTreasury:', historicalTreasury);
     const treasuryChanges: TreasuryResponse['historicalReturns'] = {};
 
     Object.keys(timeOffsets).forEach((key) => {
       const pastValue = getClosestValue(historicalTreasury, timeOffsets[key]);
+      // console.log('key:', key, 'timeOffset:', timeOffsets[key], 'pastValue:', pastValue);
 
       if (pastValue === null) {
         treasuryChanges[key] = {
