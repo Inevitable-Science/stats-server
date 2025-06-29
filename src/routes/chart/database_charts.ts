@@ -90,13 +90,13 @@ router.get('/treasury/:dao', async (req: Request, res: Response): Promise<void> 
     return;
   }
 
-  const foundDao = daos.find((d: DAO) => d.name.toLowerCase() === dao.toLowerCase());
-  /*const foundDao = daos.find((d: DAO) =>
+  // const foundDao = daos.find((d: DAO) => d.name.toLowerCase() === dao.toLowerCase());
+  const foundDao = daos.find((d: DAO) =>
     d.name.toLowerCase() === dao.toLowerCase() ||
     d.alternative_names?.some(
       (alt) => alt.toLowerCase() === dao.toLowerCase()
     )
-  );*/
+  );
 
 
   if (!foundDao) {
