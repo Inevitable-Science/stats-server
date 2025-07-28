@@ -1,99 +1,3 @@
-/*// src/routes/daos.ts
-import { Router, Request, Response } from 'express';
-import { daos, DAO } from '../../config/constants';
-import TreasuryModel, { TreasuryDocument } from '../../config/models/treasury_schema';
-import TokenModel, { TokenDocument } from '../../config/models/token_schema';
-
-const router = Router();
-
-// Interface for the simplified DAO data returned by the route
-interface SimplifiedDao {
-  name: string;
-  description: string;
-  ticker: string;
-  ecosystem: string | null;
-  backdrop_url: string;
-  logo_url: string;
-}
-
-function fetchDaosData(): SimplifiedDao[] {
-  return daos.map((dao: DAO) => ({
-    name: dao.name,
-    description: dao.description,
-    ticker: dao.ticker,
-    ecosystem: dao.ecosystem,
-    backdrop_url: dao.backdrop_url,
-    logo_url: dao.logo_url,
-  }));
-}
-
-
-router.get('/', (req: Request, res: Response): void => {
-  const daosData: SimplifiedDao[] = fetchDaosData();
-  res.json(daosData);
-});
-
-router.get('/dao/:dao', (req, res: ): void => {
-  const { dao } = req.params;
-
-  if (!dao) {
-    return res.status(400).json({ error: 'Missing required parameter: dao' });
-  }
-
-  // Find the DAO by name or ticker (case-insensitive)
-  const foundDao = daos.find(
-    (d) => d.name.toLowerCase() === dao.toLowerCase() || d.ticker.toLowerCase() === dao.toLowerCase()
-  );
-
-  if (!foundDao) {
-    return res.status(404).json({ error: 'DAO not found' });
-  }
-
-  const tokenAddress = foundDao.native_token.token_address;
-  const tokenEntry = await TokenModel.findOne({ token_address: tokenAddress });
-  
-  const daoNameQuery = foundDao.name.toLowerCase();
-  const treasuryEntry = await TreasuryModel.findOne({ dao_name: daoNameQuery });
-
-  const addedAssets = 
-  +treasuryEntry?.total_treasury_value + 
-  +treasuryEntry?.total_assets;
-
-  // Structure the response data
-  const response = {
-    name: foundDao.name,
-    logo: foundDao.logo_url,
-    tags: foundDao.tag,
-    ecosystem: foundDao.ecosystem,
-    ecosystemSite: foundDao.ecosystem_url,
-    socials: foundDao.socials,
-    description: foundDao.description,
-    treasuryHoldings: treasuryEntry?.total_treasury_value,
-    assetsUnderManagement: addedAssets,
-    nativeToken: {
-      name: foundDao.native_token?.name,
-      address: foundDao.native_token?.token_address,
-      mc_ticker: foundDao.native_token?.mc_ticker,
-      totalSupply: tokenEntry?.total_supply || null,
-      totalHolders: tokenEntry?.total_holders || null,
-      marketCap: tokenEntry?.market_cap || null,
-    },
-    ipt: foundDao.ipt
-      ? Object.values(foundDao.ipt).map(item => ({
-          name: item?.name,
-          backdrop: item?.backdrop_url,
-          logo: item?.logo_url,
-          description: item?.description,
-          tokenType: item?.token_type,
-        }))
-      : null,
-  };
-})
-
-export default router;
-*/
-
-// src/routes/daos.ts
 import { Router, Request, Response } from 'express';
 import { daos, DAO } from '../../config/constants';
 import TreasuryModel, { TreasuryDocument } from '../../config/models/treasury_schema';
@@ -104,7 +8,6 @@ interface SimplifiedDao {
   name: string;
   description: string;
   ticker: string;
-  ecosystem: string | null;
   backdrop_url: string;
   logo_url: string;
 }
@@ -113,16 +16,18 @@ interface SimplifiedDao {
 interface DaoResponse {
   name: string;
   logo: string;
+  backdrop: string;
+  description: string;
+  date_created: string;
+  payments: number;
+  eth_raised: string;
   tags: string;
-  ecosystem: string | null;
-  ecosystemSite: string | null;
   socials: {
     site: string | null;
     linked_in: string | null;
     x: string | null;
     discord: string | null;
   };
-  description: string;
   treasuryHoldings: string | null;
   assetsUnderManagement: number | null;
   nativeToken: {
@@ -147,7 +52,6 @@ function fetchDaosData(): SimplifiedDao[] {
     name: dao.name,
     description: dao.description,
     ticker: dao.ticker,
-    ecosystem: dao.ecosystem,
     backdrop_url: dao.backdrop_url,
     logo_url: dao.logo_url,
   }));
@@ -161,31 +65,27 @@ router.get('/', (req: Request, res: Response): void => {
 });
 
 router.get('/:dao', async (req: Request, res: Response): Promise<void> => {
-  const { dao } = req.params;
-
-  if (!dao) {
-    res.status(400).json({ error: 'Missing required parameter: dao' });
-    return;
-  }
-
-  // Find the DAO by name or ticker (case-insensitive)
-  /*const foundDao = daos.find(
-    (d) => d.name.toLowerCase() === dao.toLowerCase() || d.ticker.toLowerCase() === dao.toLowerCase()
-  );*/
-  const foundDao = daos.find((d: DAO) =>
-    d.name.toLowerCase() === dao.toLowerCase() ||
-    d.ticker.toLowerCase() === dao.toLowerCase() ||
-    d.alternative_names?.some(
-      (alt) => alt.toLowerCase() === dao.toLowerCase()
-    )
-  );
-
-  if (!foundDao) {
-    res.status(404).json({ error: 'DAO not found' });
-    return;
-  }
-
   try {
+    const { dao } = req.params;
+
+    if (!dao) {
+      res.status(400).json({ error: 'Missing required parameter: dao' });
+      return;
+    }
+
+    const foundDao = daos.find((d: DAO) =>
+      d.name.toLowerCase() === dao.toLowerCase() ||
+      d.ticker.toLowerCase() === dao.toLowerCase() ||
+      d.alternative_names?.some(
+        (alt) => alt.toLowerCase() === dao.toLowerCase()
+      )
+    );
+
+    if (!foundDao) {
+      res.status(404).json({ error: 'DAO not found' });
+      return;
+    }
+
     // Fetch token data
     const tokenAddress = foundDao.native_token?.token_address;
     let tokenEntry: TokenDocument | null = null;
@@ -209,16 +109,18 @@ router.get('/:dao', async (req: Request, res: Response): Promise<void> => {
     const response: DaoResponse = {
       name: foundDao.name,
       logo: foundDao.logo_url,
+      backdrop: foundDao.backdrop_url,
+      description: foundDao.description,
+      date_created: foundDao.date_created,
+      payments: foundDao.payments,
+      eth_raised: foundDao.eth_raised,
       tags: foundDao.tag,
-      ecosystem: foundDao.ecosystem,
-      ecosystemSite: foundDao.ecosystem_url,
       socials: {
         site: foundDao.socials?.site || null,
         linked_in: foundDao.socials?.linked_in || null,
         x: foundDao.socials?.x || null,
         discord: foundDao.socials?.discord || null,
       },
-      description: foundDao.description,
       treasuryHoldings: treasuryEntry?.total_treasury_value || null,
       assetsUnderManagement,
       nativeToken: {

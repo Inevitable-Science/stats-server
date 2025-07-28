@@ -12,8 +12,6 @@ interface TreasuryResponse {
   logo: string;
   description: string;
   tags: string;
-  ecosystem: string | null;
-  ecosystemSite: string | null;
   socials: {
     site: string | null;
     linked_in: string | null;
@@ -254,8 +252,6 @@ router.get('/:dao', async (req: Request, res: Response): Promise<void> => {
       logo: foundDao.logo_url,
       description: foundDao.description,
       tags: foundDao.tag,
-      ecosystem: foundDao.ecosystem,
-      ecosystemSite: foundDao.ecosystem_url,
       socials: {
         site: foundDao.socials?.site || null,
         linked_in: foundDao.socials?.linked_in || null,

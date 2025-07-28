@@ -6,8 +6,9 @@ export interface Socials {
 }
 
 export interface Treasury {
-  address: string;
-  ens_name: string;
+  address: `0x${string}`;
+  ens_name: `${string}.eth`;
+  chain_id: number;
 }
 
 export interface Signers {
@@ -65,10 +66,11 @@ export interface DAO {
   ticker: string;
   tag: string;
   description: string;
+  date_created: string;
+  payments: number;
+  eth_raised: string;
   socials: Socials;
   projects: number;
-  ecosystem: string | null;
-  ecosystem_url: string | null;
   logo_url: string;
   backdrop_url: string;
   treasury: Treasury;
@@ -91,20 +93,22 @@ export const daos: DAO[] = [
     tag: 'Cryopreservation',
     description:
       "CryoDAO's objective is to contribute to cryopreservation research projects that have a high potential to increase the quality and capabilities of cryopreservation.",
+    date_created: "27 April 2023",
+    payments: 753,
+    eth_raised: '1,108.18',
     socials: {
       site: 'https://cryodao.org',
       linked_in: 'https://www.linkedin.com/company/cryodao',
-      x: 'https://x.com/cryodao',
+      x: 'cryodao',
       discord: 'https://discord.gg/cryodao',
     },
     projects: 5,
-    ecosystem: 'bio.xyz',
-    ecosystem_url: 'https://bio.xyz',
-    logo_url: 'https://www.profiler.bio/external/logos/cryodao.png',
-    backdrop_url: 'https://www.profiler.bio/external/backdrops/cryodao.png',
+    logo_url: 'https://ipfs.banny.eth.sucks/ipfs/QmVPuGhmVzGb2z9Lpa9J6She4fWr5GV5DsR3doQzWvvkq6',
+    backdrop_url: 'https://juicebox.money/_next/image?url=https%3A%2F%2Fipfs.banny.eth.sucks%2Fipfs%2FQmbtfkWtVocZnakQucppwBEFxdnJsRoMpFKbjtDbkQbapc&w=3840&q=75&dpl=dpl_DwdnNEjtzZVd1P6fuDHSTKEyako1',
     treasury: {
       address: '0xcfaB782fc6DEE9F381f29586aD25BbE6D8F84c7a',
       ens_name: 'cryodao.eth',
+      chain_id: 1,
     },
     signers: {
       required: 3,
@@ -194,20 +198,22 @@ export const daos: DAO[] = [
     tag: 'Replacement Research',
     description:
       'HydraDAO is a decentralized collective of scientists, entrepreneurs, advocates, and crypto enthusiasts working to advance replacement research in an open and democratic manner.',
+    date_created: "9 December 2024",
+    payments: 1276,
+    eth_raised: '1,113.88',
     socials: {
       site: 'https://hydradao.org',
       linked_in: 'https://www.linkedin.com/company/hydradao',
-      x: 'https://x.com/cryodao',
+      x: 'cryodao',
       discord: 'https://discord.gg/hydradao',
     },
     projects: 0,
-    ecosystem: null,
-    ecosystem_url: null,
-    logo_url: 'https://www.profiler.bio/external/logos/hydradao.png',
-    backdrop_url: 'https://www.profiler.bio/external/backdrops/hydradao.png',
+    logo_url: 'https://ipfs.banny.eth.sucks/ipfs/QmWGd5hZ2vxR1PLwoQAPARo8StoiA7KRo4R4qM8YHzH4Ya',
+    backdrop_url: 'https://juicebox.money/_next/image?url=https%3A%2F%2Fipfs.banny.eth.sucks%2Fipfs%2FQmbDq5zdUECGrSgYPj5AbCSC8KjDAd8RmTwcbZPPgscuti&w=3840&q=75&dpl=dpl_DwdnNEjtzZVd1P6fuDHSTKEyako1',
     treasury: {
       address: '0xE27fBfED8f446684D1fF042E41604a0785EF3508',
       ens_name: 'daohydra.eth',
+      chain_id: 1,
     },
     signers: {
       required: 2,
@@ -246,20 +252,22 @@ export const daos: DAO[] = [
     tag: "Men's Health",
     description:
       "ErectusDAO is a research-focused DAO committed to funding and developing cutting-edge regenerative strategies for men's health, particularly in the fields of sexual health and fertility.",
+    date_created: "28 November 2024",
+    payments: 460,
+    eth_raised: '370.95',
     socials: {
       site: 'https://www.erectusdao.org/',
       linked_in: null,
-      x: 'https://x.com/ErectusDAO',
+      x: 'ErectusDAO',
       discord: 'https://discord.com/invite/Hp4cGDMF9B',
     },
     projects: 0,
-    ecosystem: null,
-    ecosystem_url: null,
-    logo_url: 'https://www.profiler.bio/external/logos/erectusdao.png',
-    backdrop_url: 'https://www.profiler.bio/external/backdrops/erectusdao.png',
+    logo_url: 'https://ipfs.banny.eth.sucks/ipfs/QmTyYZNfxBs33BA3RyTQAm6jfcckAGjPepsAPoKDeL7E2x',
+    backdrop_url: 'https://juicebox.money/_next/image?url=https%3A%2F%2Fipfs.banny.eth.sucks%2Fipfs%2FQmT8H46PbdH59m29ZuJPdH9HJhGQGp4Y6Rx3tJnJTHak6j&w=3840&q=75&dpl=dpl_DwdnNEjtzZVd1P6fuDHSTKEyako1',
     treasury: {
       address: '0x65AF8Af9E39921d5ec9700E646B8300f76139101',
       ens_name: 'erectusdao.eth',
+      chain_id: 1,
     },
     signers: {
       required: 2,

@@ -23,6 +23,8 @@ import daoRouter from './routes/dao/daos'
 import tokenRouter from './routes/dao/token'
 import treasuryRouter from './routes/dao/treasury'
 
+import activityRouter from './routes/dao/activity/activity'
+
 const app = express();
 app.use(express.json())
 const PORT = process.env.PORT || 3001;
@@ -82,6 +84,8 @@ app.use('/charts', databaseChartRouter);
 app.use('/dao', daoRouter);
 app.use('/token', tokenRouter);
 app.use('/treasury', treasuryRouter);
+
+app.use('/activity', activityRouter);
 
 
 app.get('/schema', async (req: Request, res: Response) => {

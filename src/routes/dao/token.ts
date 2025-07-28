@@ -1,4 +1,3 @@
-// src/routes/tokens.ts
 import { Router, Request, Response } from 'express';
 import { daos, DAO, NativeToken, IPTEntry } from '../../config/constants';
 import TreasuryModel, { TreasuryDocument } from '../../config/models/treasury_schema';
@@ -12,8 +11,6 @@ interface TokenResponse {
   isIptToken: boolean;
   logo: string;
   tags: string;
-  ecosystem: string | null;
-  ecosystemSite: string | null;
   socials: {
     site: string | null;
     linked_in: string | null;
@@ -56,45 +53,46 @@ let isRunning = false;
 const router = Router();
 
 router.get('/:token', async (req: Request, res: Response): Promise<void> => {
-  const { token } = req.params;
-
-  if (!token) {
-    res.status(400).json({ error: 'Missing required parameter: token' });
-    return;
-  }
-
-  let isIptToken = false;
-
-  // Find the DAO that matches the token
-  const foundDao = daos.find((d: DAO) => {
-    // Check if the token matches native_token.name
-    if (d.native_token.name.toLowerCase() === token.toLowerCase()) {
-      return true;
-    }
-
-    // Check if any IPT object has the token name and is of type ERC-20
-    if (d.ipt) {
-      return Object.keys(d.ipt).some((key) => {
-        if (
-          d.ipt![key].name.toLowerCase() === token.toLowerCase() &&
-          d.ipt![key].token_type === 'ERC-20'
-        ) {
-          isIptToken = true; // Set to true if IPT token is found
-          return true;
-        }
-        return false;
-      });
-    }
-
-    return false;
-  });
-
-  if (!foundDao) {
-    res.status(404).json({ error: 'Token not found in any DAO' });
-    return;
-  }
-
   try {
+    const { token } = req.params;
+
+    if (!token) {
+      res.status(400).json({ error: 'Missing required parameter: token' });
+      return;
+    }
+
+    let isIptToken = false;
+
+    // Find the DAO that matches the token
+    const foundDao = daos.find((d: DAO) => {
+      // Check if the token matches native_token.name
+      if (d.native_token.name.toLowerCase() === token.toLowerCase()) {
+        return true;
+      }
+
+      // Check if any IPT object has the token name and is of type ERC-20
+      if (d.ipt) {
+        return Object.keys(d.ipt).some((key) => {
+          if (
+            d.ipt![key].name.toLowerCase() === token.toLowerCase() &&
+            d.ipt![key].token_type === 'ERC-20'
+          ) {
+            isIptToken = true; // Set to true if IPT token is found
+            return true;
+          }
+          return false;
+        });
+      }
+
+      return false;
+    });
+
+    if (!foundDao) {
+      res.status(404).json({ error: 'Token not found in any DAO' });
+      return;
+    }
+
+
     // Determine token stats from either native_token or ipt
     let tokenStats: NativeToken | IPTEntry = foundDao.native_token; // Default to native_token
 
@@ -129,8 +127,6 @@ router.get('/:token', async (req: Request, res: Response): Promise<void> => {
       isIptToken,
       logo: foundDao.logo_url,
       tags: foundDao.tag,
-      ecosystem: foundDao.ecosystem,
-      ecosystemSite: foundDao.ecosystem_url,
       socials: {
         site: foundDao.socials?.site || null,
         linked_in: foundDao.socials?.linked_in || null,
