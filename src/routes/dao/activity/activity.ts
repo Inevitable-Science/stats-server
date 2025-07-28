@@ -43,7 +43,9 @@ router.get('/:dao', async (req: Request, res: Response) => {
     const startIndex = (page - 1) * limit;
 
     // Define filepath
-    const csvFilePath = path.join(__dirname, `/dump/${foundDao.name.toLowerCase()}.csv`);
+    //const csvFilePath = path.join(__dirname, `/dump/${foundDao.name.toLowerCase()}.csv`);
+    const csvFilePath = path.resolve(process.cwd(), 'src/routes/dao/activity/dump', `${foundDao.name.toLowerCase()}.csv`);
+
     if (!fs.existsSync(csvFilePath)) {
       res.status(404).json({ error: 'Activity Data Not Found' });
       return;
