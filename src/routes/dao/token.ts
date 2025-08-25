@@ -20,6 +20,7 @@ interface TokenResponse {
   assetsUnderManagement: number | null;
   selectedToken: {
     address: string | null;
+    chain_id: number | null;
     logoUrl: string | null;
     ticker: string | null;
     tokenType: string | null;
@@ -136,6 +137,7 @@ router.get('/:token', async (req: Request, res: Response): Promise<void> => {
       assetsUnderManagement,
       selectedToken: {
         address: tokenStats?.token_address || null,
+        chain_id: tokenStats?.chain_id || null,
         logoUrl: tokenStats?.logo_url || null,
         ticker: tokenStats?.mc_ticker || null,
         tokenType: 'token_type' in tokenStats ? tokenStats.token_type || null : null,

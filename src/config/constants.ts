@@ -29,6 +29,7 @@ export interface ManagedAccounts {
 
 export interface NativeToken {
   name: string;
+  chain_id: number;
   parent_dao: string;
   mc_ticker: string;
   logo_url: string;
@@ -41,6 +42,7 @@ export interface NativeToken {
 
 export interface IPTEntry {
   name: string;
+  chain_id: number;
   parent_dao: string;
   mc_ticker: string;
   token_type: string;
@@ -160,6 +162,7 @@ export const daos: DAO[] = [
     },
     native_token: {
       name: 'CRYO',
+      chain_id: 1,
       parent_dao: 'CryoDAO',
       mc_ticker: 'cryodao',
       logo_url: 'https://www.profiler.bio/external/logos/cryodao.png',
@@ -172,6 +175,7 @@ export const daos: DAO[] = [
     ipt: {
       cryorat: {
         name: 'CryoRat',
+        chain_id: 1,
         parent_dao: 'CryoDAO',
         mc_ticker: 'cryorat',
         token_type: 'ERC-20',
@@ -204,7 +208,7 @@ export const daos: DAO[] = [
     socials: {
       site: 'https://hydradao.org',
       linked_in: 'https://www.linkedin.com/company/hydradao',
-      x: 'cryodao',
+      x: 'daohydra',
       discord: 'https://discord.gg/hydradao',
     },
     projects: 0,
@@ -234,6 +238,7 @@ export const daos: DAO[] = [
     },
     native_token: {
       name: 'HYDRA',
+      chain_id: 1,
       parent_dao: 'HydraDAO',
       mc_ticker: 'hydradao',
       logo_url: 'https://www.profiler.bio/external/logos/cryodao.png',
@@ -287,6 +292,7 @@ export const daos: DAO[] = [
     },
     native_token: {
       name: 'YUGE',
+      chain_id: 1,
       parent_dao: 'ErectusDAO',
       mc_ticker: 'yuge',
       logo_url: 'https://www.profiler.bio/external/logos/erectusdao.png',
@@ -342,6 +348,7 @@ export const daos: DAO[] = [
     },
     native_token: {
       name: 'CryoRat',
+      chain_id: 1,
       parent_dao: 'CryoDAO',
       mc_ticker: 'cryorat',
       logo_url: 'https://www.profiler.bio/external/logos/cryodao.png',
