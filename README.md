@@ -7,10 +7,6 @@ This is a Web3 analytics server built with Express, integrating on-chain DAO, to
 1. Clone the repo
 2. Install dependencies:
    ```bash
-   yarn install --frozen-lockfile
-   ```
-   or
-   ```bash
    npm install
    ```
 3. Set up your `.env` with the following keys:
@@ -21,6 +17,7 @@ This is a Web3 analytics server built with Express, integrating on-chain DAO, to
    ZAPPER_KEY=...
    DISCORD_WEBHOOK_URL=...
    MONGO_URI=...
+   X_API_KEY=...
    ```
 
 4. Start the server:
