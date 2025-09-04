@@ -8,7 +8,7 @@ const router = Router();
 });*/
 
 router.get('/tokenlist.schema.json', (req, res) => {
-  res.sendFile(path.join(__dirname, 'tokenlist.schema.json'));
+  res.sendFile(path.resolve('src/routes/web3/tokenlist/tokenlist.schema.json'));
 });
 
 export default router;
