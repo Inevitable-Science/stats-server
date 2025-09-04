@@ -19,11 +19,13 @@ import ohlcChartRouter from './routes/chart/ohlc_chart';
 import marketChartRouter from './routes/chart/market_charts';
 import databaseChartRouter from './routes/chart/database_charts';
 
-import daoRouter from './routes/dao/daos'
-import tokenRouter from './routes/dao/token'
-import treasuryRouter from './routes/dao/treasury'
+import daoRouter from './routes/dao/daos';
+import tokenRouter from './routes/dao/token';
+import treasuryRouter from './routes/dao/treasury';
 
-import activityRouter from './routes/dao/activity/activity'
+import activityRouter from './routes/dao/activity/activity';
+
+import tokenListRouter from './routes/web3/token_list'
 
 const app = express();
 app.use(express.json())
@@ -86,6 +88,8 @@ app.use('/token', tokenRouter);
 app.use('/treasury', treasuryRouter);
 
 app.use('/activity', activityRouter);
+
+app.use('/web3/tokenList', tokenListRouter);
 
 
 app.get('/schema', async (req: Request, res: Response) => {
