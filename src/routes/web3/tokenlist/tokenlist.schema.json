@@ -23,6 +23,7 @@
       {
         "chainId": 1,
         "address": "0x4cd1B2874e020C5bf08c4bE18Ab69ca86EC25fEf",
+        "name": "CryoRat",
         "decimals": 18,
         "symbol": "CRYORAT",
         "logoURI": "https://coin-images.coingecko.com/coins/images/52533/large/cryorat-tp.png?1733583635"
