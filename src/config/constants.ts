@@ -317,7 +317,7 @@ export const daos: DAO[] = [
     eth_raised: '246.37',
     socials: {
       site: 'https://cryorat.com',
-      x: 'cryorat',
+      x: 'thecryorat',
       discord: 'https://discord.gg/cryodao',
     },
     projects: 1,

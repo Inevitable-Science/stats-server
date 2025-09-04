@@ -26,6 +26,7 @@ import treasuryRouter from './routes/dao/treasury';
 import activityRouter from './routes/dao/activity/activity';
 
 import tokenListRouter from './routes/web3/tokenlist/token_list'
+import fetchAndUpdateTwitterFollowers from './utils/schedule/handlers/twitter_refresh';
 
 const app = express();
 app.use(express.json())
@@ -113,6 +114,27 @@ app.get('/schemaToken', async (req: Request, res: Response) => {
   }
 });
 
+app.post('/refreshFollowers/:password', async (req: Request, res: Response) => {
+  const { password } = req.params;
+
+  if (!password || password != process.env.APP_PASSWORD) {
+    res.status(400).json({ error: 'Missing required parameter: password' });
+    return;
+  }
+
+  try {
+    await sendDiscordMessage(`**Request received to refresh followers stats at ${new Date().toLocaleString()}**`);
+    res.status(202).json({ message: 'Processing request in the background' });
+
+    setImmediate(async () => {
+      await fetchAndUpdateTwitterFollowers();
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).send("Something went wrong.");
+  }
+});
+
 app.post('/refreshAll/:password', async (req: Request, res: Response): Promise<void> => {
   const { password } = req.params;
 
@@ -122,7 +144,7 @@ app.post('/refreshAll/:password', async (req: Request, res: Response): Promise<v
   }
 
   try {
-    await sendDiscordMessage(`**Request to refresh all stats for at ${new Date().toLocaleString()}**`);
+    await sendDiscordMessage(`**Request received to refresh all stats at ${new Date().toLocaleString()}**`);
     res.status(202).json({ message: 'Processing request in the background' });
 
     // Set isRunning to true and process in the background

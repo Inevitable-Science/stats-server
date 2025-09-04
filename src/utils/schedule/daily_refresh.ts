@@ -1,6 +1,7 @@
 import fetchAndUpdateTokenStats from "./handlers/token_refresh";
 import fetchAndUpdateTreasuries from "./handlers/treasury_refresh";
 import sendDiscordMessage from "../coms/send_message";
+import fetchAndUpdateTwitterFollowers from "./handlers/twitter_refresh";
 
 async function dailyRefresh() {
     try {
@@ -9,6 +10,9 @@ async function dailyRefresh() {
 
         await sendDiscordMessage("**Daily Token Stats Refresh Completed**");
         await fetchAndUpdateTreasuries();
+
+        await sendDiscordMessage("**Daily Treasury Stats Refresh Completed**");
+        await fetchAndUpdateTwitterFollowers();
 
         await sendDiscordMessage("**Daily Stats Refresh Completed**");
     } catch (error){
