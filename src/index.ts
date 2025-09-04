@@ -25,7 +25,7 @@ import treasuryRouter from './routes/dao/treasury';
 
 import activityRouter from './routes/dao/activity/activity';
 
-import tokenListRouter from './routes/web3/token_list'
+import tokenListRouter from './routes/web3/tokenlist/token_list'
 
 const app = express();
 app.use(express.json())
@@ -89,7 +89,7 @@ app.use('/treasury', treasuryRouter);
 
 app.use('/activity', activityRouter);
 
-app.use('/web3/tokenList', tokenListRouter);
+app.use('/web3', tokenListRouter);
 
 
 app.get('/schema', async (req: Request, res: Response) => {

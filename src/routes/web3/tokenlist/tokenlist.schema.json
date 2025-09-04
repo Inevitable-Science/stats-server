@@ -1,6 +1,4 @@
-import { Router, Request, Response } from 'express';
-
-const tokenList = {
+{
     "name": "Inevitable Sciences Token List",
     "timestamp": "2025-03-08T12:34:09Z",
     "version": {
@@ -46,12 +44,4 @@ const tokenList = {
         "logoURI": "https://www.profiler.bio/web3/tokenlistAssets/yuge_token.png"
       }
     ]
-};
-
-const router = Router();
-
-router.get('/', (req: Request, res: Response): void => {
-  res.json(tokenList);
-});
-
-export default router;
+}
