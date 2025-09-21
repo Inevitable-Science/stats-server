@@ -82,6 +82,16 @@ export interface DAO {
   ipt: IPT | null;
 }
 
+export interface TwitterAccount {
+  username: string;
+}
+
+export const trackFollowersArray: TwitterAccount[] = [
+  {
+    username: "inevitablesci"
+  }
+]
+
 // Define and export the daos array
 export const daos: DAO[] = [
   {
