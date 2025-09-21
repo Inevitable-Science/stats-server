@@ -304,7 +304,7 @@ export const daos: DAO[] = [
       name: 'YUGE',
       chain_id: 1,
       parent_dao: 'ErectusDAO',
-      mc_ticker: 'yuge',
+      mc_ticker: 'erectusdao',
       logo_url: 'https://www.profiler.bio/external/logos/erectusdao.png',
       creation_block: 21307633,
       decimals: 18,
