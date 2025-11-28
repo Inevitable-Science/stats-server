@@ -153,12 +153,9 @@ router.get("/:query", async (req: Request, res: Response): Promise<void> => {
 
   // Validate `id` and `days` parameters
   if (!id || !days) {
-    res
-      .status(400)
-      .json({
-        error:
-          "Invalid query format. Expected format: id-days (e.g., cryodao-7)",
-      });
+    res.status(400).json({
+      error: "Invalid query format. Expected format: id-days (e.g., cryodao-7)",
+    });
     return;
   }
 

@@ -240,11 +240,9 @@ router.post(
     }
 
     if (!tokenStats.networks.includes("eth")) {
-      res
-        .status(400)
-        .json({
-          error: "Token must be on the Ethereum network to refresh stats.",
-        });
+      res.status(400).json({
+        error: "Token must be on the Ethereum network to refresh stats.",
+      });
       return;
     }
 
@@ -264,12 +262,10 @@ router.post(
           await sendDiscordMessage(
             `**REJECTED request to refresh token stats for ${tokenName} at ${new Date().toLocaleString()}: 15 minute grace period**`
           );
-          res
-            .status(400)
-            .json({
-              error:
-                "Please wait 15 minutes before requesting a data update again.",
-            });
+          res.status(400).json({
+            error:
+              "Please wait 15 minutes before requesting a data update again.",
+          });
           return;
         }
       }

@@ -355,12 +355,10 @@ router.post(
           await sendDiscordMessage(
             `**REJECTED request to refresh treasury for ${foundDao.name} at ${new Date().toLocaleString()}: 15 minute grace period**`
           );
-          res
-            .status(400)
-            .json({
-              error:
-                "Please wait 15 minutes before requesting a data update again.",
-            });
+          res.status(400).json({
+            error:
+              "Please wait 15 minutes before requesting a data update again.",
+          });
           return;
         }
       }
