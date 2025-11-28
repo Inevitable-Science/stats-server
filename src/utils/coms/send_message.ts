@@ -1,19 +1,13 @@
 import axios from "axios";
+import { ENV } from "../env";
 
 const sendDiscordMessage = async (message: string) => {
   try {
-    const webhook = process.env.DISCORD_WEBHOOK_URL;
-
-    if (!webhook) {
-      console.warn("Discord webhook URL is required");
-      return;
-    }
-
     const discordMessage = {
       content: message,
     };
 
-    await axios.post(webhook, discordMessage);
+    await axios.post(ENV.DISCORD_WEBHOOK_URL, discordMessage);
   } catch (error) {
     console.error("Error sending message to Discord:", error);
   } finally {

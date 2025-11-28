@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { ethers } from "ethers";
+import { ENV } from "../env";
 
 // Interface for CoinGecko API response
 interface MarketCapResponse {
@@ -74,9 +75,6 @@ export interface TokenStatsResponse {
   stats: Stats;
 }
 
-// Set up the provider (Infura or Alchemy endpoint)
-const infuraKey: string | undefined = process.env.INFURA_KEY;
-
 async function fetchMarketCap(tokenSymbol: string): Promise<number | null> {
   const url = `https://api.coingecko.com/api/v3/coins/${tokenSymbol}`;
   try {
@@ -105,11 +103,8 @@ async function fetchHolders(
 ): Promise<HoldersStats | null> {
   let provider: ethers.JsonRpcProvider;
   try {
-    if (!infuraKey) {
-      throw new Error("Infura key not provided");
-    }
     provider = new ethers.JsonRpcProvider(
-      `https://mainnet.infura.io/v3/${infuraKey}`
+      `https://mainnet.infura.io/v3/${ENV.INFURA_KEY}`
     );
   } catch (error: any) {
     console.error(`Failed to initialize provider: ${error.message}`);

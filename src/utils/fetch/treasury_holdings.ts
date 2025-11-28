@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import { ENV } from "../env";
 
 // Interface for pegged token configuration
 interface PeggedToken {
@@ -68,7 +69,7 @@ const peggedTokens: PeggedToken[] = [
 ];
 
 // API keys and endpoints
-const ALCHEMY_API_KEY: string | undefined = process.env.ALCHEMY_KEY;
+const ALCHEMY_API_KEY = ENV.ALCHEMY_KEY;
 const ALCHEMY_MAINNET_URL = `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
 const ALCHEMY_PRICE_URL = `https://api.g.alchemy.com/prices/v1/${ALCHEMY_API_KEY}/tokens/by-address`;
 

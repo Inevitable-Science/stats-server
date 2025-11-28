@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ENV } from "../env";
 
 // GraphQL endpoint
 const GRAPHQL_ENDPOINT = "https://public.zapper.xyz/graphql";
@@ -31,16 +32,9 @@ interface PortfolioResponse {
 // Function to send a query for each address
 async function getAssetsManaged(walletData: WalletData): Promise<number> {
   let totalUsd = 0;
-  const API_KEY = process.env.ZAPPER_KEY;
-
-  if (!API_KEY) {
-    console.error("ZAPPER_KEY is not set in environment variables");
-    return totalUsd;
-  }
-
   let encodedKey: string;
   try {
-    encodedKey = Buffer.from(API_KEY).toString("base64");
+    encodedKey = Buffer.from(ENV.ZAPPER_KEY).toString("base64");
   } catch (error) {
     console.error("Error encoding API key:", error);
     return totalUsd;

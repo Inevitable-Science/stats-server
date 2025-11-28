@@ -1,15 +1,12 @@
 import sendDiscordMessage from "../coms/send_message";
+import { ENV } from "../env";
 
 async function getTwitterFollowers(username: string): Promise<number | null> {
   try {
-    const X_API_KEY = process.env.X_API_KEY;
-    if (!X_API_KEY) throw new Error("No X API Key found");
-
     const response = await fetch(
-      `https://api.twitterapi.io/twitter/user/info?userName=${username}`,
-      {
+      `https://api.twitterapi.io/twitter/user/info?userName=${username}`, {
         headers: {
-          "X-API-Key": X_API_KEY,
+          "X-API-Key": ENV.X_API_KEY,
         },
       }
     );

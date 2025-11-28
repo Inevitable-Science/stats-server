@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { ENV } from "../env";
 
 // Interface for event arguments
 interface TransferEventArgs {
@@ -12,9 +13,6 @@ interface TransferEvent {
   args: TransferEventArgs;
   transactionHash: string;
 }
-
-// Set up the provider (Infura or Alchemy endpoint)
-const infuraKey: string | undefined = process.env.INFURA_KEY;
 
 // Function to fetch the number of current holders
 async function getCurrentHolders(
@@ -32,11 +30,8 @@ async function getCurrentHolders(
 
     let provider: ethers.JsonRpcProvider;
     try {
-      if (!infuraKey) {
-        throw new Error("Infura key not provided");
-      }
       provider = new ethers.JsonRpcProvider(
-        `https://mainnet.infura.io/v3/${infuraKey}`
+        `https://mainnet.infura.io/v3/${ENV.INFURA_KEY}`
       );
     } catch (error: any) {
       console.error(`Error initializing provider: ${error.message}`);

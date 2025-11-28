@@ -1,17 +1,21 @@
-import express, { Request, Response } from "express";
-require("dotenv").config();
+import express, { NextFunction, Request, Response } from "express";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Dependencies
 import cors from "cors";
 import cron from "node-cron";
+import rateLimit from "express-rate-limit";
+import { RateLimiterMemory } from "rate-limiter-flexible";
+
+// Database
+import mongoose from "mongoose";
 
 import TreasuryModel from "./config/models/treasury_schema";
 import TokenModel from "./config/models/token_schema";
 
 import sendDiscordMessage from "./utils/coms/send_message";
 
-// Database
-import mongoose from "mongoose";
 
 import dailyRefresh from "./utils/schedule/daily_refresh";
 
@@ -27,28 +31,12 @@ import activityRouter from "./routes/dao/activity/activity";
 
 import tokenListRouter from "./routes/web3/tokenlist/token_list";
 import fetchAndUpdateTwitterFollowers from "./utils/schedule/handlers/twitter_refresh";
+import { ENV } from "./utils/env";
+import { ErrorCodes } from "./utils/errors";
 
 const app = express();
 app.use(express.json());
 const PORT = process.env.PORT || 3001;
-
-/*const allowedOrigins = ['http://localhost:3000'];
-
-app.use(cors({
-  origin: (
-    origin: string | undefined, 
-    callback: (err: Error | null, allow?: boolean) => void
-  ) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: 'GET',
-  credentials: true,
-  optionsSuccessStatus: 200,
-}));*/
 
 app.use(
   cors({
@@ -58,15 +46,43 @@ app.use(
   })
 );
 
+// ----- IP RATE LIMIT: 10 req/sec -----
+const ipLimiter = rateLimit({
+  windowMs: 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// ----- GLOBAL RATE LIMIT: 15,000 req/min -----
+const globalLimiter = new RateLimiterMemory({
+  points: 15000,
+  duration: 60,
+});
+
+const globalRateLimit = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    await globalLimiter.consume("global");
+    next();
+  } catch {
+    res.status(429).json({
+      error: ErrorCodes.RATE_LIMIT,
+    });
+  }
+};
+
+// ----- Apply both middlewares -----
+app.use(ipLimiter);
+app.use(globalRateLimit);
+
+
 const connectDB = async () => {
   try {
-    const mongo_uri = process.env.MONGO_URI;
-    if (!mongo_uri) {
-      console.warn("No Mongo URI found");
-      return;
-    }
-
-    const conn = await mongoose.connect(mongo_uri);
+    const conn = await mongoose.connect(ENV.MONGO_URI);
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
@@ -117,7 +133,7 @@ app.get("/schemaToken", async (req: Request, res: Response) => {
 app.post("/refreshFollowers/:password", async (req: Request, res: Response) => {
   const { password } = req.params;
 
-  if (!password || password != process.env.APP_PASSWORD) {
+  if (!password || password != ENV.APP_PASSWORD) {
     res.status(400).json({ error: "Missing required parameter: password" });
     return;
   }
@@ -142,7 +158,7 @@ app.post(
   async (req: Request, res: Response): Promise<void> => {
     const { password } = req.params;
 
-    if (!password || password != process.env.APP_PASSWORD) {
+    if (!password || password != ENV.APP_PASSWORD) {
       res.status(400).json({ error: "Missing required parameter: password" });
       return;
     }
