@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
 
 // GraphQL endpoint
-const GRAPHQL_ENDPOINT = 'https://public.zapper.xyz/graphql';
+const GRAPHQL_ENDPOINT = "https://public.zapper.xyz/graphql";
 
 // Define chain mapping type
-type Chain = 'eth' | 'sol' | 'base' | 'poly' | 'btc' | 'arb';
+type Chain = "eth" | "sol" | "base" | "poly" | "btc" | "arb";
 
 // Define expected wallet data structure
 interface WalletData {
@@ -34,29 +34,29 @@ async function getAssetsManaged(walletData: WalletData): Promise<number> {
   const API_KEY = process.env.ZAPPER_KEY;
 
   if (!API_KEY) {
-    console.error('ZAPPER_KEY is not set in environment variables');
+    console.error("ZAPPER_KEY is not set in environment variables");
     return totalUsd;
   }
 
   let encodedKey: string;
   try {
-    encodedKey = Buffer.from(API_KEY).toString('base64');
+    encodedKey = Buffer.from(API_KEY).toString("base64");
   } catch (error) {
     console.error("Error encoding API key:", error);
     return totalUsd;
   }
 
   const networkMapping: Record<Chain, string> = {
-    eth: 'ETHEREUM_MAINNET',
-    sol: 'SOLANA_MAINNET',
-    base: 'BASE_MAINNET',
-    poly: 'POLYGON_MAINNET',
-    btc: 'BITCOIN_MAINNET',
-    arb: 'ARBITRUM_MAINNET',
+    eth: "ETHEREUM_MAINNET",
+    sol: "SOLANA_MAINNET",
+    base: "BASE_MAINNET",
+    poly: "POLYGON_MAINNET",
+    btc: "BITCOIN_MAINNET",
+    arb: "ARBITRUM_MAINNET",
   };
 
   for (const [address, { chain }] of Object.entries(walletData)) {
-    const network = networkMapping[chain] || 'ETHEREUM_MAINNET';
+    const network = networkMapping[chain] || "ETHEREUM_MAINNET";
 
     const query = `
       query($portfolioAddresses2: [Address!]!, $networks: [Network!]) {
@@ -81,7 +81,7 @@ async function getAssetsManaged(walletData: WalletData): Promise<number> {
         { query, variables },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             authorization: `Basic ${encodedKey}`,
           },
         }
@@ -95,7 +95,10 @@ async function getAssetsManaged(walletData: WalletData): Promise<number> {
         }, 0);
         totalUsd += balanceUSD;
       } else {
-        console.warn(`Unexpected response format for address ${address}`, response.data);
+        console.warn(
+          `Unexpected response format for address ${address}`,
+          response.data
+        );
       }
     } catch (error) {
       console.error(`Error fetching data for ${address}:`, error);

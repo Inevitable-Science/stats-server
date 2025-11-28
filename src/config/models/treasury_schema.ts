@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Schema, Document, Model } from "mongoose";
 
 interface Token {
   contractAddress: string;
@@ -59,7 +59,7 @@ const DataSchema: Schema<TreasuryDocument> = new Schema({
 });
 
 const TreasuryModel: Model<TreasuryDocument> = mongoose.model<TreasuryDocument>(
-  'treasury_collections',
+  "treasury_collections",
   DataSchema
 );
 

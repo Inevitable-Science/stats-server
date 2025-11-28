@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 
 // Interface for event arguments
 interface TransferEventArgs {
@@ -25,15 +25,19 @@ async function getCurrentHolders(
 ): Promise<number> {
   try {
     if (!tokenAddress || !tokenABI || !startBlock || decimals === undefined) {
-      throw new Error('Invalid function arguments. Please provide tokenAddress, tokenABI, startBlock, and decimals.');
+      throw new Error(
+        "Invalid function arguments. Please provide tokenAddress, tokenABI, startBlock, and decimals."
+      );
     }
 
     let provider: ethers.JsonRpcProvider;
     try {
       if (!infuraKey) {
-        throw new Error('Infura key not provided');
+        throw new Error("Infura key not provided");
       }
-      provider = new ethers.JsonRpcProvider(`https://mainnet.infura.io/v3/${infuraKey}`);
+      provider = new ethers.JsonRpcProvider(
+        `https://mainnet.infura.io/v3/${infuraKey}`
+      );
     } catch (error: any) {
       console.error(`Error initializing provider: ${error.message}`);
       return 0; // Return zero to avoid breaking the app
@@ -43,7 +47,9 @@ async function getCurrentHolders(
     try {
       tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
     } catch (error: any) {
-      console.error(`Error creating contract instance for ${tokenAddress}: ${error.message}`);
+      console.error(
+        `Error creating contract instance for ${tokenAddress}: ${error.message}`
+      );
       return 0; // Return zero to avoid breaking the app
     }
 
@@ -54,7 +60,11 @@ async function getCurrentHolders(
       // Define block range
       const endBlock: number = await provider.getBlockNumber();
 
-      for (let fromBlock = startBlock; fromBlock <= endBlock; fromBlock += batchSize) {
+      for (
+        let fromBlock = startBlock;
+        fromBlock <= endBlock;
+        fromBlock += batchSize
+      ) {
         const toBlock: number = Math.min(fromBlock + batchSize - 1, endBlock);
 
         console.log(`Fetching events from block ${fromBlock} to ${toBlock}...`);
@@ -67,21 +77,25 @@ async function getCurrentHolders(
         );
 
         if (!Array.isArray(events) || events.length === 0) {
-          console.warn(`No transfer events found from block ${fromBlock} to ${toBlock}.`);
+          console.warn(
+            `No transfer events found from block ${fromBlock} to ${toBlock}.`
+          );
           continue; // Skip empty batches
         }
 
         // Process events with type safety
         for (const event of events) {
           // Check if event is an EventLog with args
-          if ('args' in event && event.args) {
+          if ("args" in event && event.args) {
             const transferEvent = event as unknown as TransferEvent;
             if (
               !transferEvent.args?.from ||
               !transferEvent.args.to ||
               !transferEvent.args.value
             ) {
-              console.warn(`Warning: Skipping malformed event: ${JSON.stringify(event)}`);
+              console.warn(
+                `Warning: Skipping malformed event: ${JSON.stringify(event)}`
+              );
               continue;
             }
 
@@ -90,7 +104,9 @@ async function getCurrentHolders(
 
             let value: number;
             try {
-              value = parseFloat(ethers.formatUnits(transferEvent.args.value, decimals));
+              value = parseFloat(
+                ethers.formatUnits(transferEvent.args.value, decimals)
+              );
             } catch (error: any) {
               console.warn(
                 `Warning: Error parsing value for event ${transferEvent.transactionHash}: ${error.message}`
@@ -104,7 +120,9 @@ async function getCurrentHolders(
             holders.set(from, (holders.get(from) || 0) - value);
             holders.set(to, (holders.get(to) || 0) + value);
           } else {
-            console.warn(`Warning: Skipping event without args: ${JSON.stringify(event)}`);
+            console.warn(
+              `Warning: Skipping event without args: ${JSON.stringify(event)}`
+            );
             continue;
           }
         }
@@ -117,7 +135,9 @@ async function getCurrentHolders(
 
       return currentHoldersCount;
     } catch (error: any) {
-      console.error(`Error fetching events for token ${tokenAddress}: ${error.message}`);
+      console.error(
+        `Error fetching events for token ${tokenAddress}: ${error.message}`
+      );
       return 0; // Return zero in case of errors
     }
   } catch (err: any) {

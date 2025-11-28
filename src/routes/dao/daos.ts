@@ -1,7 +1,9 @@
-import { Router, Request, Response } from 'express';
-import { daos, DAO } from '../../config/constants';
-import TreasuryModel, { TreasuryDocument } from '../../config/models/treasury_schema';
-import TokenModel, { TokenDocument } from '../../config/models/token_schema';
+import { Router, Request, Response } from "express";
+import { daos, DAO } from "../../config/constants";
+import TreasuryModel, {
+  TreasuryDocument,
+} from "../../config/models/treasury_schema";
+import TokenModel, { TokenDocument } from "../../config/models/token_schema";
 
 // Interface for the simplified DAO data returned by the root route
 interface SimplifiedDao {
@@ -59,30 +61,31 @@ function fetchDaosData(): SimplifiedDao[] {
 
 const router = Router();
 
-router.get('/', (req: Request, res: Response): void => {
+router.get("/", (req: Request, res: Response): void => {
   const daosData: SimplifiedDao[] = fetchDaosData();
   res.json(daosData);
 });
 
-router.get('/:dao', async (req: Request, res: Response): Promise<void> => {
+router.get("/:dao", async (req: Request, res: Response): Promise<void> => {
   try {
     const { dao } = req.params;
 
     if (!dao) {
-      res.status(400).json({ error: 'Missing required parameter: dao' });
+      res.status(400).json({ error: "Missing required parameter: dao" });
       return;
     }
 
-    const foundDao = daos.find((d: DAO) =>
-      d.name.toLowerCase() === dao.toLowerCase() ||
-      d.ticker.toLowerCase() === dao.toLowerCase() ||
-      d.alternative_names?.some(
-        (alt) => alt.toLowerCase() === dao.toLowerCase()
-      )
+    const foundDao = daos.find(
+      (d: DAO) =>
+        d.name.toLowerCase() === dao.toLowerCase() ||
+        d.ticker.toLowerCase() === dao.toLowerCase() ||
+        d.alternative_names?.some(
+          (alt) => alt.toLowerCase() === dao.toLowerCase()
+        )
     );
 
     if (!foundDao) {
-      res.status(404).json({ error: 'DAO not found' });
+      res.status(404).json({ error: "DAO not found" });
       return;
     }
 
@@ -95,12 +98,15 @@ router.get('/:dao', async (req: Request, res: Response): Promise<void> => {
 
     // Fetch treasury data
     const daoNameQuery = foundDao.name.toLowerCase();
-    const treasuryEntry: TreasuryDocument | null = await TreasuryModel.findOne({ dao_name: daoNameQuery });
+    const treasuryEntry: TreasuryDocument | null = await TreasuryModel.findOne({
+      dao_name: daoNameQuery,
+    });
 
     // Calculate assets under management
     let assetsUnderManagement: number | null = null;
     if (treasuryEntry?.total_treasury_value && treasuryEntry?.total_assets) {
-      const totalTreasuryValue = parseFloat(treasuryEntry.total_treasury_value) || 0;
+      const totalTreasuryValue =
+        parseFloat(treasuryEntry.total_treasury_value) || 0;
       const totalAssets = parseFloat(treasuryEntry.total_assets) || 0;
       assetsUnderManagement = totalTreasuryValue + totalAssets;
     }
@@ -132,7 +138,7 @@ router.get('/:dao', async (req: Request, res: Response): Promise<void> => {
         marketCap: tokenEntry?.market_cap || null,
       },
       ipt: foundDao.ipt
-        ? Object.values(foundDao.ipt).map(item => ({
+        ? Object.values(foundDao.ipt).map((item) => ({
             name: item?.name || null,
             backdrop: item?.backdrop_url || null,
             logo: item?.logo_url || null,
@@ -144,8 +150,8 @@ router.get('/:dao', async (req: Request, res: Response): Promise<void> => {
 
     res.json(response);
   } catch (error) {
-    console.error('Error fetching DAO data:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching DAO data:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

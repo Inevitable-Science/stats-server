@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Schema, Document, Model } from "mongoose";
 
 interface TopHolder {
   address: string | null;
@@ -59,6 +59,9 @@ const DataSchema: Schema<TokenDocument> = new Schema({
   },
 });
 
-const TokenModel: Model<TokenDocument> = mongoose.model<TokenDocument>('token_collections', DataSchema);
+const TokenModel: Model<TokenDocument> = mongoose.model<TokenDocument>(
+  "token_collections",
+  DataSchema
+);
 
 export default TokenModel;

@@ -1,33 +1,38 @@
 // src/routes/chart.ts
-import { Router, Request, Response } from 'express';
-import axios, { AxiosResponse } from 'axios';
-import NodeCache from 'node-cache';
-import { daos, DAO } from '../../config/constants';
+import { Router, Request, Response } from "express";
+import axios, { AxiosResponse } from "axios";
+import NodeCache from "node-cache";
+import { daos, DAO } from "../../config/constants";
 
 // Cache instances
 const cache = new NodeCache({ stdTTL: 300, checkperiod: 320 });
 const cache404 = new NodeCache({ stdTTL: 120 });
 
 // Allowed days for the API query
-const ALLOWED_DAYS = ['1', '7', '30', '365', 'max'];
+const ALLOWED_DAYS = ["1", "7", "30", "365", "max"];
 
 const router = Router();
 
-router.get('/:query', async (req: Request, res: Response): Promise<void> => {
+router.get("/:query", async (req: Request, res: Response): Promise<void> => {
   const { query } = req.params;
 
   // Parse query parameter (expected format: id-days, e.g., cryodao-7)
-  const [id, days] = query.split('-');
+  const [id, days] = query.split("-");
 
   // Validate `id` and `days` parameters
   if (!id || !days) {
-    res.status(400).json({ error: 'Invalid query format. Expected format: id-days (e.g., cryodao-7)' });
+    res
+      .status(400)
+      .json({
+        error:
+          "Invalid query format. Expected format: id-days (e.g., cryodao-7)",
+      });
     return;
   }
 
   if (!ALLOWED_DAYS.includes(days)) {
     res.status(400).json({
-      error: `Invalid 'days' parameter. Allowed values are: ${ALLOWED_DAYS.join(', ')}`,
+      error: `Invalid 'days' parameter. Allowed values are: ${ALLOWED_DAYS.join(", ")}`,
     });
     return;
   }
@@ -44,7 +49,7 @@ router.get('/:query', async (req: Request, res: Response): Promise<void> => {
       return Object.keys(d.ipt).some(
         (key) =>
           d.ipt![key].name.toLowerCase() === id.toLowerCase() &&
-          d.ipt![key].token_type === 'ERC-20'
+          d.ipt![key].token_type === "ERC-20"
       );
     }
 
@@ -68,7 +73,7 @@ router.get('/:query', async (req: Request, res: Response): Promise<void> => {
     const matchingIptKey = Object.keys(daoMatch.ipt).find(
       (key) =>
         daoMatch.ipt![key].name.toLowerCase() === id.toLowerCase() &&
-        daoMatch.ipt![key].token_type === 'ERC-20'
+        daoMatch.ipt![key].token_type === "ERC-20"
     );
 
     if (matchingIptKey) {
@@ -87,7 +92,7 @@ router.get('/:query', async (req: Request, res: Response): Promise<void> => {
     const cached404 = cache404.get(cacheKey404);
 
     if (cached404) {
-      console.log('Serving cached 404 response');
+      console.log("Serving cached 404 response");
       res.status(404).json(cached404);
       return;
     }
@@ -97,7 +102,7 @@ router.get('/:query', async (req: Request, res: Response): Promise<void> => {
     const cachedData = cache.get(cacheKey);
 
     if (cachedData) {
-      console.log('Serving from cache:', cacheKey);
+      console.log("Serving from cache:", cacheKey);
       res.json(cachedData);
       return;
     }
@@ -116,7 +121,7 @@ router.get('/:query', async (req: Request, res: Response): Promise<void> => {
 
     res.json(response.data);
   } catch (error: any) {
-    console.error('Error fetching data:', error.message);
+    console.error("Error fetching data:", error.message);
 
     // Handle 404 errors
     if (error.response && error.response.status === 404) {
@@ -129,7 +134,7 @@ router.get('/:query', async (req: Request, res: Response): Promise<void> => {
     }
 
     // Handle other errors
-    res.status(500).json({ error: 'Failed to fetch data from external API' });
+    res.status(500).json({ error: "Failed to fetch data from external API" });
   }
 });
 

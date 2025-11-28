@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Schema, Document, Model } from "mongoose";
 
 interface HistoricalFollowers {
   date: Date;
@@ -17,11 +17,12 @@ const DataSchema: Schema<FollowersDocument> = new Schema({
   historical_followers: [
     {
       date: { type: Date, required: true },
-      count: { type: Number, required: true }
-    }
-  ]
+      count: { type: Number, required: true },
+    },
+  ],
 });
 
-const FollowersModel: Model<FollowersDocument> = mongoose.model<FollowersDocument>('followers_collections', DataSchema);
+const FollowersModel: Model<FollowersDocument> =
+  mongoose.model<FollowersDocument>("followers_collections", DataSchema);
 
 export default FollowersModel;
