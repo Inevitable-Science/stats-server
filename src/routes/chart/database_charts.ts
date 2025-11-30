@@ -1,9 +1,9 @@
 // src/routes/holders_chart.ts
 import { Router, Request, Response } from "express";
-import TokenModel from "../../config/models/token_schema";
+import TokenModel from "../../config/models/tokenSchema";
 import TreasuryModel, {
   TreasuryDocument,
-} from "../../config/models/treasury_schema";
+} from "../../config/models/treasurySchema";
 import { daos, DAO, NativeToken, IPTEntry } from "../../config/constants";
 
 const router = Router();

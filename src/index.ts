@@ -11,8 +11,8 @@ import { RateLimiterMemory } from "rate-limiter-flexible";
 // Database
 import mongoose from "mongoose";
 
-import TreasuryModel from "./config/models/treasury_schema";
-import TokenModel from "./config/models/token_schema";
+import TreasuryModel from "./config/models/treasurySchema";
+import TokenModel from "./config/models/tokenSchema";
 
 import sendDiscordMessage from "./utils/coms/send_message";
 

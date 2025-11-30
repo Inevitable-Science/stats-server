@@ -1,7 +1,7 @@
 // src/utils/cron/treasury_refresh.ts
 import TreasuryModel, {
   TreasuryDocument,
-} from "../../../config/models/treasury_schema";
+} from "../../../config/models/treasurySchema";
 import { daos } from "../../../config/constants";
 import getAssetsManaged from "../../../utils/fetch/assets_managed";
 import getTreasuryHoldings, {

@@ -2,8 +2,8 @@ import { Router, Request, Response } from "express";
 import { daos, DAO, NativeToken, IPTEntry } from "../../config/constants";
 import TreasuryModel, {
   TreasuryDocument,
-} from "../../config/models/treasury_schema";
-import TokenModel, { TokenDocument } from "../../config/models/token_schema";
+} from "../../config/models/treasurySchema";
+import TokenModel, { TokenDocument } from "../../config/models/tokenSchema";
 import getTokenStats, {
   TokenStatsResponse,
 } from "../../utils/fetch/token_stats";

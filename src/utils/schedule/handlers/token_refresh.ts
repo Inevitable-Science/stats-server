@@ -1,5 +1,5 @@
 // src/utils/cron/token_refresh.ts
-import TokenModel, { TokenDocument } from "../../../config/models/token_schema";
+import TokenModel, { TokenDocument } from "../../../config/models/tokenSchema";
 import { daos, DAO, NativeToken, IPTEntry } from "../../../config/constants";
 import getTokenStats, {
   TokenStatsResponse,

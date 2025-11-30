@@ -1,5 +1,5 @@
 // rfc
-import FollowersModel from "../../../config/models/followers_schema";
+import FollowersModel from "../../../config/models/followersSchema";
 import getTwitterFollowers from "../../fetch/twitterFollowers";
 import { daos, trackFollowersArray } from "../../../config/constants";
 import logAction, { logErrorEmbed } from "../../coms/logAction";

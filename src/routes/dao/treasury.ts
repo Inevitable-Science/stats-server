@@ -4,7 +4,7 @@ import { daos, DAO } from "../../config/constants";
 import TreasuryModel, {
   TreasuryDocument,
   HistoricalTreasury,
-} from "../../config/models/treasury_schema";
+} from "../../config/models/treasurySchema";
 import sendDiscordMessage from "../../utils/coms/send_message";
 import getAssetsManaged from "../../utils/fetch/assets_managed";
 import getTreasuryHoldings from "../../utils/fetch/treasury_holdings";
