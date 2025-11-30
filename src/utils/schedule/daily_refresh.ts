@@ -1,7 +1,7 @@
 import fetchAndUpdateTokenStats from "./handlers/token_refresh";
 import fetchAndUpdateTreasuries from "./handlers/treasury_refresh";
 import sendDiscordMessage from "../coms/send_message";
-import fetchAndUpdateTwitterFollowers from "./handlers/twitter_refresh";
+import fetchAndUpdateTwitterFollowers from "./handlers/twitterRefresh";
 
 async function dailyRefresh() {
   try {

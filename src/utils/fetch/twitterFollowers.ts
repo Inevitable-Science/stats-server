@@ -1,5 +1,7 @@
-import sendDiscordMessage from "../coms/send_message";
+// rfc
 import { ENV } from "../env";
+import { logErrorEmbed } from "../coms/logAction";
+import z from "zod";
 
 async function getTwitterFollowers(username: string): Promise<number | null> {
   try {
@@ -19,17 +21,13 @@ async function getTwitterFollowers(username: string): Promise<number | null> {
     }
 
     const data = await response.json();
-    console.log(data);
     const followerCount = data.data.followers;
-    if (!followerCount)
-      throw new Error(
-        `Followers not found in array for ${username} - status: ${response.status}`
-      );
-
-    return followerCount;
+    const parsedFollowers = z.number().parse(followerCount);
+    
+    return parsedFollowers;
   } catch (err) {
-    console.log(err);
-    await sendDiscordMessage(`Unable to fetch twitter stats for @${username}`);
+    console.error(err);
+    await logErrorEmbed(`**Unable to fetch twitter followers for @${username} - ${err}**`);
     return null;
   }
 }

@@ -30,7 +30,7 @@ import treasuryRouter from "./routes/dao/treasury";
 import activityRouter from "./routes/dao/activity/activity";
 
 import tokenListRouter from "./routes/web3/tokenlist/token_list";
-import fetchAndUpdateTwitterFollowers from "./utils/schedule/handlers/twitter_refresh";
+import fetchAndUpdateTwitterFollowers from "./utils/schedule/handlers/twitterRefresh";
 import { ENV } from "./utils/env";
 import { ErrorCodes } from "./utils/errors";
 
