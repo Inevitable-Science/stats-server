@@ -79,27 +79,23 @@ async function fetchWithRetry<T>(
   maxRetries: number = 7,
   delay: number = 1000
 ): Promise<T> {
-  let attempts = 0;
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  while (attempts < maxRetries) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
-      const response: AxiosResponse<T> = await axios.post(url, payload, {
-        timeout: 20000,
-      });
+      const response: AxiosResponse<T> = await axios.post(url, payload, { timeout: 20000 });
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 429) {
-        const retryAfter = error.response.headers["retry-after"];
-        const waitTime = retryAfter
-          ? parseFloat(retryAfter) * 1000
-          : delay * Math.pow(2, attempts);
+        const retryAfter = parseFloat(error.response.headers["retry-after"] || "");
+        const waitTime = !isNaN(retryAfter) ? retryAfter * 1000 : delay * 2 ** attempt;
         console.warn(`Rate limited. Retrying in ${waitTime / 1000} seconds...`);
-        await new Promise((resolve) => setTimeout(resolve, waitTime));
+
+        await sleep(waitTime);
       } else {
-        throw error; // Re-throw other errors
+        throw error;
       }
     }
-    attempts++;
   }
 
   throw new Error(`Max retries exceeded for ${url}`);
@@ -202,10 +198,6 @@ async function getTreasuryHoldings(
   walletAddress: string
 ): Promise<TreasuryHoldings> {
   try {
-    if (!ALCHEMY_API_KEY) {
-      throw new Error("Alchemy API key not provided");
-    }
-
     const walletData: WalletData[] = [];
     let totalUsdBalance = 0;
 

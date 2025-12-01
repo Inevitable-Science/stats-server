@@ -3,7 +3,7 @@ import TreasuryModel, {
   TreasuryDocument,
 } from "../../../config/models/treasurySchema";
 import { daos } from "../../../config/constants";
-import getAssetsManaged from "../../../utils/fetch/assets_managed";
+import getAssetsManaged from "../../fetch/assetsManaged";
 import getTreasuryHoldings, {
   TreasuryHoldings,
   WalletData,
@@ -70,25 +70,15 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
 
       // Start background processing
       try {
-        // Transform managed_accounts to AssetsManagedWalletData
-        const walletData: AssetsManagedWalletData = Object.keys(
-          foundDao.managed_accounts
-        ).reduce((acc, address) => {
-          const chain = foundDao.managed_accounts[address].chain as
-            | "eth"
-            | "sol"
-            | "base"
-            | "poly"
-            | "btc"
-            | "arb";
-          acc[address] = { chain };
-          return acc;
-        }, {} as AssetsManagedWalletData);
+        const managedAccounts = foundDao.managed_accounts.map(acc => acc.address);
+        const mappedChainId = foundDao.managed_accounts.map(acc => acc.chain_id);
+        const chainIds = Array.from(new Set(mappedChainId));
 
         // Fetch assets and treasury holdings, use fallback if unavailable
         const [assetsManaged, treasuryHoldings]: [number, TreasuryHoldings] =
           await Promise.all([
-            getAssetsManaged(walletData).catch(() => 0), // Fallback to 0 if API fails
+            //getAssetsManaged(walletData).catch(() => 0), // Fallback to 0 if API fails
+            getAssetsManaged(managedAccounts, chainIds),
             getTreasuryHoldings(foundDao.treasury.address).catch(() => ({
               usdBalance: "0.00",
               tokens: [],

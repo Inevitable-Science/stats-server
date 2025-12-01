@@ -1,3 +1,7 @@
+import { Address } from "viem";
+
+export type ChainId = 1 | 8453 | 10 | 42161;
+
 export interface Socials {
   site?: string;
   linked_in?: string | null;
@@ -6,7 +10,7 @@ export interface Socials {
 }
 
 export interface Treasury {
-  address: `0x${string}`;
+  address: Address;
   ens_name: `${string}.eth`;
   chain_id: number;
 }
@@ -14,17 +18,19 @@ export interface Treasury {
 export interface Signers {
   required: number;
   total: number;
-  signers: string[];
+  signers: Address[];
 }
 
 export interface ManagedAccount {
+  address: Address;
   comment: string;
   ens: string | null;
   chain: string;
+  chain_id: ChainId;
 }
 
 export interface ManagedAccounts {
-  [key: string]: ManagedAccount;
+  [key: Address]: ManagedAccount;
 }
 
 export interface NativeToken {
@@ -35,7 +41,7 @@ export interface NativeToken {
   logo_url: string;
   creation_block: number;
   decimals: number;
-  token_address: string;
+  token_address: Address;
   token_abi?: any; // Replace with specific ABI type if available
   networks: string[];
 }
@@ -48,7 +54,7 @@ export interface IPTEntry {
   token_type: string;
   creation_block: number;
   decimals: number;
-  token_address: string;
+  token_address: Address;
   token_abi?: any; // Replace with specific ABI type if available
   website?: string;
   description?: string;
@@ -77,7 +83,7 @@ export interface DAO {
   backdrop_url: string;
   treasury: Treasury;
   signers: Signers;
-  managed_accounts: ManagedAccounts;
+  managed_accounts: ManagedAccount[]; //ManagedAccounts;
   native_token: NativeToken;
   ipt: IPT | null;
 }
@@ -133,43 +139,57 @@ export const daos: DAO[] = [
         '0xc301C38133B16590Cee4fBe66AaaCDD3B1f3BB29',
       ],
     },
-    managed_accounts: {
-      '0xa9115C830A3d13BEccF9B3166c2B3c00F51F69A6': {
+    managed_accounts: [
+      {
+        address: '0xa9115C830A3d13BEccF9B3166c2B3c00F51F69A6',
         comment: 'cryorat.eth',
         ens: 'cryorat.eth',
         chain: 'eth',
+        chain_id: 1,
       },
-      '0xF5BdfeE7910c561606e6A19Bbf0319238A6a2340': {
+      {
+        address: '0xF5BdfeE7910c561606e6A19Bbf0319238A6a2340',
         comment: 'Vesting Contract',
         ens: null,
         chain: 'eth',
+        chain_id: 1,
       },
-      '0x6fcEe8a45384Aec61FDEE3FBDD871A338d8EA44c': {
+      {
+        address: '0x6fcEe8a45384Aec61FDEE3FBDD871A338d8EA44c',
         comment: 'Uniswap v2 Pool',
         ens: null,
         chain: 'eth',
+        chain_id: 1,
       },
-      '0x57b9394323fC58B724c06722ed299f3C5Ce87131': {
+      {
+        address: '0x57b9394323fC58B724c06722ed299f3C5Ce87131',
         comment: 'Uniswap v3 Pool',
         ens: null,
         chain: 'eth',
+        chain_id: 1,
       },
-      '0x31a6654bDE58bCe2B437396bA71A0E545198CAce': {
+      {
+        address: '0x31a6654bDE58bCe2B437396bA71A0E545198CAce',
         comment: 'VITA-CRYO Pool',
         ens: null,
         chain: 'eth',
+        chain_id: 1,
       },
-      '0xefe4A010Ad0fAD70154116cb0c43cf47A1062B3B': {
+      {
+        address: '0xefe4A010Ad0fAD70154116cb0c43cf47A1062B3B',
         comment: 'CRYORAT Pool',
         ens: null,
         chain: 'eth',
+        chain_id: 1,
       },
-      '0x0dcab386a5c1905cbf6c141680e01fe253c76ac0': {
+      {
+        address: '0x0dcab386a5c1905cbf6c141680e01fe253c76ac0',
         comment: 'Base CRYO Pool',
         ens: null,
         chain: 'base',
+        chain_id: 8453,
       },
-    },
+    ],
     native_token: {
       name: 'CRYO',
       chain_id: 1,
@@ -239,13 +259,15 @@ export const daos: DAO[] = [
         '0x0b2c9E0ee3057f4B9b0c2e42894a3D5A9B32b5Af',
       ],
     },
-    managed_accounts: {
-      '0x9C4980635d980611CECDbcA74773E240ffa44240': {
+    managed_accounts: [
+      {
+        address: '0x9C4980635d980611CECDbcA74773E240ffa44240',
         comment: 'Uniswap v3 Pool',
         ens: null,
         chain: 'eth',
+        chain_id: 1,
       },
-    },
+    ],
     native_token: {
       name: 'HYDRA',
       chain_id: 1,
@@ -293,13 +315,15 @@ export const daos: DAO[] = [
         '0xbFa69F537823f9736192dEEF60CeD3f15CCd76B7',
       ],
     },
-    managed_accounts: {
-      '0xcAb7D1c2777488b85ed301c3944CDbd6Bb30Bf72': {
+    managed_accounts: [
+      {
+        address: '0xcAb7D1c2777488b85ed301c3944CDbd6Bb30Bf72',
         comment: 'Uniswap v3 Pool',
         ens: null,
         chain: 'eth',
+        chain_id: 1,
       },
-    },
+    ],
     native_token: {
       name: 'YUGE',
       chain_id: 1,
@@ -349,13 +373,15 @@ export const daos: DAO[] = [
         '0xc301C38133B16590Cee4fBe66AaaCDD3B1f3BB29',
       ],
     },
-    managed_accounts: {
-      '0xefe4A010Ad0fAD70154116cb0c43cf47A1062B3B': {
+    managed_accounts: [
+      {
+        address: '0xefe4A010Ad0fAD70154116cb0c43cf47A1062B3B',
         comment: 'CRYORAT Pool',
         ens: null,
         chain: 'eth',
+        chain_id: 1,
       },
-    },
+    ],
     native_token: {
       name: 'CryoRat',
       chain_id: 1,

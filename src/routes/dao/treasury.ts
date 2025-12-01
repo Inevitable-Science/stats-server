@@ -1,13 +1,14 @@
 // src/routes/treasury.ts
 import { Router, Request, Response } from "express";
-import { daos, DAO } from "../../config/constants";
+import { daos, DAO, ManagedAccounts } from "../../config/constants";
 import TreasuryModel, {
   TreasuryDocument,
   HistoricalTreasury,
 } from "../../config/models/treasurySchema";
 import sendDiscordMessage from "../../utils/coms/send_message";
-import getAssetsManaged from "../../utils/fetch/assets_managed";
+import getAssetsManaged from "../../utils/fetch/assetsManaged";
 import getTreasuryHoldings from "../../utils/fetch/treasury_holdings";
+import { Address } from "viem";
 
 // Interface for the treasury response
 interface TreasuryResponse {
@@ -31,7 +32,8 @@ interface TreasuryResponse {
     signers: string[];
   };
   managed_accounts: {
-    [key: string]: {
+    [key: Address]: { // TODO: make this an array
+      address: Address;
       comment: string;
       ens: string | null;
       chain: string;
@@ -264,6 +266,14 @@ router.get("/:dao", async (req: Request, res: Response): Promise<void> => {
       };
     });
 
+    const managedObject: ManagedAccounts = foundDao.managed_accounts.reduce(
+      (acc, account) => {
+        acc[account.address] = account;
+        return acc;
+      },
+      {} as ManagedAccounts
+    );
+
     // Structure the response data
     const response: TreasuryResponse = {
       name: foundDao.name,
@@ -278,7 +288,7 @@ router.get("/:dao", async (req: Request, res: Response): Promise<void> => {
       },
       treasury: foundDao.treasury,
       signers: foundDao.signers,
-      managed_accounts: foundDao.managed_accounts,
+      managed_accounts: managedObject,
       treasuryValue: currentTreasuryValue,
       assetsUnderManagement,
       lastUpdated: treasuryEntry.last_updated || null,
@@ -374,7 +384,7 @@ router.post(
       setImmediate(async () => {
         try {
           // Transform managed_accounts to WalletData
-          const walletData: WalletData = Object.keys(
+          /*const walletData: WalletData = Object.keys(
             foundDao.managed_accounts
           ).reduce((acc, address) => {
             const chain = foundDao.managed_accounts[address].chain as
@@ -386,11 +396,15 @@ router.post(
               | "arb";
             acc[address] = { chain };
             return acc;
-          }, {} as WalletData);
+          }, {} as WalletData);*/
+
+          const managedAccounts = foundDao.managed_accounts.map(acc => acc.address);
+          const mappedChainId = foundDao.managed_accounts.map(acc => acc.chain_id);
+          const chainIds = Array.from(new Set(mappedChainId));
 
           const [assetsManaged, treasuryHoldings]: [number, TreasuryHoldings] =
             await Promise.all([
-              getAssetsManaged(walletData),
+              getAssetsManaged(managedAccounts, chainIds),
               getTreasuryHoldings(foundDao.treasury.address),
             ]);
 

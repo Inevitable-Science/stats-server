@@ -1,4 +1,34 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import z from "zod";
+
+const TokenSchema = z.object({
+  contractAddress: z.string(),
+  metadata: z.object({
+    name: z.string(),
+    symbol: z.string(),
+    decimals: z.number(),
+  }),
+  rawBalance: z.string(),
+  decodedBalance: z.number(),
+  price: z.number(),
+  totalValue: z.number(),
+});
+
+const HistoricalTreasurySchema = z.object({
+  date: z.date(),
+  balance: z.string(),
+  assets: z.string(),
+});
+
+export const TreasuryDocumentSchemaZ = z.object({
+  dao_name: z.string(),
+  date_added: z.date(),
+  last_updated: z.date(),
+  total_treasury_value: z.string(),
+  total_assets: z.string(),
+  tokens: z.array(TokenSchema),
+  historical_treasury: z.array(HistoricalTreasurySchema),
+});
 
 interface Token {
   contractAddress: string;

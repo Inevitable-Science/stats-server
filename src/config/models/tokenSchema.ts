@@ -1,4 +1,34 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { z } from "zod";
+
+const TopHolderSchema = z.object({
+  address: z.string().nullable(),
+  token_amount: z.number().nullable(),
+  account_type: z.string().nullable(),
+});
+
+const TokenDistributionSchema = z.object({
+  range: z.string().nullable(),
+  accounts: z.string().nullable(),
+  amount_tokens_held: z.number().nullable(),
+  percent_tokens_held: z.number().nullable(),
+});
+
+
+export const TokenDocumentSchemaZ = z.object({
+  token_name: z.string(),
+  token_address: z.string(),
+  date_added: z.date(),
+  last_updated: z.date(),
+  total_supply: z.number(),
+  market_cap: z.number(),
+  average_balance: z.number(),
+  median_balance: z.number(),
+  total_holders: z.string(),
+  top_holders: z.array(TopHolderSchema),
+  token_distribution: z.array(TokenDistributionSchema),
+  holders_graph: z.array(z.array(z.number())),
+});
 
 interface TopHolder {
   address: string | null;

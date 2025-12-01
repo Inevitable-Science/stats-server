@@ -1,4 +1,16 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import z from "zod";
+
+const HistoricalFollowersZ = z.object({
+  date: z.date(),
+  count: z.number()
+});
+
+export const FollowersSchemaZ = z.object({
+  username: z.string(),
+  current_followers: z.number(),
+  historical_followers: z.array(HistoricalFollowersZ)
+});
 
 interface HistoricalFollowers {
   date: Date;
