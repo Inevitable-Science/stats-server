@@ -6,7 +6,7 @@ import TreasuryModel, {
   HistoricalTreasury,
 } from "../../config/models/treasurySchema";
 import sendDiscordMessage from "../../utils/coms/send_message";
-import getAssetsManaged from "../../utils/fetch/assetsManaged";
+import getAssetsManaged from "../../utils/fetch/treasury/assetsManaged";
 import getTreasuryHoldings from "../../utils/fetch/treasury/treasuryHoldings";
 import { Address } from "viem";
 

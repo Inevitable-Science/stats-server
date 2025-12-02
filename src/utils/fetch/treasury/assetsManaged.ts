@@ -1,5 +1,5 @@
-import { ENV } from "../env";
-import { logErrorEmbed } from "../coms/logAction";
+import { ENV } from "../../env";
+import { logErrorEmbed } from "../../coms/logAction";
 import { ChainId } from "@/config/constants";
 import request, { gql } from "graphql-request";
 import { Address } from "viem";

@@ -3,7 +3,7 @@ import TreasuryModel, {
   TreasuryDocument,
 } from "../../../config/models/treasurySchema";
 import { daos } from "../../../config/constants";
-import getAssetsManaged from "../../fetch/assetsManaged";
+import getAssetsManaged from "../../fetch/treasury/assetsManaged";
 import getTreasuryHoldings, {
   TreasuryHoldings,
   WalletData,
