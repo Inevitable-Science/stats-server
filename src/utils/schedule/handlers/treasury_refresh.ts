@@ -7,56 +7,30 @@ import getAssetsManaged from "../../fetch/assetsManaged";
 import getTreasuryHoldings, {
   TreasuryHoldings,
   WalletData,
-} from "../../../utils/fetch/treasury_holdings";
+} from "../../fetch/treasury/treasuryHoldings";
 import sendDiscordMessage from "../../../utils/coms/send_message";
 
-// Interface for wallet data (from assets_managed.ts)
-interface AssetsManagedWalletData {
-  [address: string]: {
-    chain: "eth" | "sol" | "base" | "poly" | "btc" | "arb";
-  };
-}
-
-// Helper function to sanitize DAO name
-function sanitizeName(name: string): string | null {
-  return /^[a-zA-Z0-9]+$/.test(name) ? name : null;
-}
 
 async function fetchAndUpdateTreasuries(): Promise<void> {
-  const date = new Date();
-
   try {
+    const date = new Date();
+
     await sendDiscordMessage(
       `**Starting daily treasury refresh at: ${new Date().toLocaleString()}**`
     );
 
     // Iterate through all DAOs
     for (const foundDao of daos) {
-      const sanitizedNameUppercase = sanitizeName(foundDao.name);
-      const sanitizedName = sanitizedNameUppercase
-        ? sanitizedNameUppercase.toLowerCase()
-        : null;
-
-      if (!sanitizedName) {
-        console.log("Invalid DAO name format.");
-        await sendDiscordMessage(
-          `**Skipping ${foundDao.name}: Invalid DAO name format**`
-        );
-        continue;
-      }
-
       await sendDiscordMessage(
-        `**Refreshing Treasury Stats For: ${sanitizedNameUppercase} at ${new Date().toLocaleString()}**`
+        `**Refreshing Treasury Stats For: ${foundDao.name} at ${new Date().toLocaleString()}**`
       );
 
-      const entry: TreasuryDocument | null = await TreasuryModel.findOne({
-        dao_name: sanitizedName,
+      const entry = await TreasuryModel.findOne({
+        dao_name: foundDao.name.toLowerCase(),
       });
 
-      if (entry) {
-        const lastUpdated = entry.last_updated;
-        const timeDifference =
-          (date.getTime() - lastUpdated.getTime()) / 1000 / 60;
+      if (entry) { // uncomment in prod
+        const timeDifference = (date.getTime() - entry.last_updated.getTime()) / 1000 / 60;
         if (timeDifference < 15) {
           await sendDiscordMessage(
             `**Skipping ${foundDao.name}, update requested too soon. (last updated <15 minutes ago)**`
@@ -64,9 +38,7 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
           console.log(`Skipping ${foundDao.name}, update requested too soon.`);
           continue;
         }
-      } /*else {
-        continue; // Skip if no entry exists
-      }*/
+      }
 
       // Start background processing
       try {
@@ -77,12 +49,8 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
         // Fetch assets and treasury holdings, use fallback if unavailable
         const [assetsManaged, treasuryHoldings]: [number, TreasuryHoldings] =
           await Promise.all([
-            //getAssetsManaged(walletData).catch(() => 0), // Fallback to 0 if API fails
             getAssetsManaged(managedAccounts, chainIds),
-            getTreasuryHoldings(foundDao.treasury.address).catch(() => ({
-              usdBalance: "0.00",
-              tokens: [],
-            })), // Fallback to empty data
+            getTreasuryHoldings(foundDao.treasury.address, foundDao.treasury.chain_id),
           ]);
 
         console.log(assetsManaged, "ASSETS");
@@ -91,12 +59,13 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
         // Ensure we have valid data
         const usdBalance = Number(treasuryHoldings.usdBalance) || 0;
         const tokens = treasuryHoldings.tokens || [];
+        console.log(treasuryHoldings, "treasury holdings");
 
         // Check if this DAO already has a treasury entry
         if (!entry) {
           // If no entry, create a new treasury record
           const newEntry = new TreasuryModel({
-            dao_name: sanitizedName,
+            dao_name: foundDao.name.toLowerCase(),
             date_added: date,
             last_updated: date,
             total_treasury_value: String(usdBalance),
@@ -123,7 +92,7 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
           });
 
           await newEntry.save();
-          console.log(`Created new treasury entry for ${sanitizedName}`);
+          console.log(`Created new treasury entry for ${foundDao.name}`);
         } else {
           // If entry exists, update the treasury record
           const updatedEntry: Partial<TreasuryDocument> = {
@@ -158,7 +127,7 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
             { dao_name: entry.dao_name },
             { $set: updatedEntry }
           );
-          console.log(`Updated treasury entry for ${sanitizedName}`);
+          console.log(`Updated treasury entry for ${foundDao.name}`);
           await sendDiscordMessage(
             `**Finished refreshing ${entry.dao_name} treasury stats**`
           );

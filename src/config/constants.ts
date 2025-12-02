@@ -12,7 +12,7 @@ export interface Socials {
 export interface Treasury {
   address: Address;
   ens_name: `${string}.eth`;
-  chain_id: number;
+  chain_id: ChainId;
 }
 
 export interface Signers {
@@ -35,7 +35,7 @@ export interface ManagedAccounts {
 
 export interface NativeToken {
   name: string;
-  chain_id: number;
+  chain_id: ChainId;
   parent_dao: string;
   mc_ticker: string;
   logo_url: string;
@@ -48,7 +48,7 @@ export interface NativeToken {
 
 export interface IPTEntry {
   name: string;
-  chain_id: number;
+  chain_id: ChainId;
   parent_dao: string;
   mc_ticker: string;
   token_type: string;

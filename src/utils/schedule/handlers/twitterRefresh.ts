@@ -53,13 +53,14 @@ async function fetchAndUpdateTwitterFollowers(): Promise<void> {
         await sleep(7000);
         continue;
       };
-
-      await logAction({
-        action: "logAction",
-        message: `**Daily twitter followers refresh complete: ${generateDiscordTimestamp(new Date(), "R")}**`
-      });
-      return;
     };
+    
+    await logAction({
+      action: "logAction",
+      message: `**Daily twitter followers refresh complete: ${generateDiscordTimestamp(new Date(), "R")}**`
+    });
+    return;
+
   } catch (err) {
     console.error(err);
     await logErrorEmbed(`Error performing full twitter analytics refresh, Error: ${err}`);

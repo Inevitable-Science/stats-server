@@ -7,7 +7,7 @@ import TreasuryModel, {
 } from "../../config/models/treasurySchema";
 import sendDiscordMessage from "../../utils/coms/send_message";
 import getAssetsManaged from "../../utils/fetch/assetsManaged";
-import getTreasuryHoldings from "../../utils/fetch/treasury_holdings";
+import getTreasuryHoldings from "../../utils/fetch/treasury/treasuryHoldings";
 import { Address } from "viem";
 
 // Interface for the treasury response
@@ -405,7 +405,7 @@ router.post(
           const [assetsManaged, treasuryHoldings]: [number, TreasuryHoldings] =
             await Promise.all([
               getAssetsManaged(managedAccounts, chainIds),
-              getTreasuryHoldings(foundDao.treasury.address),
+              getTreasuryHoldings(foundDao.treasury.address, foundDao.treasury.chain_id),
             ]);
 
           console.log(assetsManaged, "ASSETS");
