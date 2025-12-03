@@ -17,7 +17,7 @@ import TokenModel from "./config/models/tokenSchema";
 import sendDiscordMessage from "./utils/coms/send_message";
 
 
-import dailyRefresh from "./utils/schedule/daily_refresh";
+import dailyRefresh from "./utils/schedule/dailyRefresh";
 
 import ohlcChartRouter from "./routes/chart/ohlc_chart";
 import marketChartRouter from "./routes/chart/market_charts";

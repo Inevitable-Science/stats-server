@@ -30,6 +30,8 @@ export const TreasuryDocumentSchemaZ = z.object({
   historical_treasury: z.array(HistoricalTreasurySchema),
 });
 
+export type TreasuryDocumentType = z.infer<typeof TreasuryDocumentSchemaZ>
+
 interface Token {
   contractAddress: string;
   metadata: {

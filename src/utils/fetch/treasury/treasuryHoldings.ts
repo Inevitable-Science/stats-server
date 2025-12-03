@@ -1,19 +1,12 @@
 import { Address, zeroAddress } from "viem";
 import axios, { AxiosResponse } from "axios";
 import { ENV } from "../../env";
-import { ChainId } from "@/config/constants";
+import { ChainId } from "../../../config/constants";
 import { logErrorEmbed } from "../../coms/logAction";
 import { AlchemyChainSubdomain, AlchemyEthBalResponseZ, AlchemyEthPriceResponseZ, AlchemyTokenBalancesSchemaType, AlchemyTokenBalancesSchemaZ, AlchemyTokenMetadataSchemaType, AlchemyTokenMetadataSchemaZ, AlchemyTokenPriceSchemaType, AlchemyTokenPriceSchemaZ } from "./alchemyResponseTypes";
 
-// Interface for pegged token configuration
-interface PeggedToken {
-  tokenAddress: Address;
-  peggedPrice: Address;
-  customName: string;
-}
-
 // Interface for wallet data entry
-export interface WalletData {
+export interface TokenData {
   contractAddress: Address;
   metadata: {
     name: string;
@@ -22,15 +15,22 @@ export interface WalletData {
     logo?: string;
   };
   rawBalance: string;
-  decodedBalance: string;
-  price: string;
-  totalValue: string;
+  decodedBalance: number;
+  price: number;
+  totalValue: number;
 }
 
 // Interface for treasury holdings response
-export interface TreasuryHoldings {
+export interface TreasuryHoldingsResponse {
   usdBalance: string;
-  tokens: WalletData[] | null;
+  tokens: TokenData[];
+}
+
+// Interface for pegged token configuration
+interface PeggedToken {
+  tokenAddress: Address;
+  peggedPrice: Address;
+  customName: string;
 }
 
 // Pegged tokens configuration
@@ -270,9 +270,9 @@ async function fetchEthHoldings(walletAddress: Address, chainId: ChainId): Promi
 async function getTreasuryHoldings(
   walletAddress: Address,
   chainId: ChainId
-): Promise<TreasuryHoldings> {
+): Promise<TreasuryHoldingsResponse> {
   try {
-    const walletData: WalletData[] = [];
+    const walletData: TokenData[] = [];
     let totalUsdBalance = 0;
 
     const ethData = await fetchEthHoldings(walletAddress, chainId);
@@ -285,11 +285,11 @@ async function getTreasuryHoldings(
           decimals: 18 
         },
         rawBalance: ethData.hexBalance,
-        decodedBalance: ethData.ethBalance.toFixed(4),
-        price: ethData.ethPrice.toFixed(4),
-        totalValue: ethData.totalValue.toFixed(4),
+        decodedBalance: Number(ethData.ethBalance.toFixed(4)),
+        price: Number(ethData.ethPrice.toFixed(4)),
+        totalValue: Number(ethData.totalValue.toFixed(4)),
       });
-      totalUsdBalance += Number(ethData.totalValue);
+      totalUsdBalance += ethData.totalValue;
     }
 
     // Fetch other token balances
@@ -324,9 +324,9 @@ async function getTreasuryHoldings(
           name: tokenMetadata.name,
         },
         rawBalance: token.tokenBalance,
-        decodedBalance: decodedBalance.toFixed(4),
-        price: tokenPrice.toFixed(4),
-        totalValue: totalAssetValue.toFixed(2),
+        decodedBalance: Number(decodedBalance.toFixed(4)),
+        price: Number(tokenPrice.toFixed(4)),
+        totalValue: Number(totalAssetValue.toFixed(2)),
       });
       continue;
     }

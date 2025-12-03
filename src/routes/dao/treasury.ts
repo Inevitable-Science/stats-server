@@ -7,7 +7,7 @@ import TreasuryModel, {
 } from "../../config/models/treasurySchema";
 import sendDiscordMessage from "../../utils/coms/send_message";
 import getAssetsManaged from "../../utils/fetch/treasury/assetsManaged";
-import getTreasuryHoldings from "../../utils/fetch/treasury/treasuryHoldings";
+import getTreasuryHoldings, { TreasuryHoldingsResponse } from "../../utils/fetch/treasury/treasuryHoldings";
 import { Address } from "viem";
 
 // Interface for the treasury response
@@ -81,11 +81,6 @@ interface TokenHolding {
   totalValue: string;
 }
 
-// Interface for treasury holdings return type (aligned with treasury_holdings.ts)
-interface TreasuryHoldings {
-  usdBalance: string;
-  tokens: TokenHolding[] | null;
-}
 
 // Interface for wallet data (from assets_managed.ts)
 interface WalletData {
@@ -402,12 +397,13 @@ router.post(
           const mappedChainId = foundDao.managed_accounts.map(acc => acc.chain_id);
           const chainIds = Array.from(new Set(mappedChainId));
 
-          const [assetsManaged, treasuryHoldings]: [number, TreasuryHoldings] =
+          const [assetsManaged, treasuryHoldings]: [number, TreasuryHoldingsResponse] =
             await Promise.all([
               getAssetsManaged(managedAccounts, chainIds),
               getTreasuryHoldings(foundDao.treasury.address, foundDao.treasury.chain_id),
             ]);
 
+          if (!treasuryHoldings) throw new Error();
           console.log(assetsManaged, "ASSETS");
           console.log(treasuryHoldings, "TREASURY");
 
@@ -419,7 +415,7 @@ router.post(
               total_treasury_value: Number(treasuryHoldings.usdBalance),
               total_assets: assetsManaged,
               tokens:
-                treasuryHoldings.tokens?.map((token: TokenHolding) => ({
+                treasuryHoldings.tokens.map((token) => ({
                   contractAddress: token.contractAddress || null,
                   metadata: {
                     name: token.metadata.name || "",
@@ -452,7 +448,7 @@ router.post(
               total_treasury_value: Number(treasuryHoldings.usdBalance),
               total_assets: assetsManaged,
               tokens:
-                treasuryHoldings.tokens?.map((token: TokenHolding) => ({
+                treasuryHoldings.tokens.map((token) => ({
                   contractAddress: token.contractAddress || null,
                   metadata: {
                     name: token.metadata.name || "",
