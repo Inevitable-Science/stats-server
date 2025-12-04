@@ -3,97 +3,65 @@ import TokenModel, { TokenDocument } from "../../../config/models/tokenSchema";
 import { daos, DAO, NativeToken, IPTEntry } from "../../../config/constants";
 import getTokenStats, {
   TokenStatsResponse,
-} from "../../../utils/fetch/token_stats";
+} from "../../fetch/token/tokenStats";
 import sendDiscordMessage from "../../../utils/coms/send_message";
+import { Address } from "viem";
 
 async function fetchAndUpdateTokenStats(): Promise<void> {
   try {
     await sendDiscordMessage(
       `**Starting daily token refresh at: ${new Date().toLocaleString()}**`
     );
-    const tokens: TokenDocument[] = await TokenModel.find();
+    //const tokens: TokenDocument[] = await TokenModel.find();
+    const tokens = daos.map(dao => {
+      return {
+        token_name: dao.native_token.name,
+        token_address: dao.native_token.token_address.toLowerCase(),
+      }
+    })
 
-    for (const tokenStats of tokens) {
-      const tokenAddress = tokenStats.token_address;
-      const entry: TokenDocument | null = await TokenModel.findOne({
-        token_address: tokenAddress,
-      });
-      if (!entry) continue;
+    tokens.length = 1; // rm later on for testing atm
 
-      await sendDiscordMessage(
-        `**Refreshing Token Stats For: ${entry.token_name} at ${new Date().toLocaleString()}**`
-      );
-      console.log("Refreshing Stats For:", entry.token_name);
-      const date = new Date();
-
-      const foundDao = daos.find((d: DAO) => {
-        // Check if the token matches native_token.token_address
-        if (
-          d.native_token.token_address.toLowerCase() ===
-          tokenAddress.toLowerCase()
-        ) {
-          return true;
-        }
-
-        // Check if any IPT object has the token address and is of type ERC-20
-        if (d.ipt) {
-          return Object.keys(d.ipt).some(
-            (key) =>
-              d.ipt![key].token_address.toLowerCase() ===
-                tokenAddress.toLowerCase() &&
-              d.ipt![key].token_type === "ERC-20"
-          );
-        }
-
-        return false;
-      });
-
+    for (const token of tokens) {
+      const foundDao = daos.find(d => d.native_token.token_address.toLocaleLowerCase() === token.token_address);
       if (!foundDao) continue;
 
-      const lastUpdated = entry.last_updated;
-      const timeDifference =
-        (date.getTime() - lastUpdated.getTime()) / 1000 / 60;
-      if (timeDifference < 15) {
-        await sendDiscordMessage(
-          `**Skipping ${foundDao.name}, update requested too soon. (last updated <15 minutes ago)**`
-        );
-        console.log(
-          "Please wait 15 minutes before requesting a data update again."
-        );
-        continue;
-      }
+      const entry: TokenDocument | null = await TokenModel.findOne({
+        token_address: token.token_address,
+      });
 
-      let tokenName = foundDao.native_token.name.toLowerCase();
-      let hardcodedStats: NativeToken | IPTEntry = foundDao.native_token; // Default to native_token
+      await sendDiscordMessage(
+        `**Refreshing Token Stats For: ${token.token_name} at ${new Date().toLocaleString()}**`
+      );
 
-      if (foundDao.ipt) {
-        const iptToken = Object.keys(foundDao.ipt).find(
-          (key) =>
-            foundDao.ipt![key].token_address.toLowerCase() ===
-            tokenAddress.toLowerCase()
-        );
-        if (iptToken) {
-          tokenName = foundDao.ipt[iptToken].name.toLowerCase();
-          hardcodedStats = foundDao.ipt[iptToken];
+      console.log("Refreshing Stats For:", token.token_name);
+      const date = new Date();
+
+      /*if (entry) {
+        const lastUpdated = entry.last_updated;
+        const timeDifference =
+          (date.getTime() - lastUpdated.getTime()) / 1000 / 60;
+        if (timeDifference < 15) {
+          await sendDiscordMessage(
+            `**Skipping ${token.token_name}, update requested too soon. (last updated <15 minutes ago)**`
+          );
+          console.log(
+            "Please wait 15 minutes before requesting a data update again."
+          );
+          continue;
         }
-      }
+      }*/
 
-      if (
-        hardcodedStats.token_address.toLowerCase() !==
-        tokenAddress.toLowerCase()
-      )
-        continue;
-
+      let hardcodedStats: NativeToken = foundDao.native_token;
       try {
-        const tokenStatsFunc: TokenStatsResponse | null = await getTokenStats(
+
+        const tokenStats: TokenStatsResponse | null = await getTokenStats(
           hardcodedStats.mc_ticker,
-          tokenAddress,
-          hardcodedStats.token_abi,
+          token.token_address.toLowerCase() as Address,
           hardcodedStats.creation_block,
-          hardcodedStats.decimals
         );
 
-        if (!tokenStatsFunc) {
+        if (!tokenStats) {
           throw new Error("No token stats returned");
         }
 
@@ -101,64 +69,48 @@ async function fetchAndUpdateTokenStats(): Promise<void> {
         currentDate.setHours(0, 0, 0, 0); // Set the time to 00:00:00
 
         // Get the current timestamp
-        const currentTimestamp = Number(currentDate.getTime());
-        const currentHolderCount = Number(tokenStatsFunc.stats.totalWallets); // Default to 0 if no data
+        const currentTimestamp = currentDate.getTime();
+        const currentHolderCount = tokenStats.totalHolders; // Default to 0 if no data
 
         // Push the new data to holders_graph
-        const updatedHoldersGraph = [
+        const updatedHoldersGraph = entry ? [
           ...entry.holders_graph,
           [currentTimestamp, currentHolderCount],
+        ] : [
+          [currentTimestamp, currentHolderCount]
         ];
 
-        const convertedTopHolders = (
-          tokenStatsFunc.tokenStats.topHolders || []
-        ).map((item) => ({
-          address: item?.address || null,
-          token_amount: item?.balance || null,
-          account_type: item?.type || null,
-        }));
-
-        const convertedDistribution = (
-          tokenStatsFunc.stats.groupStats || []
-        ).map((item) => ({
-          range: item?.percentage || null,
-          accounts: item?.walletsCount?.toString() || null,
-          amount_tokens_held: item?.cumulativeBalance
-            ? Number(item.cumulativeBalance) || null
-            : null,
-          percent_tokens_held: item?.walletsHoldingPercentage || null,
-        }));
-
         const updatedEntry = {
-          token_name: entry.token_name,
-          token_address: entry.token_address,
-          date_added: entry.date_added,
+          token_name: token.token_name,
+          token_address: token.token_address.toLowerCase(),
+          date_added: entry ? entry.date_added : new Date(),
           last_updated: date,
-          total_supply: tokenStatsFunc.tokenStats.totalSupply,
-          market_cap: tokenStatsFunc.tokenStats.marketCap,
-          average_balance: Number(tokenStatsFunc.stats.averageBalance) || null,
-          median_balance: Number(tokenStatsFunc.stats.medianBalance) || null,
-          total_holders: tokenStatsFunc.stats.totalWallets.toString() || null,
-          top_holders: convertedTopHolders,
-          token_distribution: convertedDistribution,
-          // holders_graph: entry.holders_graph,
+
+          total_supply: tokenStats.totalSupply,
+          market_cap: tokenStats.marketCap,
+          total_holders: tokenStats.totalHolders.toString() || null,
+          average_balance: tokenStats.averageBalance || null,
+          median_balance: tokenStats.medianBalance || null,
+          top_holders: tokenStats.topHolders,
+          token_distribution: tokenStats.groupStats,
           holders_graph: updatedHoldersGraph,
         };
 
         await TokenModel.updateOne(
-          { token_address: entry.token_address },
-          { $set: updatedEntry }
+          { token_address: token.token_address }, // query
+          { $set: updatedEntry },                 // update fields
+          { upsert: true }                        // create if not found
         );
-        console.log("Refreshed Stats For:", entry.token_name);
+        console.log("Refreshed Stats For:", token.token_name);
         await sendDiscordMessage(
-          `**Finished refreshing ${entry.token_name} token stats**`
+          `**Finished refreshing ${token.token_name} token stats**`
         );
       } catch (err) {
         await sendDiscordMessage(
-          `Error occurred refreshing token: ${entry.token_name}`
+          `Error occurred refreshing token: ${token.token_name}`
         );
         console.error(
-          `Error occurred refreshing token ${entry.token_name}:`,
+          `Error occurred refreshing token ${token.token_name}:`,
           err
         );
       }

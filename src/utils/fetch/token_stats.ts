@@ -1,6 +1,7 @@
-import axios, { AxiosResponse } from "axios";
+/*import axios, { AxiosResponse } from "axios";
 import { ethers } from "ethers";
 import { ENV } from "../env";
+import { erc20Abi, formatUnits } from "viem";
 
 // Interface for CoinGecko API response
 interface MarketCapResponse {
@@ -95,61 +96,60 @@ async function fetchMarketCap(tokenSymbol: string): Promise<number | null> {
   }
 }
 
+// add a last fetched block that overrides the start block in db
+
 async function fetchHolders(
   tokenAddress: string,
-  tokenABI: any[], // Consider using ethers.ContractInterface for stricter typing
+  //tokenABI: any[], // Consider using ethers.ContractInterface for stricter typing
   startBlock: number,
   decimals: number
 ): Promise<HoldersStats | null> {
-  let provider: ethers.JsonRpcProvider;
-  try {
-    provider = new ethers.JsonRpcProvider(
-      `https://mainnet.infura.io/v3/${ENV.INFURA_KEY}`
-    );
-  } catch (error: any) {
-    console.error(`Failed to initialize provider: ${error.message}`);
-    return null;
-  }
+
+  const provider = new ethers.JsonRpcProvider(
+    `https://mainnet.infura.io/v3/${ENV.INFURA_KEY}`
+  );
 
   const sleep = (ms: number): Promise<void> =>
     new Promise((resolve) => setTimeout(resolve, ms));
 
-  let tokenContract: ethers.Contract;
-  try {
-    tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
-  } catch (error: any) {
-    console.error(`Failed to create contract instance: ${error.message}`);
-    return null;
-  }
+  const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, provider);
+  if (!tokenContract) throw new Error(`Couldn't initialize token contract in fetchHolders`);
 
   // Get total supply and format it
-  let totalSupply: number;
+  const supply = await tokenContract.totalSupply();
+  console.log(supply);
+  const totalSupply = Math.round(
+    parseFloat(formatUnits(supply, decimals))
+  );
+  console.log(totalSupply);
+  /*let totalSupply: number;
   try {
     const supply = await tokenContract.totalSupply();
     totalSupply = Math.round(parseFloat(ethers.formatUnits(supply, decimals)));
   } catch (error: any) {
     console.error(`Error fetching total supply: ${error.message}`);
     return null;
-  }
+  }* /
 
   const holders: Map<string, number> = new Map();
 
-  let endBlock: number;
+  const currentBlock = await provider.getBlockNumber(); // final block to fetch data for
+  const batchSize = 100000; // Process events in batches of 100,000 blocks
+
+  /*let endBlock: number;
   try {
     endBlock = await provider.getBlockNumber();
   } catch (error: any) {
     console.error(`Error fetching latest block number: ${error.message}`);
     return null;
-  }
-
-  const batchSize = 100000; // Process events in batches of 100,000 blocks
+  }* /
 
   for (
     let fromBlock = startBlock;
-    fromBlock <= endBlock;
+    fromBlock <= currentBlock;
     fromBlock += batchSize
   ) {
-    const toBlock = Math.min(fromBlock + batchSize - 1, endBlock);
+    const toBlock = Math.min(fromBlock + batchSize - 1, currentBlock);
 
     console.log(`Fetching events from block ${fromBlock} to ${toBlock}...`);
     await sleep(500);
@@ -328,16 +328,13 @@ function calculateStats(holdersArray: Holder[]): Stats {
 async function getTokenStats(
   tokenSymbol: string,
   tokenAddress: string,
-  tokenABI: any[], // Consider using ethers.ContractInterface for stricter typing
+  //tokenABI: any[], // Consider using ethers.ContractInterface for stricter typing
   startBlock: number,
-  decimals: number
 ): Promise<TokenStatsResponse | null> {
   try {
     const holdersStats = await fetchHolders(
       tokenAddress,
-      tokenABI,
       startBlock,
-      decimals
     );
     if (!holdersStats) {
       console.error("Failed to fetch holders stats");
@@ -383,8 +380,9 @@ async function getTokenStats(
         medianBalance: '0.00',
         groupStats: [],
       },
-    };*/
+    };* /
   }
 }
 
 export default getTokenStats;
+*/

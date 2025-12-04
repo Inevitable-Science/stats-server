@@ -6,7 +6,7 @@ import TreasuryModel, {
 import TokenModel, { TokenDocument } from "../../config/models/tokenSchema";
 import getTokenStats, {
   TokenStatsResponse,
-} from "../../utils/fetch/token_stats";
+} from "../../utils/fetch/token/tokenStats";
 import sendDiscordMessage from "../../utils/coms/send_message";
 
 // Interface for the token response
@@ -284,9 +284,7 @@ router.post(
             await getTokenStats(
               tokenStats.mc_ticker,
               tokenStats.token_address,
-              tokenStats.token_abi,
               tokenStats.creation_block,
-              tokenStats.decimals
             );
 
           if (tokenStatsResult === null) {
@@ -302,11 +300,11 @@ router.post(
           // Get the current timestamp
           const currentTimestamp = Number(currentDate.getTime());
           const currentHolderCount = Number(
-            tokenStatsResult.stats.totalWallets
+            tokenStatsResult.totalHolders
           ); // Default to 0 if no data
 
-          const convertedTopHolders = (
-            tokenStatsResult?.tokenStats?.topHolders || []
+          /*const convertedTopHolders = (
+            tokenStatsResult?.topHolders || []
           ).map((item) => ({
             address: item?.address || null,
             token_amount: item?.balance || null,
@@ -314,13 +312,13 @@ router.post(
           }));
 
           const convertedDistribution = (
-            tokenStatsResult?.stats?.groupStats || []
+            tokenStatsResult?.groupStats || []
           ).map((item) => ({
             range: item?.percentage || null,
             accounts: item?.walletsCount || null,
             amount_tokens_held: item?.cumulativeBalance || null,
             percent_tokens_held: item?.walletsHoldingPercentage || null,
-          }));
+          }));*/
 
           if (!tokenEntry) {
             const newEntry = new TokenModel({
@@ -328,14 +326,14 @@ router.post(
               token_address: tokenStats.token_address,
               date_added: date,
               last_updated: date,
-              total_supply: tokenStatsResult.tokenStats.totalSupply,
-              market_cap: tokenStatsResult.tokenStats.marketCap,
-              average_balance: tokenStatsResult.stats.averageBalance,
-              median_balance: tokenStatsResult.stats.medianBalance,
-              total_holders: tokenStatsResult.stats.totalWallets,
-              top_holders: convertedTopHolders,
-              token_distribution: convertedDistribution,
-              holders_graph: [[currentTimestamp, currentHolderCount]],
+              total_supply: tokenStatsResult.totalSupply,
+              market_cap: tokenStatsResult.marketCap,
+              average_balance: tokenStatsResult.averageBalance,
+              median_balance: tokenStatsResult.medianBalance,
+              total_holders: tokenStatsResult.totalHolders,
+              top_holders: tokenStatsResult.topHolders,
+              token_distribution: tokenStatsResult.groupStats,
+              holders_graph: [[currentTimestamp, tokenStatsResult.totalHolders]],
             });
 
             await newEntry.save();
@@ -348,13 +346,13 @@ router.post(
               token_address: tokenEntry.token_address,
               date_added: tokenEntry.date_added,
               last_updated: date,
-              total_supply: tokenStatsResult.tokenStats.totalSupply,
-              market_cap: tokenStatsResult.tokenStats.marketCap,
-              average_balance: tokenStatsResult.stats.averageBalance,
-              median_balance: tokenStatsResult.stats.medianBalance,
-              total_holders: tokenStatsResult.stats.totalWallets,
-              top_holders: convertedTopHolders,
-              token_distribution: convertedDistribution,
+              total_supply: tokenStatsResult.totalSupply,
+              market_cap: tokenStatsResult.marketCap,
+              average_balance: tokenStatsResult.averageBalance,
+              median_balance: tokenStatsResult.medianBalance,
+              total_holders: tokenStatsResult.topHolders,
+              top_holders: tokenStatsResult.topHolders,
+              token_distribution: tokenStatsResult.groupStats,
               holders_graph: tokenEntry.holders_graph,
             };
 

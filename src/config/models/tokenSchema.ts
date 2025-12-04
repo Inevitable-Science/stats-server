@@ -60,7 +60,7 @@ export interface TokenDocument extends Document {
 
 const DataSchema: Schema<TokenDocument> = new Schema({
   token_name: { type: String, required: true, unique: true, index: true },
-  token_address: { type: String, required: true, unique: true, index: true },
+  token_address: { type: String, required: true, unique: true, index: true, lowercase: true },
   date_added: Date,
   last_updated: Date,
   total_supply: Number,
