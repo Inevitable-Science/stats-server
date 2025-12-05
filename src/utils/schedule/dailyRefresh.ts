@@ -11,14 +11,8 @@ async function dailyRefresh() {
     });
 
     await fetchAndUpdateTokenStats();
-    await logAction({
-      action: "logAction",
-      message: "**Daily Token Stats Refresh Completed**"
-    });
-
-    //await fetchAndUpdateTreasuries();
-
-    //await fetchAndUpdateTwitterFollowers();
+    await fetchAndUpdateTreasuries();
+    await fetchAndUpdateTwitterFollowers();
 
     await logAction({
       action: "logAction",

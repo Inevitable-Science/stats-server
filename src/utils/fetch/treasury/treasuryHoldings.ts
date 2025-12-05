@@ -1,9 +1,8 @@
 import { Address, zeroAddress } from "viem";
-import axios, { AxiosResponse } from "axios";
-import { ENV } from "../../env";
 import { ChainId } from "../../../config/constants";
 import { logErrorEmbed } from "../../coms/logAction";
-import { AlchemyChainSubdomain, AlchemyEthBalResponseZ, AlchemyEthPriceResponseZ, AlchemyTokenBalancesSchemaType, AlchemyTokenBalancesSchemaZ, AlchemyTokenMetadataSchemaType, AlchemyTokenMetadataSchemaZ, AlchemyTokenPriceSchemaType, AlchemyTokenPriceSchemaZ } from "./alchemyResponseTypes";
+import { fetchEthHoldings } from "./helpers/ethAccountHelper";
+import { fetchAllTokenBalances, fetchTokenMetadata, fetchTokenPrice } from "./helpers/erc20TokenHelper";
 
 // Interface for wallet data entry
 export interface TokenData {
@@ -42,150 +41,8 @@ const peggedTokens: PeggedToken[] = [
   },
 ];
 
-const ALCHEMY_API_KEY = ENV.ALCHEMY_KEY;
-
-async function fetchWithRetry<T>(
-  url: string,
-  payload: any,
-  maxRetries: number = 7,
-  delay: number = 1000
-): Promise<T> {
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      const response: AxiosResponse<T> = await axios.post(url, payload, { timeout: 20000 });
-      const data = await response.data;
-      return data;
-    } catch (error: any) {
-      if (error.response?.status === 429) {
-        const retryAfter = parseFloat(error.response.headers["retry-after"] || "");
-        const waitTime = !isNaN(retryAfter) ? retryAfter * 1000 : delay * 2 ** attempt;
-        console.warn(`Rate limited. Retrying in ${waitTime / 1000} seconds...`);
-
-        await sleep(waitTime);
-      } else {
-        throw error;
-      }
-    }
-  }
-
-  throw new Error(`Max retries exceeded for ${url}`);
-}
-
-interface FetchAllTokenBalancesResponse {
-  contractAddress: Address;
-  tokenBalance: string;
-}
-
-async function fetchAllTokenBalances(
-  walletAddress: Address,
-  chainId: ChainId
-): Promise<FetchAllTokenBalancesResponse[] | null> {
-  try {
-    const SUBDOMAIN = AlchemyChainSubdomain[chainId];
-    const ALCHEMY_TOKEN_BAL_URL = `https://${SUBDOMAIN}.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
-    
-    const payload = {
-      id: 1,
-      jsonrpc: "2.0",
-      method: "alchemy_getTokenBalances",
-      params: [walletAddress],
-    };
-
-    const response = await fetchWithRetry<AlchemyTokenBalancesSchemaType>(ALCHEMY_TOKEN_BAL_URL, payload);
-    const parsed = AlchemyTokenBalancesSchemaZ.parse(response);
-    const mapppedTokens = parsed.result.tokenBalances.map(tkn => {
-      return {
-        contractAddress: tkn.contractAddress as Address,
-        tokenBalance: tkn.tokenBalance,
-      }
-    });
-
-    return mapppedTokens;
-  } catch (err) {
-    await logErrorEmbed(`Error in fetchAllTokenBalances For ${walletAddress}: ${err}`);
-    return null;
-  };
-}
-
-async function fetchTokenPrice(
-  contractAddress: Address,
-  chainId: ChainId
-): Promise<number | null> {
-  try {
-    const NETWORK_STRING = AlchemyChainSubdomain[chainId];
-    const ALCHEMY_TOKEN_PRICE_URL = `https://api.g.alchemy.com/prices/v1/${ALCHEMY_API_KEY}/tokens/by-address`;
-    const payload = {
-      addresses: [
-        {
-          network: NETWORK_STRING,
-          address: contractAddress.toLowerCase(),
-        },
-      ],
-    };
-
-    const response = await fetchWithRetry<AlchemyTokenPriceSchemaType>(
-      ALCHEMY_TOKEN_PRICE_URL,
-      payload
-    );
-    const parsed = AlchemyTokenPriceSchemaZ.parse(response);
-
-    const prices = parsed.data[0].prices;
-    const usdPrice = prices.find(obj => obj.currency === "usd");
-
-    if (!usdPrice?.value) return null;
-    return parseFloat(usdPrice.value);
-
-  } catch (err) {
-    await logErrorEmbed(`Error fetching price for ${contractAddress} - ${chainId}: ${err}`);
-    return null;
-  }
-}
-
-interface FetchTokenMetadataResponse {
-  name: string;
-  symbol: string;
-  decimals: number;
-  logo?: string;
-}
-
-async function fetchTokenMetadata(
-  contractAddress: Address,
-  chainId: ChainId
-): Promise<FetchTokenMetadataResponse | null> {
-  try {
-    const SUBDOMAIN = AlchemyChainSubdomain[chainId];
-    const ALCHEMY_TOKEN_METADATA_URL = `https://${SUBDOMAIN}.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
-    const payload = {
-      id: 1,
-      jsonrpc: "2.0",
-      method: "alchemy_getTokenMetadata",
-      params: [contractAddress.toLowerCase()],
-    };
-
-    const response = await fetchWithRetry<AlchemyTokenMetadataSchemaType>(
-      ALCHEMY_TOKEN_METADATA_URL,
-      payload
-    );
-
-    const parsed = AlchemyTokenMetadataSchemaZ.parse(response);
-    const data = parsed.result;
-    if (!data.name || !data.symbol || !data.decimals) throw new Error(`Name, Symbol or Decimals missing in metadata response`);
-
-    return {
-      name: data.name,
-      symbol: data.symbol,
-      decimals: data.decimals,
-      logo: data.logo ?? "",
-    };
-  } catch (err) {
-    return null;
-  }
-};
-
 // Decode token balance
-function decodeHexBalance(hexBalance: string, decimals: number): number {
+export function decodeHexBalance(hexBalance: string, decimals: number): number {
   try {
     return parseInt(hexBalance, 16) / Math.pow(10, decimals);
   } catch (error: any) {
@@ -193,74 +50,6 @@ function decodeHexBalance(hexBalance: string, decimals: number): number {
     return 0; // Fallback to 0 for invalid hex balance
   }
 }
-
-async function fetchEthPrice(): Promise<number | null> {
-  try {
-    const ALCHEMY_ETH_PRICE_URL = `https://api.g.alchemy.com/prices/v1/${ALCHEMY_API_KEY}/tokens/by-symbol?symbols=ETH`;
-    const response = await axios.get(ALCHEMY_ETH_PRICE_URL, {
-      timeout: 20000,
-    });
-
-    const data = await response.data;
-    const parsed = AlchemyEthPriceResponseZ.parse(data);
-    const price = parsed.data[0].prices[0].value;
-    if (!price || typeof price !== "string") throw new Error("ETH Price Not Found In Response");
-
-    const roundedPrice = Number(price);
-    return roundedPrice;
-  } catch (err) {
-    await logErrorEmbed(`Error in fetchEthPrice: ${err}`);
-    return null;
-  }
-}
-
-interface FetchEthHoldingsResponse {
-  hexBalance: string;
-  ethBalance: number;
-  ethPrice: number;
-  totalValue: number;
-};
-
-async function fetchEthHoldings(walletAddress: Address, chainId: ChainId): Promise<FetchEthHoldingsResponse | null> {
-  try {
-    const SUBDOMAIN = AlchemyChainSubdomain[chainId];
-    const ALCHEMY_ETH_BAL_URL = `https://${SUBDOMAIN}.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
-
-    const ethBalancePayload = {
-      id: 1,
-      jsonrpc: "2.0",
-      method: "eth_getBalance",
-      params: [walletAddress, "latest"],
-    };
-
-    const response = await fetchWithRetry(
-      ALCHEMY_ETH_BAL_URL,
-      ethBalancePayload,
-    );
-
-    const parsed = AlchemyEthBalResponseZ.parse(response);
-    const ethBalanceHex = parsed.result;
-
-    const ethBalanceDecoded = decodeHexBalance(ethBalanceHex, 18); // ETH = 18 decimals
-    const ethPrice = await fetchEthPrice();
-    if (!ethPrice) throw new Error("No ETH Price Returned");
-
-    const ethTotalValue =
-      ethPrice ? ethBalanceDecoded * ethPrice : 0;
-
-    return {
-      hexBalance: ethBalanceHex,
-      ethBalance: ethBalanceDecoded,
-      ethPrice: ethPrice,
-      totalValue: ethTotalValue,
-    };
-
-  } catch (err) {
-    await logErrorEmbed(`Error in fetchEthHoldings For: ${walletAddress}: ${err}`);
-    return null;
-  }
-}
-
 
 // Main function
 async function getTreasuryHoldings(
