@@ -62,7 +62,6 @@ async function fetchAndUpdateTwitterFollowers(): Promise<void> {
     return;
 
   } catch (err) {
-    console.error(err);
     await logErrorEmbed(`Error performing full twitter analytics refresh, Error: ${err}`);
     return;
   }

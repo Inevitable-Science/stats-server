@@ -104,7 +104,6 @@ async function fetchAllTokenBalances(
 
     return mapppedTokens;
   } catch (err) {
-    console.error(err);
     await logErrorEmbed(`Error in fetchAllTokenBalances For ${walletAddress}: ${err}`);
     return null;
   };
@@ -139,7 +138,6 @@ async function fetchTokenPrice(
     return parseFloat(usdPrice.value);
 
   } catch (err) {
-    console.error(`Error fetching price for ${contractAddress} - ${chainId}: ${err}`);
     await logErrorEmbed(`Error fetching price for ${contractAddress} - ${chainId}: ${err}`);
     return null;
   }
@@ -211,7 +209,6 @@ async function fetchEthPrice(): Promise<number | null> {
     const roundedPrice = Number(price);
     return roundedPrice;
   } catch (err) {
-    console.error(err);
     await logErrorEmbed(`Error in fetchEthPrice: ${err}`);
     return null;
   }
@@ -259,7 +256,6 @@ async function fetchEthHoldings(walletAddress: Address, chainId: ChainId): Promi
     };
 
   } catch (err) {
-    console.error(err);
     await logErrorEmbed(`Error in fetchEthHoldings For: ${walletAddress}: ${err}`);
     return null;
   }
@@ -336,7 +332,6 @@ async function getTreasuryHoldings(
       tokens: walletData,
     };
   } catch (err) {
-    console.error(`Error fetching treasury holdings: ${err}`);
     await logErrorEmbed(`Error in treasury handler function ${err}`);
     return {
       usdBalance: "0.00",

@@ -48,6 +48,8 @@ export async function logErrorEmbed(error: unknown) {
 
 async function logAction({ action, message, embed }: { action: "logError" | "logAction", message?: string, embed?: Embed }) {
   try {
+    console.log(message);
+    
     let color;
     if (action === "logError") {
       color = 12520460;

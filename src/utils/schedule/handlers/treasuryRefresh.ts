@@ -122,15 +122,10 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
         
       } catch (err) {
         await logErrorEmbed(`Error occurred refreshing treasury: ${foundDao.name}`);
-        console.error(
-          `Error occurred while refreshing treasury for ${foundDao.name}:`,
-          err
-        );
       }
     }
   } catch (err) {
     await logErrorEmbed(`Error occurred refreshing treasury within fetchAndUpdateTreasuries: ${err}`)
-    console.error("Error occurred while refreshing treasuries:", err);
   } finally {
     await logAction({
       action: "logAction",

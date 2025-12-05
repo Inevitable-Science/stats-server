@@ -26,7 +26,6 @@ async function getTwitterFollowers(username: string): Promise<number | null> {
     
     return parsedFollowers;
   } catch (err) {
-    console.error(err);
     await logErrorEmbed(`**Unable to fetch twitter followers for @${username} - ${err}**`);
     return null;
   }
