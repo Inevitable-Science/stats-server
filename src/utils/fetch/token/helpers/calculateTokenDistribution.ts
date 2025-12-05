@@ -26,7 +26,10 @@ const walletGroups: {
   { percentage: 80, rangeStart: 50, rangeEnd: 80 },
 ];
 
-export default function calculateTokenDistribution(holdersArray: Holder[], totalSupply: number): CalculateStatsResponse | null {
+export default function calculateTokenDistribution(
+  holdersArray: Holder[],
+  totalSupply: number
+): CalculateStatsResponse | null {
   try {
     const totalHolders = holdersArray.length;
     const averageBalance = totalHolders > 0 ? totalSupply / totalHolders : 0;
@@ -34,10 +37,12 @@ export default function calculateTokenDistribution(holdersArray: Holder[], total
     // Group stats for each percentage range
     const groupStats: PercentileStat[] = walletGroups.map(
       ({ rangeStart, rangeEnd }) => {
-
         const rangeStartIndex = Math.floor((rangeStart / 100) * totalHolders);
         const rangeEndIndex = Math.floor((rangeEnd / 100) * totalHolders);
-        const walletsInRange = holdersArray.slice(rangeStartIndex, rangeEndIndex);
+        const walletsInRange = holdersArray.slice(
+          rangeStartIndex,
+          rangeEndIndex
+        );
 
         const cumulativeBalance = walletsInRange.reduce(
           (total, { balance }) => total + balance,

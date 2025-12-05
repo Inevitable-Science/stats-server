@@ -17,33 +17,39 @@ const PortfolioSchemaZ = z.object({
 });
 
 // Function to send a query for each address
-async function getAssetsManaged(walletAddresses: Address[], chainId: ChainId[]): Promise<number> {
+async function getAssetsManaged(
+  walletAddresses: Address[],
+  chainId: ChainId[]
+): Promise<number> {
   try {
     const GRAPHQL_ENDPOINT = "https://public.zapper.xyz/graphql";
     const QUERY = gql`
-    query AssetsManaged($addresses: [Address!]!, $chainIds: [Int!]) {
-      portfolioV2(addresses: $addresses, chainIds: $chainIds) {
-        tokenBalances {
-          totalBalanceUSD
-        }
-        appBalances {
-          totalBalanceUSD
+      query AssetsManaged($addresses: [Address!]!, $chainIds: [Int!]) {
+        portfolioV2(addresses: $addresses, chainIds: $chainIds) {
+          tokenBalances {
+            totalBalanceUSD
+          }
+          appBalances {
+            totalBalanceUSD
+          }
         }
       }
-    }`;
+    `;
 
     const response = await request(
       GRAPHQL_ENDPOINT,
       QUERY,
       { addresses: walletAddresses, chainIds: chainId },
       {
-        'Content-Type': 'application/json',
-        'x-zapper-api-key': ENV.ZAPPER_KEY
+        "Content-Type": "application/json",
+        "x-zapper-api-key": ENV.ZAPPER_KEY,
       }
     );
 
     const data = PortfolioSchemaZ.parse(response).portfolioV2;
-    const totalBal = (data.tokenBalances.totalBalanceUSD ?? 0) + (data.appBalances.totalBalanceUSD ?? 0);
+    const totalBal =
+      (data.tokenBalances.totalBalanceUSD ?? 0) +
+      (data.appBalances.totalBalanceUSD ?? 0);
 
     if (totalBal === 0) {
       const message = `AUM is $0 for addresses \`${walletAddresses.join(", ")}\` and chains \`${chainId.join(", ")}\``;
@@ -55,6 +61,6 @@ async function getAssetsManaged(walletAddresses: Address[], chainId: ChainId[]):
     await logErrorEmbed(err);
     return 0;
   }
-};
+}
 
 export default getAssetsManaged;

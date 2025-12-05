@@ -7,7 +7,7 @@ async function dailyRefresh() {
   try {
     await logAction({
       action: "logAction",
-      message: "**Started Daily Stats Refresh**"
+      message: "**Started Daily Stats Refresh**",
     });
 
     await fetchAndUpdateTokenStats();
@@ -16,10 +16,12 @@ async function dailyRefresh() {
 
     await logAction({
       action: "logAction",
-      message: "**Daily Stats Refresh Completed**"
+      message: "**Daily Stats Refresh Completed**",
     });
   } catch (err) {
-    await logErrorEmbed(`Error in parent daily refresh stats function **BREAKING:** ${err}`);
+    await logErrorEmbed(
+      `Error in parent daily refresh stats function **BREAKING:** ${err}`
+    );
   }
 }
 

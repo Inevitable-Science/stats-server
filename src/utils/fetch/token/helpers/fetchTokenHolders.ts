@@ -1,15 +1,15 @@
 import { ethers } from "ethers";
 import { Address, erc20Abi, formatUnits } from "viem";
 import z from "zod";
-import TokenHoldersModel, { TokenHoldersDocument } from "../../../../config/models/tokenHoldersSchema";
+import TokenHoldersModel, {
+  TokenHoldersDocument,
+} from "../../../../config/models/tokenHoldersSchema";
 import { Holder } from "../tokenStats";
 import { ENV } from "../../../../utils/env";
 import { logErrorEmbed } from "../../../../utils/coms/logAction";
 
-
 const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
-
 
 const TransferArgsSchema = z.tuple([
   z.string(), // from
@@ -36,12 +36,10 @@ interface FetchHoldersResponse {
   topHolders: TopHolder[];
 }
 
-
 export default async function fetchTokenHolders(
   tokenAddress: Address,
-  initialBlock: number,
+  initialBlock: number
 ): Promise<FetchHoldersResponse | null> {
-  
   const batchSize = 100_000; // Process events in batches of 100,000 blocks reduce to 50,000 soon
   const minBalanceThreshold = 0.01; // Only include accounts with >0.01 tokens
 
@@ -49,13 +47,19 @@ export default async function fetchTokenHolders(
     const provider = new ethers.JsonRpcProvider(
       `https://mainnet.infura.io/v3/${ENV.INFURA_KEY}`
     );
-    if (!provider) throw new Error(`Couldn't initialize provider contract in fetchHolders`);
+    if (!provider)
+      throw new Error(`Couldn't initialize provider contract in fetchHolders`);
 
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, provider);
-    if (!tokenContract) throw new Error(`Couldn't initialize token contract in fetchHolders`);
-    
+    if (!tokenContract)
+      throw new Error(`Couldn't initialize token contract in fetchHolders`);
+
     // Get total supply and format it
-    const [totalSupply, decimals, tokenHoldersEntry]: [bigint, bigint, TokenHoldersDocument | null] = await Promise.all([
+    const [totalSupply, decimals, tokenHoldersEntry]: [
+      bigint,
+      bigint,
+      TokenHoldersDocument | null,
+    ] = await Promise.all([
       await tokenContract.totalSupply(),
       await tokenContract.decimals(),
       await TokenHoldersModel.findByTokenAddress(tokenAddress),
@@ -66,15 +70,17 @@ export default async function fetchTokenHolders(
     );
 
     const currentBlock = await provider.getBlockNumber();
-    
+
     const holders: Map<string, number> = new Map();
     let startBlock = initialBlock;
 
     if (tokenHoldersEntry) {
       startBlock = tokenHoldersEntry.last_block_fetched;
-      tokenHoldersEntry.holders.forEach(holder => holders.set(holder.address, holder.balance));
+      tokenHoldersEntry.holders.forEach((holder) =>
+        holders.set(holder.address, holder.balance)
+      );
     }
-    
+
     for (
       let fromBlock = startBlock;
       fromBlock <= currentBlock;
@@ -83,18 +89,21 @@ export default async function fetchTokenHolders(
       try {
         const toBlock = Math.min(fromBlock + batchSize - 1, currentBlock);
         console.log(`Fetching events from block ${fromBlock} to ${toBlock}...`);
-        
+
         await sleep(500);
 
         const events = await tokenContract.queryFilter(
           tokenContract.filters.Transfer(),
           fromBlock,
           toBlock
-        );          
+        );
 
         for (const event of events) {
           try {
-            if (!("args" in event && event.args)) throw new Error(`Skipping event without args: ${JSON.stringify(event)}`);
+            if (!("args" in event && event.args))
+              throw new Error(
+                `Skipping event without args: ${JSON.stringify(event)}`
+              );
 
             const transferEvent = event.args as unknown as TransferEventArgs;
             TransferArgsSchema.parse(transferEvent);
@@ -111,36 +120,39 @@ export default async function fetchTokenHolders(
             holders.set(from, (holders.get(from) || 0) - value);
             holders.set(to, (holders.get(to) || 0) + value);
           } catch (err) {
-            await logErrorEmbed(`Error in event block batching child fetchHolders: ${err}`);
+            await logErrorEmbed(
+              `Error in event block batching child fetchHolders: ${err}`
+            );
             continue;
           }
         }
       } catch (err) {
-        await logErrorEmbed(`Error in event block batching parent fetchHolders: ${err}`);
+        await logErrorEmbed(
+          `Error in event block batching parent fetchHolders: ${err}`
+        );
         continue;
-      };
-    };
+      }
+    }
 
-    // Filter holders and sort by balance    
+    // Filter holders and sort by balance
     const filteredHolders: [string, number][] = Array.from(holders.entries())
       .filter(([_, balance]) => balance > minBalanceThreshold)
       .sort((a, b) => b[1] - a[1]);
 
     if (filteredHolders.length === 0) throw new Error("No token holders found");
 
-
-    const holdersArray = filteredHolders.map(
-      ([address, balance]) => ({
-        address,
-        balance,
-      })
-    );
+    const holdersArray = filteredHolders.map(([address, balance]) => ({
+      address,
+      balance,
+    }));
 
     const constructedEntry = {
       token_address: tokenAddress,
-      initial_block_fetched: tokenHoldersEntry ? tokenHoldersEntry.initial_block_fetched : initialBlock,
+      initial_block_fetched: tokenHoldersEntry
+        ? tokenHoldersEntry.initial_block_fetched
+        : initialBlock,
       last_block_fetched: currentBlock,
-      holders: holdersArray
+      holders: holdersArray,
     };
 
     await TokenHoldersModel.updateOne(
@@ -149,26 +161,23 @@ export default async function fetchTokenHolders(
       { upsert: true }
     );
 
-
     // Get top 10 holders and identify wallet/contract
     const topHolders: TopHolder[] = await Promise.all(
       filteredHolders.slice(0, 10).map(async ([address, token_amount]) => {
         try {
           const code = await provider.getCode(address);
           const type = code !== "0x" ? "contract" : "wallet";
-          return { 
-            address,
-            token_amount,
-            account_type: type
-          };
-        } catch (err) {
-          console.error(
-            `Error fetching code for address ${address}: ${err}`
-          );
           return {
             address,
             token_amount,
-            account_type: "unknown"
+            account_type: type,
+          };
+        } catch (err) {
+          console.error(`Error fetching code for address ${address}: ${err}`);
+          return {
+            address,
+            token_amount,
+            account_type: "unknown",
           };
         }
       })
@@ -187,9 +196,9 @@ export default async function fetchTokenHolders(
       allHolders: holdersArray,
       topHoldersProportion: Number(topHoldersProportion.toFixed(2)),
       topHolders,
-    }
+    };
   } catch (err) {
     await logErrorEmbed(`Error in parent fetchHolders function: ${err}`);
     return null;
   }
-};
+}

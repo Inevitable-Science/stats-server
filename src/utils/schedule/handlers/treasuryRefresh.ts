@@ -10,14 +10,13 @@ import getTreasuryHoldings, {
 import logAction, { logErrorEmbed } from "../../coms/logAction";
 import { generateDiscordTimestamp } from "../../utils";
 
-
 async function fetchAndUpdateTreasuries(): Promise<void> {
   try {
     const date = new Date();
 
     await logAction({
       action: "logAction",
-      message: `**Starting daily treasury refresh: ${generateDiscordTimestamp(new Date(), "R")}**`
+      message: `**Starting daily treasury refresh: ${generateDiscordTimestamp(new Date(), "R")}**`,
     });
 
     // Iterate through all DAOs
@@ -25,7 +24,7 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
       try {
         await logAction({
           action: "logAction",
-          message: `**Refreshing Treasury Stats For: ${foundDao.name} - ${generateDiscordTimestamp(new Date(), "R")}**`
+          message: `**Refreshing Treasury Stats For: ${foundDao.name} - ${generateDiscordTimestamp(new Date(), "R")}**`,
         });
 
         const entry = await TreasuryModel.findOne({
@@ -33,30 +32,43 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
         });
 
         if (entry) {
-          const timeDifference = (date.getTime() - entry.last_updated.getTime()) / 1000 / 60;
+          const timeDifference =
+            (date.getTime() - entry.last_updated.getTime()) / 1000 / 60;
           if (timeDifference < 15) {
             await logAction({
               action: "logAction",
-              message: `Skipping ${foundDao.name}, update requested too soon. (last updated ${generateDiscordTimestamp(entry.last_updated, "R")})`
+              message: `Skipping ${foundDao.name}, update requested too soon. (last updated ${generateDiscordTimestamp(entry.last_updated, "R")})`,
             });
-            console.log(`Skipping ${foundDao.name}, update requested too soon.`);
+            console.log(
+              `Skipping ${foundDao.name}, update requested too soon.`
+            );
             continue;
           }
-        };
+        }
 
         // Start background processing
-        const managedAccounts = foundDao.managed_accounts.map(acc => acc.address);
-        const mappedChainId = foundDao.managed_accounts.map(acc => acc.chain_id);
+        const managedAccounts = foundDao.managed_accounts.map(
+          (acc) => acc.address
+        );
+        const mappedChainId = foundDao.managed_accounts.map(
+          (acc) => acc.chain_id
+        );
         const chainIds = Array.from(new Set(mappedChainId));
 
         // Fetch assets and treasury holdings, use fallback if unavailable
-        const [treasuryHoldings, assetsManaged]: [TreasuryHoldingsResponse, number] =
-          await Promise.all([
-            getTreasuryHoldings(foundDao.treasury.address, foundDao.treasury.chain_id),
-            getAssetsManaged(managedAccounts, chainIds),
-          ]);
+        const [treasuryHoldings, assetsManaged]: [
+          TreasuryHoldingsResponse,
+          number,
+        ] = await Promise.all([
+          getTreasuryHoldings(
+            foundDao.treasury.address,
+            foundDao.treasury.chain_id
+          ),
+          getAssetsManaged(managedAccounts, chainIds),
+        ]);
 
-        if (!treasuryHoldings) throw new Error("No treasury holdings passed from handler function");
+        if (!treasuryHoldings)
+          throw new Error("No treasury holdings passed from handler function");
         console.log(treasuryHoldings, "treasury holdings");
 
         const treasuryData: TreasuryDocumentType = {
@@ -78,21 +90,21 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
             totalValue: token.totalValue,
           })),
           historical_treasury: entry?.historical_treasury
-          ? [
-              ...entry.historical_treasury,
-              {
-                date,
-                balance: treasuryHoldings.usdBalance,
-                assets: String(assetsManaged),
-              },
-            ]
-          : [
-              {
-                date,
-                balance: treasuryHoldings.usdBalance,
-                assets: String(assetsManaged),
-              },
-            ]
+            ? [
+                ...entry.historical_treasury,
+                {
+                  date,
+                  balance: treasuryHoldings.usdBalance,
+                  assets: String(assetsManaged),
+                },
+              ]
+            : [
+                {
+                  date,
+                  balance: treasuryHoldings.usdBalance,
+                  assets: String(assetsManaged),
+                },
+              ],
         };
 
         const parsed = TreasuryDocumentSchemaZ.parse(treasuryData);
@@ -101,8 +113,8 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
           { dao_name: foundDao.name.toLowerCase() },
           parsed,
           {
-            upsert: true,        // Create if doesn't exist
-            new: true,           // Return the modified document
+            upsert: true, // Create if doesn't exist
+            new: true, // Return the modified document
             setDefaultsOnInsert: true,
           }
         );
@@ -110,26 +122,29 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
         if (result.date_added.getTime() === date.getTime()) {
           await logAction({
             action: "logAction",
-            message: `**Created new entry and finished refreshing ${foundDao.name} treasury stats (Treasury: $${treasuryHoldings.usdBalance}, Assets: $${assetsManaged.toFixed(2)}, Total: $${(Number(treasuryHoldings.usdBalance) + assetsManaged).toFixed(2)}) ${generateDiscordTimestamp(new Date(), "R")}**`
+            message: `**Created new entry and finished refreshing ${foundDao.name} treasury stats (Treasury: $${treasuryHoldings.usdBalance}, Assets: $${assetsManaged.toFixed(2)}, Total: $${(Number(treasuryHoldings.usdBalance) + assetsManaged).toFixed(2)}) ${generateDiscordTimestamp(new Date(), "R")}**`,
           });
         } else {
           await logAction({
             action: "logAction",
-            message: `**Finished refreshing ${foundDao.name} treasury stats (Treasury: $${treasuryHoldings.usdBalance}, Assets: $${assetsManaged.toFixed(2)}, Total: $${(Number(treasuryHoldings.usdBalance) + assetsManaged).toFixed(2)}) ${generateDiscordTimestamp(new Date(), "R")}**`
+            message: `**Finished refreshing ${foundDao.name} treasury stats (Treasury: $${treasuryHoldings.usdBalance}, Assets: $${assetsManaged.toFixed(2)}, Total: $${(Number(treasuryHoldings.usdBalance) + assetsManaged).toFixed(2)}) ${generateDiscordTimestamp(new Date(), "R")}**`,
           });
-        };
+        }
         continue;
-        
       } catch (err) {
-        await logErrorEmbed(`Error occurred refreshing treasury: ${foundDao.name}`);
+        await logErrorEmbed(
+          `Error occurred refreshing treasury: ${foundDao.name}`
+        );
       }
     }
   } catch (err) {
-    await logErrorEmbed(`Error occurred refreshing treasury within fetchAndUpdateTreasuries: ${err}`)
+    await logErrorEmbed(
+      `Error occurred refreshing treasury within fetchAndUpdateTreasuries: ${err}`
+    );
   } finally {
     await logAction({
       action: "logAction",
-      message: `**Full treasury refresh completed ${generateDiscordTimestamp(new Date(), "R")}**`
+      message: `**Full treasury refresh completed ${generateDiscordTimestamp(new Date(), "R")}**`,
     });
   }
 }

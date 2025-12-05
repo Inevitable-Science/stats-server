@@ -4,10 +4,12 @@ import { ENV } from "../env";
 export const EmbedZ = z.object({
   title: z.string().max(256).optional(),
   description: z.string().max(4096).optional(),
-  author: z.object({
-    name: z.string(),
-    icon_url: z.string().optional(),
-  }).optional(),
+  author: z
+    .object({
+      name: z.string(),
+      icon_url: z.string().optional(),
+    })
+    .optional(),
   fields: z
     .array(
       z.object({
@@ -21,10 +23,9 @@ export const EmbedZ = z.object({
 
 export type Embed = z.infer<typeof EmbedZ>;
 
-
 export async function logErrorEmbed(error: unknown) {
   console.error("Server Error:", error);
-  
+
   let errorMessage: string;
   if (typeof error === "string") {
     errorMessage = error.slice(0, 4096);
@@ -41,21 +42,29 @@ export async function logErrorEmbed(error: unknown) {
 
   await logAction({
     action: "logError",
-    embed: constructedEmbed
+    embed: constructedEmbed,
   });
   return;
-};
+}
 
-async function logAction({ action, message, embed }: { action: "logError" | "logAction", message?: string, embed?: Embed }) {
+async function logAction({
+  action,
+  message,
+  embed,
+}: {
+  action: "logError" | "logAction";
+  message?: string;
+  embed?: Embed;
+}) {
   try {
     console.log(message);
-    
+
     let color;
     if (action === "logError") {
       color = 12520460;
     } else {
       color = 2236962;
-    };
+    }
 
     const webhook = ENV.DISCORD_WEBHOOK_URL;
     const payload: any = {};
@@ -63,7 +72,8 @@ async function logAction({ action, message, embed }: { action: "logError" | "log
     if (embed) {
       const footer = {
         text: "Analytics API",
-        icon_url: "https://cdn.inevitable.science/static/img/branding/manifest/android-chrome-192x192.png"
+        icon_url:
+          "https://cdn.inevitable.science/static/img/branding/manifest/android-chrome-192x192.png",
       };
 
       const constructedEmbedd = { ...embed, color, footer };
@@ -72,19 +82,18 @@ async function logAction({ action, message, embed }: { action: "logError" | "log
       payload.content = message;
     } else {
       return;
-    };
+    }
 
     await fetch(webhook, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-
   } catch (error) {
     console.error("Error sending message to Discord:", error);
   } finally {
     return;
   }
-};
+}
 
 export default logAction;

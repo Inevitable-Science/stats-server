@@ -284,7 +284,7 @@ router.post(
             await getTokenStats(
               tokenStats.mc_ticker,
               tokenStats.token_address,
-              tokenStats.creation_block,
+              tokenStats.creation_block
             );
 
           if (tokenStatsResult === null) {
@@ -299,9 +299,7 @@ router.post(
 
           // Get the current timestamp
           const currentTimestamp = Number(currentDate.getTime());
-          const currentHolderCount = Number(
-            tokenStatsResult.totalHolders
-          ); // Default to 0 if no data
+          const currentHolderCount = Number(tokenStatsResult.totalHolders); // Default to 0 if no data
 
           /*const convertedTopHolders = (
             tokenStatsResult?.topHolders || []
@@ -333,7 +331,9 @@ router.post(
               total_holders: tokenStatsResult.totalHolders,
               top_holders: tokenStatsResult.topHolders,
               token_distribution: tokenStatsResult.groupStats,
-              holders_graph: [[currentTimestamp, tokenStatsResult.totalHolders]],
+              holders_graph: [
+                [currentTimestamp, tokenStatsResult.totalHolders],
+              ],
             });
 
             await newEntry.save();

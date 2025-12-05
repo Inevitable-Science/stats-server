@@ -1,8 +1,9 @@
-
 import { Address } from "viem";
 
 import fetchMarketCap from "./helpers/tokenMarketCap";
-import calculateTokenDistribution, { PercentileStat } from "./helpers/calculateTokenDistribution";
+import calculateTokenDistribution, {
+  PercentileStat,
+} from "./helpers/calculateTokenDistribution";
 import fetchTokenHolders, { TopHolder } from "./helpers/fetchTokenHolders";
 import { logErrorEmbed } from "../../coms/logAction";
 
@@ -26,24 +27,29 @@ export interface TokenStatsResponse {
 async function getTokenStats(
   tokenSymbol: string,
   tokenAddress: Address,
-  startBlock: number,
+  startBlock: number
 ): Promise<TokenStatsResponse | null> {
   try {
     const [holdersStats, marketCap] = await Promise.all([
-      await fetchTokenHolders(
-        tokenAddress,
-        startBlock,
-      ),
-      await fetchMarketCap(tokenSymbol)
+      await fetchTokenHolders(tokenAddress, startBlock),
+      await fetchMarketCap(tokenSymbol),
     ]);
 
-    if (!holdersStats) throw new Error("Failed to fetch holders stats, fetchHolders returned null");
+    if (!holdersStats)
+      throw new Error(
+        "Failed to fetch holders stats, fetchHolders returned null"
+      );
 
-    const calculatedStats = calculateTokenDistribution(holdersStats.allHolders, holdersStats.totalSupply);
-    if (!calculatedStats) throw new Error("Failed to calculate holders stats, calculateStats returned null");
+    const calculatedStats = calculateTokenDistribution(
+      holdersStats.allHolders,
+      holdersStats.totalSupply
+    );
+    if (!calculatedStats)
+      throw new Error(
+        "Failed to calculate holders stats, calculateStats returned null"
+      );
 
-    return {...holdersStats, ...calculatedStats, marketCap}
-
+    return { ...holdersStats, ...calculatedStats, marketCap };
   } catch (err) {
     logErrorEmbed(`Error in top level getTokenStats function: ${err}`);
     return null;

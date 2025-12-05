@@ -16,7 +16,6 @@ import TokenModel from "./config/models/tokenSchema";
 
 import sendDiscordMessage from "./utils/coms/send_message";
 
-
 import dailyRefresh from "./utils/schedule/dailyRefresh";
 
 import ohlcChartRouter from "./routes/chart/ohlc_chart";
@@ -78,7 +77,6 @@ const globalRateLimit = async (
 // ----- Apply both middlewares -----
 app.use(ipLimiter);
 app.use(globalRateLimit);
-
 
 const connectDB = async () => {
   try {

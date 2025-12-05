@@ -1,6 +1,10 @@
 import { logErrorEmbed } from "../../../../utils/coms/logAction";
 import { fetchWithRetry } from "./fetchWithRetry";
-import { AlchemyChainSubdomain, AlchemyEthBalResponseZ, AlchemyEthPriceResponseZ } from "./alchemyResponseTypes";
+import {
+  AlchemyChainSubdomain,
+  AlchemyEthBalResponseZ,
+  AlchemyEthPriceResponseZ,
+} from "./alchemyResponseTypes";
 import { Address } from "viem";
 import { ChainId } from "../../../../config/constants";
 import axios from "axios";
@@ -8,7 +12,6 @@ import { decodeHexBalance } from "../treasuryHoldings";
 import { ENV } from "../../../../utils/env";
 
 const ALCHEMY_API_KEY = ENV.ALCHEMY_KEY;
-
 
 export async function fetchEthPrice(): Promise<number | null> {
   try {
@@ -20,7 +23,8 @@ export async function fetchEthPrice(): Promise<number | null> {
     const data = await response.data;
     const parsed = AlchemyEthPriceResponseZ.parse(data);
     const price = parsed.data[0].prices[0].value;
-    if (!price || typeof price !== "string") throw new Error("ETH Price Not Found In Response");
+    if (!price || typeof price !== "string")
+      throw new Error("ETH Price Not Found In Response");
 
     const roundedPrice = Number(price);
     return roundedPrice;
@@ -30,15 +34,17 @@ export async function fetchEthPrice(): Promise<number | null> {
   }
 }
 
-
 interface FetchEthHoldingsResponse {
   hexBalance: string;
   ethBalance: number;
   ethPrice: number;
   totalValue: number;
-};
+}
 
-export async function fetchEthHoldings(walletAddress: Address, chainId: ChainId): Promise<FetchEthHoldingsResponse | null> {
+export async function fetchEthHoldings(
+  walletAddress: Address,
+  chainId: ChainId
+): Promise<FetchEthHoldingsResponse | null> {
   try {
     const SUBDOMAIN = AlchemyChainSubdomain[chainId];
     const ALCHEMY_ETH_BAL_URL = `https://${SUBDOMAIN}.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
@@ -52,7 +58,7 @@ export async function fetchEthHoldings(walletAddress: Address, chainId: ChainId)
 
     const response = await fetchWithRetry(
       ALCHEMY_ETH_BAL_URL,
-      ethBalancePayload,
+      ethBalancePayload
     );
 
     const parsed = AlchemyEthBalResponseZ.parse(response);
@@ -62,8 +68,7 @@ export async function fetchEthHoldings(walletAddress: Address, chainId: ChainId)
     const ethPrice = await fetchEthPrice();
     if (!ethPrice) throw new Error("No ETH Price Returned");
 
-    const ethTotalValue =
-      ethPrice ? ethBalanceDecoded * ethPrice : 0;
+    const ethTotalValue = ethPrice ? ethBalanceDecoded * ethPrice : 0;
 
     return {
       hexBalance: ethBalanceHex,
@@ -71,9 +76,10 @@ export async function fetchEthHoldings(walletAddress: Address, chainId: ChainId)
       ethPrice: ethPrice,
       totalValue: ethTotalValue,
     };
-
   } catch (err) {
-    await logErrorEmbed(`Error in fetchEthHoldings For: ${walletAddress}: ${err}`);
+    await logErrorEmbed(
+      `Error in fetchEthHoldings For: ${walletAddress}: ${err}`
+    );
     return null;
   }
 }

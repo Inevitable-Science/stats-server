@@ -2,7 +2,11 @@ import { Address, zeroAddress } from "viem";
 import { ChainId } from "../../../config/constants";
 import { logErrorEmbed } from "../../coms/logAction";
 import { fetchEthHoldings } from "./helpers/ethAccountHelper";
-import { fetchAllTokenBalances, fetchTokenMetadata, fetchTokenPrice } from "./helpers/erc20TokenHelper";
+import {
+  fetchAllTokenBalances,
+  fetchTokenMetadata,
+  fetchTokenPrice,
+} from "./helpers/erc20TokenHelper";
 
 // Interface for wallet data entry
 export interface TokenData {
@@ -64,10 +68,10 @@ async function getTreasuryHoldings(
     if (ethData && ethData.totalValue !== 0) {
       walletData.push({
         contractAddress: zeroAddress,
-        metadata: { 
-          name: "Ethereum", 
-          symbol: "ETH", 
-          decimals: 18 
+        metadata: {
+          name: "Ethereum",
+          symbol: "ETH",
+          decimals: 18,
         },
         rawBalance: ethData.hexBalance,
         decodedBalance: Number(ethData.ethBalance.toFixed(4)),
@@ -83,16 +87,28 @@ async function getTreasuryHoldings(
 
     for (const token of tokenBalances) {
       const matchedPeggedToken = peggedTokens.find(
-        peggedTkn => peggedTkn.tokenAddress.toLowerCase() === token.contractAddress.toLowerCase()
+        (peggedTkn) =>
+          peggedTkn.tokenAddress.toLowerCase() ===
+          token.contractAddress.toLowerCase()
       );
 
-      const metadataTokenAddress = matchedPeggedToken ? matchedPeggedToken.tokenAddress : token.contractAddress;
-      const priceTokenAddress = matchedPeggedToken ? matchedPeggedToken.peggedPrice : token.contractAddress;
+      const metadataTokenAddress = matchedPeggedToken
+        ? matchedPeggedToken.tokenAddress
+        : token.contractAddress;
+      const priceTokenAddress = matchedPeggedToken
+        ? matchedPeggedToken.peggedPrice
+        : token.contractAddress;
 
-      const tokenMetadata = await fetchTokenMetadata(metadataTokenAddress, chainId);
+      const tokenMetadata = await fetchTokenMetadata(
+        metadataTokenAddress,
+        chainId
+      );
       if (!tokenMetadata) continue;
 
-      const decodedBalance = decodeHexBalance(token.tokenBalance, tokenMetadata.decimals);
+      const decodedBalance = decodeHexBalance(
+        token.tokenBalance,
+        tokenMetadata.decimals
+      );
       if (decodedBalance === 0) continue;
 
       const tokenPrice = await fetchTokenPrice(priceTokenAddress, chainId);

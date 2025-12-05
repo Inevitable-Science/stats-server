@@ -12,21 +12,25 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
   try {
     await logAction({
       action: "logAction",
-      message: `**Starting daily token refresh ${generateDiscordTimestamp(new Date(), "R")}**`
+      message: `**Starting daily token refresh ${generateDiscordTimestamp(new Date(), "R")}**`,
     });
 
-    const tokens = daos.map(dao => {
+    const tokens = daos.map((dao) => {
       return {
         token_name: dao.native_token.name,
         token_address: dao.native_token.token_address.toLowerCase(),
-      }
-    })
+      };
+    });
 
     //tokens.length = 1; // rm later on for testing atm
 
     for (const token of tokens) {
       try {
-        const foundDao = daos.find(d => d.native_token.token_address.toLocaleLowerCase() === token.token_address);
+        const foundDao = daos.find(
+          (d) =>
+            d.native_token.token_address.toLocaleLowerCase() ===
+            token.token_address
+        );
         if (!foundDao) continue;
 
         const entry: TokenDocument | null = await TokenModel.findOne({
@@ -35,18 +39,19 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
 
         await logAction({
           action: "logAction",
-          message: `**Refreshing Token Stats For: ${token.token_name} at ${generateDiscordTimestamp(new Date(), "R")}**`
+          message: `**Refreshing Token Stats For: ${token.token_name} at ${generateDiscordTimestamp(new Date(), "R")}**`,
         });
         console.log("Refreshing Stats For:", token.token_name);
 
         const date = new Date();
         if (entry) {
           // difference in ms -> sec -> min
-          const timeDifference = (date.getTime() - entry.last_updated.getTime()) / 1000 / 60; 
+          const timeDifference =
+            (date.getTime() - entry.last_updated.getTime()) / 1000 / 60;
           if (timeDifference < 15) {
             await logAction({
               action: "logAction",
-              message: `**Skipping ${token.token_name}, update requested too soon. (last updated <15 minutes ago)**`
+              message: `**Skipping ${token.token_name}, update requested too soon. (last updated <15 minutes ago)**`,
             });
             continue;
           }
@@ -55,7 +60,7 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
         const tokenStats: TokenStatsResponse | null = await getTokenStats(
           foundDao.native_token.mc_ticker,
           token.token_address.toLowerCase() as Address,
-          foundDao.native_token.creation_block,
+          foundDao.native_token.creation_block
         );
 
         if (!tokenStats) {
@@ -67,12 +72,12 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
         const currentTimestamp = currentDate.getTime();
 
         // Push the new data to holders_graph
-        const updatedHoldersGraph = entry ? [
-          ...entry.holders_graph,
-          [currentTimestamp, tokenStats.totalHolders],
-        ] : [
-          [currentTimestamp, tokenStats.totalHolders]
-        ];
+        const updatedHoldersGraph = entry
+          ? [
+              ...entry.holders_graph,
+              [currentTimestamp, tokenStats.totalHolders],
+            ]
+          : [[currentTimestamp, tokenStats.totalHolders]];
 
         const updatedEntry = {
           token_name: token.token_name,
@@ -98,20 +103,23 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
 
         await logAction({
           action: "logAction",
-          message: `**Finished refreshing ${token.token_name} token stats**`
+          message: `**Finished refreshing ${token.token_name} token stats**`,
         });
-
       } catch (err) {
-        await logErrorEmbed(`Error occurred refreshing token: ${token.token_name}`);
+        await logErrorEmbed(
+          `Error occurred refreshing token: ${token.token_name}`
+        );
         continue;
       }
     }
   } catch (error) {
-    await logErrorEmbed(`**AN ERROR OCCURRED REFRESHING ALL TOKEN STATS, child of daily refresh function**`);
+    await logErrorEmbed(
+      `**AN ERROR OCCURRED REFRESHING ALL TOKEN STATS, child of daily refresh function**`
+    );
   } finally {
     await logAction({
       action: "logAction",
-      message: `**Daily token refresh complete at ${generateDiscordTimestamp(new Date(), "R")}**`
+      message: `**Daily token refresh complete at ${generateDiscordTimestamp(new Date(), "R")}**`,
     });
   }
 }

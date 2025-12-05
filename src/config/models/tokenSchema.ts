@@ -14,7 +14,6 @@ const TokenDistributionSchema = z.object({
   percent_tokens_held: z.number().nullable(),
 });
 
-
 export const TokenDocumentSchemaZ = z.object({
   token_name: z.string(),
   token_address: z.string(),
@@ -60,7 +59,13 @@ export interface TokenDocument extends Document {
 
 const DataSchema: Schema<TokenDocument> = new Schema({
   token_name: { type: String, required: true, unique: true, index: true },
-  token_address: { type: String, required: true, unique: true, index: true, lowercase: true },
+  token_address: {
+    type: String,
+    required: true,
+    unique: true,
+    index: true,
+    lowercase: true,
+  },
   date_added: Date,
   last_updated: Date,
   total_supply: Number,
