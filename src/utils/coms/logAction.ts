@@ -57,12 +57,12 @@ async function logAction({
   embed?: Embed;
 }) {
   try {
-    console.log(message);
 
     let color;
     if (action === "logError") {
       color = 12520460;
     } else {
+      console.log(message);
       color = 2236962;
     }
 

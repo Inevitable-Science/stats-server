@@ -1,8 +1,9 @@
-import express, { Router, Request, Response } from "express";
+import { Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import { parse } from "csv-parse";
-import { daos, DAO } from "../../../config/constants";
+import { daos, DAO } from "../../../../config/constants";
+import z from "zod";
 
 interface Transaction {
   Date: string;
@@ -13,23 +14,17 @@ interface Transaction {
   "Transaction hash": string;
 }
 
-const router: Router = express.Router();
-
-router.get("/:dao", async (req: Request, res: Response) => {
+export async function fetchLegacyActivity(req: Request, res: Response): Promise<void> {
   try {
     const { dao } = req.params;
-
-    if (!dao) {
-      res.status(400).json({ error: "Missing required parameter: dao" });
-      return;
-    }
+    const parsedDao = z.string().nonempty().parse(dao);
 
     const foundDao = daos.find(
       (d: DAO) =>
-        d.name.toLowerCase() === dao.toLowerCase() ||
-        d.ticker.toLowerCase() === dao.toLowerCase() ||
+        d.name.toLowerCase() === parsedDao.toLowerCase() ||
+        d.ticker.toLowerCase() === parsedDao.toLowerCase() ||
         d.alternative_names?.some(
-          (alt) => alt.toLowerCase() === dao.toLowerCase()
+          (alt) => alt.toLowerCase() === parsedDao.toLowerCase()
         )
     );
 
@@ -44,10 +39,9 @@ router.get("/:dao", async (req: Request, res: Response) => {
     const startIndex = (page - 1) * limit;
 
     // Define filepath
-    //const csvFilePath = path.join(__dirname, `/dump/${foundDao.name.toLowerCase()}.csv`);
     const csvFilePath = path.resolve(
       process.cwd(),
-      "src/routes/dao/activity/dump",
+      "src/routes/stats/dao/legacy/dump",
       `${foundDao.name.toLowerCase()}.csv`
     );
 
@@ -78,6 +72,7 @@ router.get("/:dao", async (req: Request, res: Response) => {
           totalPages,
           data: paginatedData,
         });
+        return;
       })
       .on("error", (error) => {
         console.error("Error parsing CSV:", error);
@@ -87,6 +82,4 @@ router.get("/:dao", async (req: Request, res: Response) => {
     console.error("Server error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-});
-
-export default router;
+};

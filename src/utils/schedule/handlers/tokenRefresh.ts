@@ -28,13 +28,13 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
       try {
         const foundDao = daos.find(
           (d) =>
-            d.native_token.token_address.toLocaleLowerCase() ===
-            token.token_address
+            d.native_token.token_address.toLowerCase() ===
+            token.token_address.toLowerCase()
         );
         if (!foundDao) continue;
 
         const entry: TokenDocument | null = await TokenModel.findOne({
-          token_address: token.token_address,
+          token_address: token.token_address.toLowerCase(),
         });
 
         await logAction({
@@ -44,7 +44,7 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
         console.log("Refreshing Stats For:", token.token_name);
 
         const date = new Date();
-        if (entry) {
+        /*if (entry) {
           // difference in ms -> sec -> min
           const timeDifference =
             (date.getTime() - entry.last_updated.getTime()) / 1000 / 60;
@@ -55,7 +55,7 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
             });
             continue;
           }
-        }
+        }*/
 
         const tokenStats: TokenStatsResponse | null = await getTokenStats(
           foundDao.native_token.mc_ticker,
@@ -72,12 +72,14 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
         const currentTimestamp = currentDate.getTime();
 
         // Push the new data to holders_graph
-        const updatedHoldersGraph = entry
+        const updatedHoldersGraph = entry?.holders_graph
           ? [
-              ...entry.holders_graph,
+              ...entry.holders_graph.filter(([ts]) => ts !== currentTimestamp),
               [currentTimestamp, tokenStats.totalHolders],
             ]
           : [[currentTimestamp, tokenStats.totalHolders]];
+
+
 
         const updatedEntry = {
           token_name: token.token_name,
@@ -95,8 +97,10 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
           holders_graph: updatedHoldersGraph,
         };
 
+        console.log(updatedEntry);
+
         await TokenModel.updateOne(
-          { token_address: token.token_address },
+          { token_address: token.token_address.toLowerCase() },
           { $set: updatedEntry },
           { upsert: true }
         );

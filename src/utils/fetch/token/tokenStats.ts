@@ -1,11 +1,10 @@
 import { Address } from "viem";
 
 import fetchMarketCap from "./helpers/tokenMarketCap";
-import calculateTokenDistribution, {
-  PercentileStat,
-} from "./helpers/calculateTokenDistribution";
-import fetchTokenHolders, { TopHolder } from "./helpers/fetchTokenHolders";
+import calculateTokenDistribution from "./helpers/calculateTokenDistribution";
+import fetchTokenHolders from "./helpers/fetchTokenHolders";
 import { logErrorEmbed } from "../../coms/logAction";
+import { TokenDistribution, TopHolder } from "../../../config/models/tokenSchema";
 
 // Interface for holder data
 export interface Holder {
@@ -21,7 +20,7 @@ export interface TokenStatsResponse {
   totalHolders: number;
   averageBalance: number;
   medianBalance: number;
-  groupStats: PercentileStat[];
+  groupStats: TokenDistribution[];
 }
 
 async function getTokenStats(

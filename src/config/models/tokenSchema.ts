@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { Address } from "viem";
 import { z } from "zod";
 
 const TopHolderSchema = z.object({
@@ -13,6 +14,7 @@ const TokenDistributionSchema = z.object({
   amount_tokens_held: z.number().nullable(),
   percent_tokens_held: z.number().nullable(),
 });
+
 
 export const TokenDocumentSchemaZ = z.object({
   token_name: z.string(),
@@ -29,17 +31,18 @@ export const TokenDocumentSchemaZ = z.object({
   holders_graph: z.array(z.array(z.number())),
 });
 
-interface TopHolder {
-  address: string | null;
-  token_amount: number | null;
-  account_type: string | null;
+export interface TopHolder {
+  address: string;
+  token_amount: number;
+  account_type: string;
 }
 
-interface TokenDistribution {
-  range: string | null;
-  accounts: string | null;
-  amount_tokens_held: number | null;
-  percent_tokens_held: number | null;
+// review, this type has been changes, check if it effects exsisting DB
+export interface TokenDistribution {
+  range: string;
+  accounts: number;
+  amount_tokens_held: number;
+  percent_tokens_held: number;
 }
 
 export interface TokenDocument extends Document {
@@ -59,13 +62,7 @@ export interface TokenDocument extends Document {
 
 const DataSchema: Schema<TokenDocument> = new Schema({
   token_name: { type: String, required: true, unique: true, index: true },
-  token_address: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true,
-    lowercase: true,
-  },
+  token_address: { type: String, required: true, unique: true, index: true, lowercase: true },
   date_added: Date,
   last_updated: Date,
   total_supply: Number,

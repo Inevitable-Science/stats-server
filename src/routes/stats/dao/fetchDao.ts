@@ -1,18 +1,7 @@
-import { Router, Request, Response } from "express";
-import { daos, DAO } from "../../config/constants";
-import TreasuryModel, {
-  TreasuryDocument,
-} from "../../config/models/treasurySchema";
-import TokenModel, { TokenDocument } from "../../config/models/tokenSchema";
-
-// Interface for the simplified DAO data returned by the root route
-interface SimplifiedDao {
-  name: string;
-  description: string;
-  ticker: string;
-  backdrop_url: string;
-  logo_url: string;
-}
+import { Request, Response } from "express";
+import { daos, DAO } from "../../../config/constants";
+import TreasuryModel from "../../../config/models/treasurySchema";
+import TokenModel from "../../../config/models/tokenSchema";
 
 // Interface for the detailed DAO response
 interface DaoResponse {
@@ -40,33 +29,22 @@ interface DaoResponse {
     totalHolders: string | null;
     marketCap: number | null;
   };
-  ipt: Array<{
-    name: string | null;
-    backdrop: string | null;
-    logo: string | null;
-    description: string | null;
-    tokenType: string | null;
-  }> | null;
 }
 
-function fetchDaosData(): SimplifiedDao[] {
-  return daos.map((dao: DAO) => ({
+export function fetchDaosPreview(req: Request, res: Response): void {
+  const daosData = daos.map((dao: DAO) => ({
     name: dao.name,
     description: dao.description,
     ticker: dao.ticker,
     backdrop_url: dao.backdrop_url,
     logo_url: dao.logo_url,
   }));
-}
-
-const router = Router();
-
-router.get("/", (req: Request, res: Response): void => {
-  const daosData: SimplifiedDao[] = fetchDaosData();
+  
   res.json(daosData);
-});
+};
 
-router.get("/:dao", async (req: Request, res: Response): Promise<void> => {
+
+export async function fetchDao(req: Request, res: Response): Promise<void> {
   try {
     const { dao } = req.params;
 
@@ -76,7 +54,7 @@ router.get("/:dao", async (req: Request, res: Response): Promise<void> => {
     }
 
     const foundDao = daos.find(
-      (d: DAO) =>
+      (d) =>
         d.name.toLowerCase() === dao.toLowerCase() ||
         d.ticker.toLowerCase() === dao.toLowerCase() ||
         d.alternative_names?.some(
@@ -90,27 +68,31 @@ router.get("/:dao", async (req: Request, res: Response): Promise<void> => {
     }
 
     // Fetch token data
-    const tokenAddress = foundDao.native_token?.token_address;
-    let tokenEntry: TokenDocument | null = null;
-    if (tokenAddress) {
-      tokenEntry = await TokenModel.findOne({ token_address: tokenAddress });
-    }
+    //const tokenAddress = foundDao.native_token.token_address;
+    //const tokenEntry = await TokenModel.findOne({ token_address: tokenAddress });
 
     // Fetch treasury data
-    const daoNameQuery = foundDao.name.toLowerCase();
-    const treasuryEntry: TreasuryDocument | null = await TreasuryModel.findOne({
+    //const daoNameQuery = foundDao.name.toLowerCase();
+    /*const treasuryEntry: TreasuryDocument | null = await TreasuryModel.findOne({
       dao_name: daoNameQuery,
-    });
+    });*/
+
+    const [tokenEntry, treasuryEntry] = await Promise.all([
+      await TokenModel.findOne({ token_address: foundDao.native_token.token_address }),
+      await TreasuryModel.findOne({
+        dao_name: foundDao.name.toLowerCase(),
+      })
+    ])
 
     // Calculate assets under management
     let assetsUnderManagement: number | null = null;
     if (treasuryEntry?.total_treasury_value && treasuryEntry?.total_assets) {
-      const totalTreasuryValue =
-        parseFloat(treasuryEntry.total_treasury_value) || 0;
+      const totalTreasuryValue = parseFloat(treasuryEntry.total_treasury_value) || 0;
       const totalAssets = parseFloat(treasuryEntry.total_assets) || 0;
       assetsUnderManagement = totalTreasuryValue + totalAssets;
     }
 
+    // TODO: Simplify construction of the response
     // Structure the response data
     const response: DaoResponse = {
       name: foundDao.name,
@@ -137,15 +119,6 @@ router.get("/:dao", async (req: Request, res: Response): Promise<void> => {
         totalHolders: tokenEntry?.total_holders || null,
         marketCap: tokenEntry?.market_cap || null,
       },
-      ipt: foundDao.ipt
-        ? Object.values(foundDao.ipt).map((item) => ({
-            name: item?.name || null,
-            backdrop: item?.backdrop_url || null,
-            logo: item?.logo_url || null,
-            description: item?.description || null,
-            tokenType: item?.token_type || null,
-          }))
-        : null,
     };
 
     res.json(response);
@@ -153,6 +126,4 @@ router.get("/:dao", async (req: Request, res: Response): Promise<void> => {
     console.error("Error fetching DAO data:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-});
-
-export default router;
+};

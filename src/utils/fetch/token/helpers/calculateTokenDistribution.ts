@@ -1,18 +1,19 @@
+import { TokenDistribution } from "@/config/models/tokenSchema";
 import { logErrorEmbed } from "../../../../utils/coms/logAction";
 import { Holder } from "../tokenStats";
 
-export interface PercentileStat {
+/*export interface PercentileStat {
   range: string;
   accounts: number;
   percent_tokens_held: number;
-  amount_tokens_held: string;
-}
+  amount_tokens_held: number;
+}*/
 
 interface CalculateStatsResponse {
   totalHolders: number;
   averageBalance: number;
   medianBalance: number;
-  groupStats: PercentileStat[];
+  groupStats: TokenDistribution[];
 }
 
 const walletGroups: {
@@ -35,7 +36,7 @@ export default function calculateTokenDistribution(
     const averageBalance = totalHolders > 0 ? totalSupply / totalHolders : 0;
 
     // Group stats for each percentage range
-    const groupStats: PercentileStat[] = walletGroups.map(
+    const groupStats: TokenDistribution[] = walletGroups.map(
       ({ rangeStart, rangeEnd }) => {
         const rangeStartIndex = Math.floor((rangeStart / 100) * totalHolders);
         const rangeEndIndex = Math.floor((rangeEnd / 100) * totalHolders);
@@ -56,7 +57,7 @@ export default function calculateTokenDistribution(
           range: `${rangeStart}-${rangeEnd}%`,
           accounts: walletsInRange.length,
           percent_tokens_held,
-          amount_tokens_held: cumulativeBalance.toFixed(2),
+          amount_tokens_held: Number(cumulativeBalance.toFixed(2)), // idk why i chose string here migrate in future
         };
       }
     );

@@ -7,6 +7,7 @@ import TokenHoldersModel, {
 import { Holder } from "../tokenStats";
 import { ENV } from "../../../../utils/env";
 import { logErrorEmbed } from "../../../../utils/coms/logAction";
+import { TopHolder } from "@/config/models/tokenSchema";
 
 const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -23,11 +24,11 @@ interface TransferEventArgs {
   value: ethers.BigNumberish;
 }
 
-export interface TopHolder {
-  address: string;
+/*export interface TopHolder {
+  address: Address;
   token_amount: number;
   account_type: "wallet" | "contract" | "unknown";
-}
+}*/
 
 interface FetchHoldersResponse {
   totalSupply: number;
@@ -155,11 +156,11 @@ export default async function fetchTokenHolders(
       holders: holdersArray,
     };
 
-    await TokenHoldersModel.updateOne(
+    /*await TokenHoldersModel.updateOne(
       { token_address: tokenAddress },
       { $set: constructedEntry },
       { upsert: true }
-    );
+    );*/ // uncomment in prod, comment in dev for testing
 
     // Get top 10 holders and identify wallet/contract
     const topHolders: TopHolder[] = await Promise.all(

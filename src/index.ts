@@ -18,20 +18,15 @@ import sendDiscordMessage from "./utils/coms/send_message";
 
 import dailyRefresh from "./utils/schedule/dailyRefresh";
 
-import ohlcChartRouter from "./routes/chart/ohlc_chart";
-import marketChartRouter from "./routes/chart/market_charts";
-import databaseChartRouter from "./routes/chart/database_charts";
-
-import daoRouter from "./routes/dao/daos";
-import tokenRouter from "./routes/dao/token";
-import treasuryRouter from "./routes/dao/treasury";
-
-import activityRouter from "./routes/dao/activity/activity";
-
 import tokenListRouter from "./routes/web3/tokenlist/token_list";
 import fetchAndUpdateTwitterFollowers from "./utils/schedule/handlers/twitterRefresh";
 import { ENV } from "./utils/env";
 import { ErrorCodes } from "./utils/errors";
+
+import tokenRouter from "./routes/stats/token/tokenRouter";
+import daoRouter from "./routes/stats/dao/daoRouter";
+
+
 
 const app = express();
 app.use(express.json());
@@ -95,15 +90,8 @@ app.get("/", (_req, res) => {
 
 cron.schedule("20 0 * * *", dailyRefresh); // Refresh treasury stats daily @ 00:20
 
-app.use("/ohlc", ohlcChartRouter);
-app.use("/chart", marketChartRouter);
-app.use("/charts", databaseChartRouter);
-
-app.use("/dao", daoRouter);
 app.use("/token", tokenRouter);
-app.use("/treasury", treasuryRouter);
-
-app.use("/activity", activityRouter);
+app.use("/dao", daoRouter);
 
 app.use("/web3", tokenListRouter);
 
