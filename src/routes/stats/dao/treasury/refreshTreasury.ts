@@ -122,7 +122,5 @@ export async function refreshTreasuryData(req: Request, res: Response): Promise<
   } catch (err) {
     await logErrorEmbed(`Error initiating manual treasury refresh: ${err}`);
     res.status(500).json({ error: ErrorCodes.SERVER_ERROR });
-  } finally {
-    isRunning = false;
   }
 }
