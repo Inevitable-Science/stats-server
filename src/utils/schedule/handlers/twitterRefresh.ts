@@ -18,9 +18,7 @@ async function fetchAndUpdateTwitterFollowers(): Promise<void> {
     const mappedTwitterUsername = daos
       .map((dao) => dao.socials.x)
       .filter((username) => typeof username === "string");
-    const mappedTrackArray = trackFollowersArray.map(
-      (username) => username.username
-    );
+    const mappedTrackArray = trackFollowersArray.map((username) => username.username);
     const combinedArrays: string[] = Array.from(
       new Set([...mappedTwitterUsername, ...mappedTrackArray])
     );
@@ -63,9 +61,7 @@ async function fetchAndUpdateTwitterFollowers(): Promise<void> {
     });
     return;
   } catch (err) {
-    await logErrorEmbed(
-      `Error performing full twitter analytics refresh, Error: ${err}`
-    );
+    await logErrorEmbed(`Error performing full twitter analytics refresh, Error: ${err}`);
     return;
   }
 }

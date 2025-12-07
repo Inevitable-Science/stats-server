@@ -2,10 +2,7 @@ import z from "zod";
 
 import { logErrorEmbed } from "../../../../utils/coms/logAction";
 //import axios from "axios";
-import {
-  fetchWithRetry,
-  getWithRetry,
-} from "../../treasury/helpers/fetchWithRetry";
+import { fetchWithRetry, getWithRetry } from "../../treasury/helpers/fetchWithRetry";
 
 const CoinGeckoResponseSchemaZ = z.object({
   market_data: z.object({
@@ -17,14 +14,11 @@ const CoinGeckoResponseSchemaZ = z.object({
 
 type CoinGeckoResponseType = z.infer<typeof CoinGeckoResponseSchemaZ>;
 
-export default async function fetchMarketCap(
-  tokenSymbol: string
-): Promise<number | null> {
+export default async function fetchMarketCap(tokenSymbol: string): Promise<number | null> {
   try {
     const COIN_GECKO_ENDPOINT = `https://api.coingecko.com/api/v3/coins/${tokenSymbol}`;
 
-    const response =
-      await getWithRetry<CoinGeckoResponseType>(COIN_GECKO_ENDPOINT);
+    const response = await getWithRetry<CoinGeckoResponseType>(COIN_GECKO_ENDPOINT);
     /*const response = await axios.get(COIN_GECKO_ENDPOINT, {
       timeout: 5000,
     });*/

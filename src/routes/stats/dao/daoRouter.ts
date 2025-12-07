@@ -12,7 +12,7 @@ const router = Router();
 
 router.get("/:dao", fetchDao);
 router.get("/all", fetchDaosPreview);
-router.get("/legacy/activity/:dao", fetchLegacyActivity)
+router.get("/legacy/activity/:dao", fetchLegacyActivity);
 
 router.get("/treasury/:daoName", fetchTreasuryData);
 router.post("/treasury/refresh/:daoName", refreshTreasuryData);

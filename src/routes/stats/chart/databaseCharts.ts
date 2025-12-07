@@ -4,14 +4,10 @@ import z from "zod";
 
 import { daos } from "../../../config/constants";
 import TokenModel from "../../../config/models/tokenSchema";
-import type {
-  TreasuryDocument,
-} from "../../../config/models/treasurySchema";
+import type { TreasuryDocument } from "../../../config/models/treasurySchema";
 import TreasuryModel from "../../../config/models/treasurySchema";
 import { logErrorEmbed } from "../../../utils/coms/logAction";
 import { ErrorCodes } from "../../../utils/errors";
-
-
 
 export async function fetchTokenHoldersChart(req: Request, res: Response): Promise<void> {
   try {
@@ -24,10 +20,11 @@ export async function fetchTokenHoldersChart(req: Request, res: Response): Promi
     }
 
     // Find the DAO that matches the token
-    const foundDao = daos.find(dao => 
-      dao.name.toLowerCase() === parsedTokenName.data.toLowerCase() ||
-      dao.native_token.name.toLowerCase() === parsedTokenName.data.toLowerCase() ||
-      dao.native_token.mc_ticker.toLowerCase() === parsedTokenName.data.toLowerCase()
+    const foundDao = daos.find(
+      (dao) =>
+        dao.name.toLowerCase() === parsedTokenName.data.toLowerCase() ||
+        dao.native_token.name.toLowerCase() === parsedTokenName.data.toLowerCase() ||
+        dao.native_token.mc_ticker.toLowerCase() === parsedTokenName.data.toLowerCase()
     );
 
     if (!foundDao) {
@@ -52,15 +49,12 @@ export async function fetchTokenHoldersChart(req: Request, res: Response): Promi
     res.json({
       holders: cleanedGraph,
     });
-
   } catch (err) {
     await logErrorEmbed(`Error serving holders chart ${err}`);
     res.status(500).json({ error: ErrorCodes.SERVER_ERROR });
     return;
   }
-};
-
-
+}
 
 const removeDuplicates = (data: [number, number][]): [number, number][] => {
   const map = new Map<number, number>();
@@ -83,11 +77,10 @@ export async function fetchHistoricalTreasuryChart(req: Request, res: Response):
     }
 
     const passedDao = parsedDao.data;
-    const foundDao = daos.find(dao =>
-      dao.name.toLowerCase() === passedDao.toLowerCase() ||
-      dao.alternative_names?.some(
-        alt => alt.toLowerCase() === passedDao.toLowerCase()
-      )
+    const foundDao = daos.find(
+      (dao) =>
+        dao.name.toLowerCase() === passedDao.toLowerCase() ||
+        dao.alternative_names?.some((alt) => alt.toLowerCase() === passedDao.toLowerCase())
     );
 
     if (!foundDao) {
@@ -104,41 +97,29 @@ export async function fetchHistoricalTreasuryChart(req: Request, res: Response):
       return;
     }
 
-    const historicalTreasuryValue: [number, number][] =
-      treasuryEntry.historical_treasury.map(
-        (entry) =>
-          [
-            new Date(
-              new Date(entry.date).toISOString().split("T")[0] +
-                "T00:00:00.000Z"
-            ).getTime(),
-            parseFloat(entry.balance),
-          ] as [number, number]
-      );
+    const historicalTreasuryValue: [number, number][] = treasuryEntry.historical_treasury.map(
+      (entry) =>
+        [
+          new Date(new Date(entry.date).toISOString().split("T")[0] + "T00:00:00.000Z").getTime(),
+          parseFloat(entry.balance),
+        ] as [number, number]
+    );
 
-    const historicalAssetsValue: [number, number][] =
-      treasuryEntry.historical_treasury.map(
-        (entry) =>
-          [
-            new Date(
-              new Date(entry.date).toISOString().split("T")[0] +
-                "T00:00:00.000Z"
-            ).getTime(),
-            parseFloat(entry.assets),
-          ] as [number, number]
-      );
+    const historicalAssetsValue: [number, number][] = treasuryEntry.historical_treasury.map(
+      (entry) =>
+        [
+          new Date(new Date(entry.date).toISOString().split("T")[0] + "T00:00:00.000Z").getTime(),
+          parseFloat(entry.assets),
+        ] as [number, number]
+    );
 
-    const totalHistoricalValue: [number, number][] =
-      treasuryEntry.historical_treasury.map(
-        (entry) =>
-          [
-            new Date(
-              new Date(entry.date).toISOString().split("T")[0] +
-                "T00:00:00.000Z"
-            ).getTime(),
-            parseFloat(entry.balance) + parseFloat(entry.assets),
-          ] as [number, number]
-      );
+    const totalHistoricalValue: [number, number][] = treasuryEntry.historical_treasury.map(
+      (entry) =>
+        [
+          new Date(new Date(entry.date).toISOString().split("T")[0] + "T00:00:00.000Z").getTime(),
+          parseFloat(entry.balance) + parseFloat(entry.assets),
+        ] as [number, number]
+    );
 
     // Remove duplicates from each historical data
     const uniqueHistoricalTreasuryValue = removeDuplicates(historicalTreasuryValue);
@@ -159,4 +140,4 @@ export async function fetchHistoricalTreasuryChart(req: Request, res: Response):
     res.status(500).json({ error: ErrorCodes.SERVER_ERROR });
     return;
   }
-};
+}

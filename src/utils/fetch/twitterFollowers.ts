@@ -16,9 +16,7 @@ async function getTwitterFollowers(username: string): Promise<number | null> {
 
     if (!response.ok) {
       console.log(response);
-      throw new Error(
-        `Failed to fetch twitter followers with response: ${response.status}`
-      );
+      throw new Error(`Failed to fetch twitter followers with response: ${response.status}`);
     }
 
     const data = await response.json();
@@ -27,9 +25,7 @@ async function getTwitterFollowers(username: string): Promise<number | null> {
 
     return parsedFollowers;
   } catch (err) {
-    await logErrorEmbed(
-      `**Unable to fetch twitter followers for @${username} - ${err}**`
-    );
+    await logErrorEmbed(`**Unable to fetch twitter followers for @${username} - ${err}**`);
     return null;
   }
 }

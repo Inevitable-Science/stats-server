@@ -20,9 +20,7 @@ async function dailyRefresh() {
       message: "**Daily Stats Refresh Completed**",
     });
   } catch (err) {
-    await logErrorEmbed(
-      `Error in parent daily refresh stats function **BREAKING:** ${err}`
-    );
+    await logErrorEmbed(`Error in parent daily refresh stats function **BREAKING:** ${err}`);
   }
 }
 

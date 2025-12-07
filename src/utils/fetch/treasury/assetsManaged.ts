@@ -19,10 +19,7 @@ const PortfolioSchemaZ = z.object({
 });
 
 // Function to send a query for each address
-async function getAssetsManaged(
-  walletAddresses: Address[],
-  chainId: ChainId[]
-): Promise<number> {
+async function getAssetsManaged(walletAddresses: Address[], chainId: ChainId[]): Promise<number> {
   try {
     const GRAPHQL_ENDPOINT = "https://public.zapper.xyz/graphql";
     const QUERY = gql`
@@ -50,8 +47,7 @@ async function getAssetsManaged(
 
     const data = PortfolioSchemaZ.parse(response).portfolioV2;
     const totalBal =
-      (data.tokenBalances.totalBalanceUSD ?? 0) +
-      (data.appBalances.totalBalanceUSD ?? 0);
+      (data.tokenBalances.totalBalanceUSD ?? 0) + (data.appBalances.totalBalanceUSD ?? 0);
 
     if (totalBal === 0) {
       const message = `AUM is $0 for addresses \`${walletAddresses.join(", ")}\` and chains \`${chainId.join(", ")}\``;

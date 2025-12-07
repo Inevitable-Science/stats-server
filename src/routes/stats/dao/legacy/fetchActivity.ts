@@ -8,7 +8,6 @@ import z from "zod";
 import type { DAO } from "../../../../config/constants";
 import { daos } from "../../../../config/constants";
 
-
 interface Transaction {
   Date: string;
   "ETH paid": string;
@@ -27,9 +26,7 @@ export async function fetchLegacyActivity(req: Request, res: Response): Promise<
       (d: DAO) =>
         d.name.toLowerCase() === parsedDao.toLowerCase() ||
         d.ticker.toLowerCase() === parsedDao.toLowerCase() ||
-        d.alternative_names?.some(
-          (alt) => alt.toLowerCase() === parsedDao.toLowerCase()
-        )
+        d.alternative_names?.some((alt) => alt.toLowerCase() === parsedDao.toLowerCase())
     );
 
     if (!foundDao) {
@@ -64,20 +61,17 @@ export async function fetchLegacyActivity(req: Request, res: Response): Promise<
       .on("end", () => {
         const totalItems = transactions.length;
         const totalPages = Math.ceil(totalItems / limit);
-        const paginatedData = transactions.slice(
-          startIndex,
-          startIndex + limit
-        );
-        
-        const mappedPageData = paginatedData.map(tx => {
+        const paginatedData = transactions.slice(startIndex, startIndex + limit);
+
+        const mappedPageData = paginatedData.map((tx) => {
           return {
             date: tx.Date,
             eth_paid: tx["ETH paid"],
             usd_value: tx["USD value of ETH paid"],
             payer_address: tx.Payer,
             beneficiary: tx.Beneficiary,
-            transaction_hash: tx["Transaction hash"]
-          }
+            transaction_hash: tx["Transaction hash"],
+          };
         });
 
         res.json({
@@ -97,4 +91,4 @@ export async function fetchLegacyActivity(req: Request, res: Response): Promise<
     console.error("Server error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-};
+}

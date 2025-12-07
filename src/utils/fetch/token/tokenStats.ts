@@ -7,7 +7,6 @@ import calculateTokenDistribution from "./helpers/calculateTokenDistribution";
 import fetchTokenHolders from "./helpers/fetchTokenHolders";
 import fetchMarketCap from "./helpers/tokenMarketCap";
 
-
 // Interface for holder data
 export interface Holder {
   address: string;
@@ -36,19 +35,14 @@ async function getTokenStats(
       await fetchMarketCap(tokenSymbol),
     ]);
 
-    if (!holdersStats)
-      throw new Error(
-        "Failed to fetch holders stats, fetchHolders returned null"
-      );
+    if (!holdersStats) throw new Error("Failed to fetch holders stats, fetchHolders returned null");
 
     const calculatedStats = calculateTokenDistribution(
       holdersStats.allHolders,
       holdersStats.totalSupply
     );
     if (!calculatedStats)
-      throw new Error(
-        "Failed to calculate holders stats, calculateStats returned null"
-      );
+      throw new Error("Failed to calculate holders stats, calculateStats returned null");
 
     return { ...holdersStats, ...calculatedStats, marketCap };
   } catch (err) {

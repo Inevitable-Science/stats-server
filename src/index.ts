@@ -12,9 +12,9 @@ import cron from "node-cron";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
 // Database
-
 import TokenModel from "./config/models/tokenSchema";
 import TreasuryModel from "./config/models/treasurySchema";
+
 import daoRouter from "./routes/stats/dao/daoRouter";
 import tokenRouter from "./routes/stats/token/tokenRouter";
 import tokenListRouter from "./routes/web3/tokenlist/token_list";
@@ -23,8 +23,6 @@ import { ENV } from "./utils/env";
 import { ErrorCodes } from "./utils/errors";
 import dailyRefresh from "./utils/schedule/dailyRefresh";
 import fetchAndUpdateTwitterFollowers from "./utils/schedule/handlers/twitterRefresh";
-
-
 
 const app = express();
 app.use(express.json());
@@ -52,11 +50,7 @@ const globalLimiter = new RateLimiterMemory({
   duration: 60,
 });
 
-const globalRateLimit = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+const globalRateLimit = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     await globalLimiter.consume("global");
     next();
@@ -137,43 +131,40 @@ app.post("/refreshFollowers/:password", async (req: Request, res: Response) => {
   }
 });
 
-app.post(
-  "/refreshAll/:password",
-  async (req: Request, res: Response): Promise<void> => {
-    const { password } = req.params;
+app.post("/refreshAll/:password", async (req: Request, res: Response): Promise<void> => {
+  const { password } = req.params;
 
-    if (!password || password != ENV.APP_PASSWORD) {
-      res.status(400).json({ error: "Missing required parameter: password" });
-      return;
-    }
-
-    try {
-      await sendDiscordMessage(
-        `**Request received to refresh all stats at ${new Date().toLocaleString()}**`
-      );
-      res.status(202).json({ message: "Processing request in the background" });
-
-      // Set isRunning to true and process in the background
-      setImmediate(async () => {
-        try {
-          await dailyRefresh();
-        } catch (error) {
-          console.error("Error initiating token refresh:", error);
-          await sendDiscordMessage(
-            `**Request to refresh all stats FAILED at ${new Date().toLocaleString()}**`
-          );
-          res.status(500).json({ error: "Internal server error" });
-        }
-      });
-    } catch (error) {
-      console.error("Error initiating token refresh:", error);
-      await sendDiscordMessage(
-        `**Request to refresh all stats FAILED at ${new Date().toLocaleString()}**`
-      );
-      res.status(500).json({ error: "Internal server error" });
-    }
+  if (!password || password != ENV.APP_PASSWORD) {
+    res.status(400).json({ error: "Missing required parameter: password" });
+    return;
   }
-);
+
+  try {
+    await sendDiscordMessage(
+      `**Request received to refresh all stats at ${new Date().toLocaleString()}**`
+    );
+    res.status(202).json({ message: "Processing request in the background" });
+
+    // Set isRunning to true and process in the background
+    setImmediate(async () => {
+      try {
+        await dailyRefresh();
+      } catch (error) {
+        console.error("Error initiating token refresh:", error);
+        await sendDiscordMessage(
+          `**Request to refresh all stats FAILED at ${new Date().toLocaleString()}**`
+        );
+        res.status(500).json({ error: "Internal server error" });
+      }
+    });
+  } catch (error) {
+    console.error("Error initiating token refresh:", error);
+    await sendDiscordMessage(
+      `**Request to refresh all stats FAILED at ${new Date().toLocaleString()}**`
+    );
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 connectDB().then(() => {
   app.listen(PORT, () => {

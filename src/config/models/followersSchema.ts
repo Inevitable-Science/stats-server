@@ -35,7 +35,9 @@ const DataSchema: Schema<FollowersDocument> = new Schema({
   ],
 });
 
-const FollowersModel: Model<FollowersDocument> =
-  mongoose.model<FollowersDocument>("followers_collections", DataSchema);
+const FollowersModel: Model<FollowersDocument> = mongoose.model<FollowersDocument>(
+  "followers_collections",
+  DataSchema
+);
 
 export default FollowersModel;

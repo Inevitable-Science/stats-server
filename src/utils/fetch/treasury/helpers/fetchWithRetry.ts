@@ -18,12 +18,8 @@ export async function fetchWithRetry<T>(
       return data;
     } catch (error: any) {
       if (error.response?.status === 429) {
-        const retryAfter = parseFloat(
-          error.response.headers["retry-after"] || ""
-        );
-        const waitTime = !isNaN(retryAfter)
-          ? retryAfter * 1000
-          : delay * 2 ** attempt;
+        const retryAfter = parseFloat(error.response.headers["retry-after"] || "");
+        const waitTime = !isNaN(retryAfter) ? retryAfter * 1000 : delay * 2 ** attempt;
 
         console.warn(`Rate limited. Retrying in ${waitTime / 1000} seconds...`);
         await sleep(waitTime);
@@ -49,12 +45,8 @@ export async function getWithRetry<T>(
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 429) {
-        const retryAfter = parseFloat(
-          error.response.headers["retry-after"] || ""
-        );
-        const waitTime = !isNaN(retryAfter)
-          ? retryAfter * 1000
-          : delay * 2 ** attempt;
+        const retryAfter = parseFloat(error.response.headers["retry-after"] || "");
+        const waitTime = !isNaN(retryAfter) ? retryAfter * 1000 : delay * 2 ** attempt;
 
         console.warn(`Rate limited. Retrying in ${waitTime / 1000} seconds...`);
         await sleep(waitTime);

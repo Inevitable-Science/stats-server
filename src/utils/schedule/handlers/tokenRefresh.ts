@@ -4,9 +4,7 @@ import { daos } from "../../../config/constants";
 import type { TokenDocument } from "../../../config/models/tokenSchema";
 import TokenModel from "../../../config/models/tokenSchema";
 import logAction, { logErrorEmbed } from "../../coms/logAction";
-import type {
-  TokenStatsResponse,
-} from "../../fetch/token/tokenStats";
+import type { TokenStatsResponse } from "../../fetch/token/tokenStats";
 import getTokenStats from "../../fetch/token/tokenStats";
 import { generateDiscordTimestamp } from "../../utils";
 
@@ -29,9 +27,7 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
     for (const token of tokens) {
       try {
         const foundDao = daos.find(
-          (d) =>
-            d.native_token.token_address.toLowerCase() ===
-            token.token_address.toLowerCase()
+          (d) => d.native_token.token_address.toLowerCase() === token.token_address.toLowerCase()
         );
         if (!foundDao) continue;
 
@@ -81,8 +77,6 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
             ]
           : [[currentTimestamp, tokenStats.totalHolders]];
 
-
-
         const updatedEntry = {
           token_name: token.token_name,
           token_address: token.token_address.toLowerCase(),
@@ -112,9 +106,7 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
           message: `**Finished refreshing ${token.token_name} token stats**`,
         });
       } catch (err) {
-        await logErrorEmbed(
-          `Error occurred refreshing token: ${token.token_name}`
-        );
+        await logErrorEmbed(`Error occurred refreshing token: ${token.token_name}`);
         continue;
       }
     }

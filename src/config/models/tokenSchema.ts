@@ -15,7 +15,6 @@ const TokenDistributionSchema = z.object({
   percent_tokens_held: z.number().nullable(),
 });
 
-
 export const TokenDocumentSchemaZ = z.object({
   token_name: z.string(),
   token_address: z.string(),

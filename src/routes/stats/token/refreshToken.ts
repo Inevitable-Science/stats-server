@@ -18,23 +18,24 @@ export async function refreshTokenStats(req: Request, res: Response): Promise<vo
     if (isRunning) {
       await logAction({
         action: "logAction",
-        message: `**REJECTED request to refresh token stats for ${parsedToken} ${generateDiscordTimestamp(new Date(), "R")}: Function already running**`
+        message: `**REJECTED request to refresh token stats for ${parsedToken} ${generateDiscordTimestamp(new Date(), "R")}: Function already running**`,
       });
 
       res.status(409).json({ error: ErrorCodes.JOB_ALREADY_RUNNING });
       return;
     }
 
-    const foundDao = daos.find(dao => dao.native_token.name.toLowerCase() === parsedToken);
+    const foundDao = daos.find((dao) => dao.native_token.name.toLowerCase() === parsedToken);
     if (!foundDao) {
       res.status(404).json({ error: ErrorCodes.ELEMENT_NOT_FOUND });
       return;
-    };
+    }
 
     // Determine token stats from either native_token or ipt
     const nativeToken = foundDao.native_token;
 
-    if (!nativeToken.networks.includes("eth")) { // review this allow for omnichain tokens
+    if (!nativeToken.networks.includes("eth")) {
+      // review this allow for omnichain tokens
       res.status(400).json({
         error: "Token must be on the Ethereum network to refresh stats.",
       });
@@ -53,11 +54,10 @@ export async function refreshTokenStats(req: Request, res: Response): Promise<vo
       if (timeDifference < 15) {
         await logAction({
           action: "logAction",
-          message: `**REJECTED request to refresh token stats for ${tokenName} ${generateDiscordTimestamp(new Date(), "R")}: 15 minute grace period**`
+          message: `**REJECTED request to refresh token stats for ${tokenName} ${generateDiscordTimestamp(new Date(), "R")}: 15 minute grace period**`,
         });
         res.status(429).json({
-          error:
-            ErrorCodes.GRACE_PERIOD,
+          error: ErrorCodes.GRACE_PERIOD,
         });
         return;
       }
@@ -65,7 +65,7 @@ export async function refreshTokenStats(req: Request, res: Response): Promise<vo
 
     await logAction({
       action: "logAction",
-      message: `**Request to refresh token stats for ${tokenName} ${generateDiscordTimestamp(new Date(), "R")}**`
+      message: `**Request to refresh token stats for ${tokenName} ${generateDiscordTimestamp(new Date(), "R")}**`,
     });
     res.status(202).json({ message: "Processing request in the background" });
 
@@ -74,16 +74,17 @@ export async function refreshTokenStats(req: Request, res: Response): Promise<vo
     setImmediate(async () => {
       try {
         // Fetch token stats
-        const tokenStatsResult =
-          await getTokenStats(
-            nativeToken.mc_ticker,
-            nativeToken.token_address,
-            nativeToken.creation_block
-          );
+        const tokenStatsResult = await getTokenStats(
+          nativeToken.mc_ticker,
+          nativeToken.token_address,
+          nativeToken.creation_block
+        );
 
         console.log(tokenStatsResult);
         if (!tokenStatsResult) {
-          await logErrorEmbed(`**FAILED TO REFRESH TOKEN STATS FOR ${tokenName} ${generateDiscordTimestamp(new Date(), "R")} - no response from function handler**`);
+          await logErrorEmbed(
+            `**FAILED TO REFRESH TOKEN STATS FOR ${tokenName} ${generateDiscordTimestamp(new Date(), "R")} - no response from function handler**`
+          );
           return;
         }
 
@@ -122,11 +123,12 @@ export async function refreshTokenStats(req: Request, res: Response): Promise<vo
         );
         await logAction({
           action: "logAction",
-          message: `**Completed refreshing token stats for ${tokenName} at ${generateDiscordTimestamp(new Date(), "R")}**`
+          message: `**Completed refreshing token stats for ${tokenName} at ${generateDiscordTimestamp(new Date(), "R")}**`,
         });
-
       } catch (err) {
-        await logErrorEmbed(`**FAILED TO REFRESH TOKEN STATS FOR ${tokenName} ${generateDiscordTimestamp(new Date(), "R")} - ${err}**`);
+        await logErrorEmbed(
+          `**FAILED TO REFRESH TOKEN STATS FOR ${tokenName} ${generateDiscordTimestamp(new Date(), "R")} - ${err}**`
+        );
       } finally {
         isRunning = false;
       }
@@ -137,4 +139,4 @@ export async function refreshTokenStats(req: Request, res: Response): Promise<vo
     res.status(500).json({ error: ErrorCodes.SERVER_ERROR });
     return;
   }
-};
+}

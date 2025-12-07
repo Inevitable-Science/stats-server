@@ -7,7 +7,8 @@ import { ENV } from "../../../../utils/env";
 import type {
   AlchemyTokenBalancesSchemaType,
   AlchemyTokenMetadataSchemaType,
-  AlchemyTokenPriceSchemaType} from "./alchemyResponseTypes";
+  AlchemyTokenPriceSchemaType,
+} from "./alchemyResponseTypes";
 import {
   AlchemyChainSubdomain,
   AlchemyTokenBalancesSchemaZ,
@@ -15,7 +16,6 @@ import {
   AlchemyTokenPriceSchemaZ,
 } from "./alchemyResponseTypes";
 import { fetchWithRetry } from "./fetchWithRetry";
-
 
 const ALCHEMY_API_KEY = ENV.ALCHEMY_KEY;
 
@@ -53,9 +53,7 @@ export async function fetchAllTokenBalances(
 
     return mapppedTokens;
   } catch (err) {
-    await logErrorEmbed(
-      `Error in fetchAllTokenBalances For ${walletAddress}: ${err}`
-    );
+    await logErrorEmbed(`Error in fetchAllTokenBalances For ${walletAddress}: ${err}`);
     return null;
   }
 }
@@ -88,9 +86,7 @@ export async function fetchTokenPrice(
     if (!usdPrice?.value) return null;
     return parseFloat(usdPrice.value);
   } catch (err) {
-    await logErrorEmbed(
-      `Error fetching price for ${contractAddress} - ${chainId}: ${err}`
-    );
+    await logErrorEmbed(`Error fetching price for ${contractAddress} - ${chainId}: ${err}`);
     return null;
   }
 }

@@ -1,4 +1,4 @@
-import type { Address} from "viem";
+import type { Address } from "viem";
 import { zeroAddress } from "viem";
 
 import type { ChainId } from "../../../config/constants";
@@ -90,9 +90,7 @@ async function getTreasuryHoldings(
 
     for (const token of tokenBalances) {
       const matchedPeggedToken = peggedTokens.find(
-        (peggedTkn) =>
-          peggedTkn.tokenAddress.toLowerCase() ===
-          token.contractAddress.toLowerCase()
+        (peggedTkn) => peggedTkn.tokenAddress.toLowerCase() === token.contractAddress.toLowerCase()
       );
 
       const metadataTokenAddress = matchedPeggedToken
@@ -102,16 +100,10 @@ async function getTreasuryHoldings(
         ? matchedPeggedToken.peggedPrice
         : token.contractAddress;
 
-      const tokenMetadata = await fetchTokenMetadata(
-        metadataTokenAddress,
-        chainId
-      );
+      const tokenMetadata = await fetchTokenMetadata(metadataTokenAddress, chainId);
       if (!tokenMetadata) continue;
 
-      const decodedBalance = decodeHexBalance(
-        token.tokenBalance,
-        tokenMetadata.decimals
-      );
+      const decodedBalance = decodeHexBalance(token.tokenBalance, tokenMetadata.decimals);
       if (decodedBalance === 0) continue;
 
       const tokenPrice = await fetchTokenPrice(priceTokenAddress, chainId);

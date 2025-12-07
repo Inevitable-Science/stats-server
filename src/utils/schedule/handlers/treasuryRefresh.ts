@@ -1,14 +1,9 @@
 import { daos } from "../../../config/constants";
-import type {
-  TreasuryDocumentType} from "../../../config/models/treasurySchema";
-import TreasuryModel, {
-  TreasuryDocumentSchemaZ
-} from "../../../config/models/treasurySchema";
+import type { TreasuryDocumentType } from "../../../config/models/treasurySchema";
+import TreasuryModel, { TreasuryDocumentSchemaZ } from "../../../config/models/treasurySchema";
 import logAction, { logErrorEmbed } from "../../coms/logAction";
 import getAssetsManaged from "../../fetch/treasury/assetsManaged";
-import type {
-  TreasuryHoldingsResponse,
-} from "../../fetch/treasury/treasuryHoldings";
+import type { TreasuryHoldingsResponse } from "../../fetch/treasury/treasuryHoldings";
 import getTreasuryHoldings from "../../fetch/treasury/treasuryHoldings";
 import { generateDiscordTimestamp } from "../../utils";
 
@@ -34,43 +29,30 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
         });
 
         if (entry) {
-          const timeDifference =
-            (date.getTime() - entry.last_updated.getTime()) / 1000 / 60;
+          const timeDifference = (date.getTime() - entry.last_updated.getTime()) / 1000 / 60;
           if (timeDifference < 15) {
             await logAction({
               action: "logAction",
               message: `Skipping ${foundDao.name}, update requested too soon. (last updated ${generateDiscordTimestamp(entry.last_updated, "R")})`,
             });
-            console.log(
-              `Skipping ${foundDao.name}, update requested too soon.`
-            );
+            console.log(`Skipping ${foundDao.name}, update requested too soon.`);
             continue;
           }
         }
 
         // Start background processing
-        const managedAccounts = foundDao.managed_accounts.map(
-          (acc) => acc.address
-        );
-        const mappedChainId = foundDao.managed_accounts.map(
-          (acc) => acc.chain_id
-        );
+        const managedAccounts = foundDao.managed_accounts.map((acc) => acc.address);
+        const mappedChainId = foundDao.managed_accounts.map((acc) => acc.chain_id);
         const chainIds = Array.from(new Set(mappedChainId));
 
         // Fetch assets and treasury holdings, use fallback if unavailable
-        const [treasuryHoldings, assetsManaged]: [
-          TreasuryHoldingsResponse,
-          number,
-        ] = await Promise.all([
-          getTreasuryHoldings(
-            foundDao.treasury.address,
-            foundDao.treasury.chain_id
-          ),
-          getAssetsManaged(managedAccounts, chainIds),
-        ]);
+        const [treasuryHoldings, assetsManaged]: [TreasuryHoldingsResponse, number] =
+          await Promise.all([
+            getTreasuryHoldings(foundDao.treasury.address, foundDao.treasury.chain_id),
+            getAssetsManaged(managedAccounts, chainIds),
+          ]);
 
-        if (!treasuryHoldings)
-          throw new Error("No treasury holdings passed from handler function");
+        if (!treasuryHoldings) throw new Error("No treasury holdings passed from handler function");
         console.log(treasuryHoldings, "treasury holdings");
 
         const treasuryData: TreasuryDocumentType = {
@@ -134,9 +116,7 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
         }
         continue;
       } catch (err) {
-        await logErrorEmbed(
-          `Error occurred refreshing treasury: ${foundDao.name}`
-        );
+        await logErrorEmbed(`Error occurred refreshing treasury: ${foundDao.name}`);
       }
     }
   } catch (err) {

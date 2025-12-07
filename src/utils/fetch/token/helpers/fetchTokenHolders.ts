@@ -1,11 +1,9 @@
 import { ethers } from "ethers";
-import type { Address} from "viem";
+import type { Address } from "viem";
 import { erc20Abi, formatUnits } from "viem";
 import z from "zod";
 
-import type {
-  TokenHoldersDocument,
-} from "../../../../config/models/tokenHoldersSchema";
+import type { TokenHoldersDocument } from "../../../../config/models/tokenHoldersSchema";
 import TokenHoldersModel from "../../../../config/models/tokenHoldersSchema";
 import { logErrorEmbed } from "../../../../utils/coms/logAction";
 import { ENV } from "../../../../utils/env";
@@ -13,8 +11,7 @@ import type { Holder } from "../tokenStats";
 
 import type { TopHolder } from "@/config/models/tokenSchema";
 
-const sleep = (ms: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 const TransferArgsSchema = z.tuple([
   z.string(), // from
@@ -49,15 +46,11 @@ export default async function fetchTokenHolders(
   const minBalanceThreshold = 0.01; // Only include accounts with >0.01 tokens
 
   try {
-    const provider = new ethers.JsonRpcProvider(
-      `https://mainnet.infura.io/v3/${ENV.INFURA_KEY}`
-    );
-    if (!provider)
-      throw new Error(`Couldn't initialize provider contract in fetchHolders`);
+    const provider = new ethers.JsonRpcProvider(`https://mainnet.infura.io/v3/${ENV.INFURA_KEY}`);
+    if (!provider) throw new Error(`Couldn't initialize provider contract in fetchHolders`);
 
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, provider);
-    if (!tokenContract)
-      throw new Error(`Couldn't initialize token contract in fetchHolders`);
+    if (!tokenContract) throw new Error(`Couldn't initialize token contract in fetchHolders`);
 
     // Get total supply and format it
     const [totalSupply, decimals, tokenHoldersEntry]: [
@@ -70,9 +63,7 @@ export default async function fetchTokenHolders(
       await TokenHoldersModel.findByTokenAddress(tokenAddress),
     ]);
 
-    const parsedTotalSupply = Math.round(
-      parseFloat(formatUnits(totalSupply, Number(decimals)))
-    );
+    const parsedTotalSupply = Math.round(parseFloat(formatUnits(totalSupply, Number(decimals))));
 
     const currentBlock = await provider.getBlockNumber();
 
@@ -81,16 +72,10 @@ export default async function fetchTokenHolders(
 
     if (tokenHoldersEntry) {
       startBlock = tokenHoldersEntry.last_block_fetched;
-      tokenHoldersEntry.holders.forEach((holder) =>
-        holders.set(holder.address, holder.balance)
-      );
+      tokenHoldersEntry.holders.forEach((holder) => holders.set(holder.address, holder.balance));
     }
 
-    for (
-      let fromBlock = startBlock;
-      fromBlock <= currentBlock;
-      fromBlock += batchSize
-    ) {
+    for (let fromBlock = startBlock; fromBlock <= currentBlock; fromBlock += batchSize) {
       try {
         const toBlock = Math.min(fromBlock + batchSize - 1, currentBlock);
         console.log(`Fetching events from block ${fromBlock} to ${toBlock}...`);
@@ -106,18 +91,14 @@ export default async function fetchTokenHolders(
         for (const event of events) {
           try {
             if (!("args" in event && event.args))
-              throw new Error(
-                `Skipping event without args: ${JSON.stringify(event)}`
-              );
+              throw new Error(`Skipping event without args: ${JSON.stringify(event)}`);
 
             const transferEvent = event.args as unknown as TransferEventArgs;
             TransferArgsSchema.parse(transferEvent);
 
             const from = transferEvent.from;
             const to = transferEvent.to;
-            const value = parseFloat(
-              ethers.formatUnits(transferEvent.value, Number(decimals))
-            );
+            const value = parseFloat(ethers.formatUnits(transferEvent.value, Number(decimals)));
 
             if (!holders.has(from)) holders.set(from, 0);
             if (!holders.has(to)) holders.set(to, 0);
@@ -125,16 +106,12 @@ export default async function fetchTokenHolders(
             holders.set(from, (holders.get(from) || 0) - value);
             holders.set(to, (holders.get(to) || 0) + value);
           } catch (err) {
-            await logErrorEmbed(
-              `Error in event block batching child fetchHolders: ${err}`
-            );
+            await logErrorEmbed(`Error in event block batching child fetchHolders: ${err}`);
             continue;
           }
         }
       } catch (err) {
-        await logErrorEmbed(
-          `Error in event block batching parent fetchHolders: ${err}`
-        );
+        await logErrorEmbed(`Error in event block batching parent fetchHolders: ${err}`);
         continue;
       }
     }
@@ -189,10 +166,7 @@ export default async function fetchTokenHolders(
     );
 
     // Calculate the proportion of tokens held by the top 10 holders
-    const totalTopHoldersBalance = topHolders.reduce(
-      (sum, holder) => sum + holder.token_amount,
-      0
-    );
+    const totalTopHoldersBalance = topHolders.reduce((sum, holder) => sum + holder.token_amount, 0);
     const topHoldersProportion =
       totalSupply > 0 ? (totalTopHoldersBalance / parsedTotalSupply) * 100 : 0;
 

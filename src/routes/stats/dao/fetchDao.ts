@@ -41,10 +41,9 @@ export function fetchDaosPreview(req: Request, res: Response): void {
     backdrop_url: dao.backdrop_url,
     logo_url: dao.logo_url,
   }));
-  
-  res.json(daosData);
-};
 
+  res.json(daosData);
+}
 
 export async function fetchDao(req: Request, res: Response): Promise<void> {
   try {
@@ -59,9 +58,7 @@ export async function fetchDao(req: Request, res: Response): Promise<void> {
       (d) =>
         d.name.toLowerCase() === dao.toLowerCase() ||
         d.ticker.toLowerCase() === dao.toLowerCase() ||
-        d.alternative_names?.some(
-          (alt) => alt.toLowerCase() === dao.toLowerCase()
-        )
+        d.alternative_names?.some((alt) => alt.toLowerCase() === dao.toLowerCase())
     );
 
     if (!foundDao) {
@@ -83,8 +80,8 @@ export async function fetchDao(req: Request, res: Response): Promise<void> {
       await TokenModel.findOne({ token_address: foundDao.native_token.token_address }),
       await TreasuryModel.findOne({
         dao_name: foundDao.name.toLowerCase(),
-      })
-    ])
+      }),
+    ]);
 
     // Calculate assets under management
     let assetsUnderManagement: number | null = null;
@@ -128,4 +125,4 @@ export async function fetchDao(req: Request, res: Response): Promise<void> {
     console.error("Error fetching DAO data:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-};
+}

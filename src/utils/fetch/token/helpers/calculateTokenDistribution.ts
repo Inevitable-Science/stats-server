@@ -37,31 +37,22 @@ export default function calculateTokenDistribution(
     const averageBalance = totalHolders > 0 ? totalSupply / totalHolders : 0;
 
     // Group stats for each percentage range
-    const groupStats: TokenDistribution[] = walletGroups.map(
-      ({ rangeStart, rangeEnd }) => {
-        const rangeStartIndex = Math.floor((rangeStart / 100) * totalHolders);
-        const rangeEndIndex = Math.floor((rangeEnd / 100) * totalHolders);
-        const walletsInRange = holdersArray.slice(
-          rangeStartIndex,
-          rangeEndIndex
-        );
+    const groupStats: TokenDistribution[] = walletGroups.map(({ rangeStart, rangeEnd }) => {
+      const rangeStartIndex = Math.floor((rangeStart / 100) * totalHolders);
+      const rangeEndIndex = Math.floor((rangeEnd / 100) * totalHolders);
+      const walletsInRange = holdersArray.slice(rangeStartIndex, rangeEndIndex);
 
-        const cumulativeBalance = walletsInRange.reduce(
-          (total, { balance }) => total + balance,
-          0
-        );
-        // percent of supply held by wallets in range of the lower and upper bound
-        const percent_tokens_held =
-          totalSupply > 0 ? (cumulativeBalance / totalSupply) * 100 : 0;
+      const cumulativeBalance = walletsInRange.reduce((total, { balance }) => total + balance, 0);
+      // percent of supply held by wallets in range of the lower and upper bound
+      const percent_tokens_held = totalSupply > 0 ? (cumulativeBalance / totalSupply) * 100 : 0;
 
-        return {
-          range: `${rangeStart}-${rangeEnd}%`,
-          accounts: walletsInRange.length,
-          percent_tokens_held,
-          amount_tokens_held: Number(cumulativeBalance.toFixed(2)), // idk why i chose string here migrate in future
-        };
-      }
-    );
+      return {
+        range: `${rangeStart}-${rangeEnd}%`,
+        accounts: walletsInRange.length,
+        percent_tokens_held,
+        amount_tokens_held: Number(cumulativeBalance.toFixed(2)), // idk why i chose string here migrate in future
+      };
+    });
 
     // Median balance calculation
     const middleIndex = Math.floor(totalHolders / 2);
@@ -70,9 +61,7 @@ export default function calculateTokenDistribution(
       if (totalHolders % 2 === 0) {
         // if token holders is a even number that is not 0 average the two middle values possible simplify in future
         medianBalance =
-          (holdersArray[middleIndex - 1].balance +
-            holdersArray[middleIndex].balance) /
-          2;
+          (holdersArray[middleIndex - 1].balance + holdersArray[middleIndex].balance) / 2;
       } else {
         medianBalance = holdersArray[middleIndex].balance;
       }

@@ -58,7 +58,6 @@ async function logAction({
   embed?: Embed;
 }) {
   try {
-
     let color;
     if (action === "logError") {
       color = 12520460;

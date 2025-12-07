@@ -13,8 +13,6 @@ import {
 } from "./alchemyResponseTypes";
 import { fetchWithRetry } from "./fetchWithRetry";
 
-
-
 const ALCHEMY_API_KEY = ENV.ALCHEMY_KEY;
 
 export async function fetchEthPrice(): Promise<number | null> {
@@ -27,8 +25,7 @@ export async function fetchEthPrice(): Promise<number | null> {
     const data = await response.data;
     const parsed = AlchemyEthPriceResponseZ.parse(data);
     const price = parsed.data[0].prices[0].value;
-    if (!price || typeof price !== "string")
-      throw new Error("ETH Price Not Found In Response");
+    if (!price || typeof price !== "string") throw new Error("ETH Price Not Found In Response");
 
     const roundedPrice = Number(price);
     return roundedPrice;
@@ -60,10 +57,7 @@ export async function fetchEthHoldings(
       params: [walletAddress, "latest"],
     };
 
-    const response = await fetchWithRetry(
-      ALCHEMY_ETH_BAL_URL,
-      ethBalancePayload
-    );
+    const response = await fetchWithRetry(ALCHEMY_ETH_BAL_URL, ethBalancePayload);
 
     const parsed = AlchemyEthBalResponseZ.parse(response);
     const ethBalanceHex = parsed.result;
@@ -81,9 +75,7 @@ export async function fetchEthHoldings(
       totalValue: ethTotalValue,
     };
   } catch (err) {
-    await logErrorEmbed(
-      `Error in fetchEthHoldings For: ${walletAddress}: ${err}`
-    );
+    await logErrorEmbed(`Error in fetchEthHoldings For: ${walletAddress}: ${err}`);
     return null;
   }
 }

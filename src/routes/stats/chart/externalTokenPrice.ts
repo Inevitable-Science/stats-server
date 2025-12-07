@@ -15,40 +15,28 @@ const ALLOWED_DAYS = ["1", "7", "30", "365", "max"];
 const ALLOWED_CHARTS = ["market_chart", "ohlc"];
 
 const OHLCResponseZ = z.array(
-  z.tuple([
-    z.number(),
-    z.number(),
-    z.number(),
-    z.number(),
-    z.number(),
-  ])
+  z.tuple([z.number(), z.number(), z.number(), z.number(), z.number()])
 );
 
 const MarketChartResponseZ = z.object({
-  prices: z.array(
-    z.tuple([
-      z.number(),
-      z.number(),
-    ])
-  ),
-  market_caps: z.array(
-    z.tuple([
-      z.number(),
-      z.number(),
-    ])
-  ),
-  total_volumes: z.array(
-    z.tuple([
-      z.number(),
-      z.number(),
-    ])
-  ),
+  prices: z.array(z.tuple([z.number(), z.number()])),
+  market_caps: z.array(z.tuple([z.number(), z.number()])),
+  total_volumes: z.array(z.tuple([z.number(), z.number()])),
 });
 
 const ParamsSchemaZ = z.object({
-  chartType: z.string().nonempty().transform((val) => val.toLowerCase()),
-  tokenName: z.string().nonempty().transform((val) => val.toLowerCase()),
-  timeFrame: z.string().nonempty().transform((val) => val.toLowerCase()),
+  chartType: z
+    .string()
+    .nonempty()
+    .transform((val) => val.toLowerCase()),
+  tokenName: z
+    .string()
+    .nonempty()
+    .transform((val) => val.toLowerCase()),
+  timeFrame: z
+    .string()
+    .nonempty()
+    .transform((val) => val.toLowerCase()),
 });
 
 export async function fetchExternalChart(req: Request, res: Response): Promise<void> {
@@ -61,20 +49,18 @@ export async function fetchExternalChart(req: Request, res: Response): Promise<v
       return;
     }
 
-    if (
-      !ALLOWED_DAYS.includes(timeFrame) ||
-      !ALLOWED_CHARTS.includes(chartType)
-    ) {
+    if (!ALLOWED_DAYS.includes(timeFrame) || !ALLOWED_CHARTS.includes(chartType)) {
       res.status(400).json({
         error: ErrorCodes.BAD_REQUEST,
       });
       return;
     }
 
-    const foundDao = daos.find(dao => 
-      dao.name.toLowerCase() === tokenName.toLowerCase() ||
-      dao.native_token.name.toLowerCase() === tokenName.toLowerCase() ||
-      dao.native_token.mc_ticker.toLowerCase() === tokenName.toLowerCase()
+    const foundDao = daos.find(
+      (dao) =>
+        dao.name.toLowerCase() === tokenName.toLowerCase() ||
+        dao.native_token.name.toLowerCase() === tokenName.toLowerCase() ||
+        dao.native_token.mc_ticker.toLowerCase() === tokenName.toLowerCase()
     );
 
     if (!foundDao) {
@@ -114,13 +100,15 @@ export async function fetchExternalChart(req: Request, res: Response): Promise<v
     console.log(`Fetching data from API: ${COIN_GECKO_ENDPOINT}`);
 
     const response = await fetch(COIN_GECKO_ENDPOINT);
-    
+
     if (!response.ok) {
       console.error("Error fetching external chart");
 
       // Handle 404 & 429 errors
       if (response.status === 404 || response.status === 429) {
-        const cachedNotFoundData = { error: `External ${chartType} data not found for ${tokenName} with for ${timeFrame}` };
+        const cachedNotFoundData = {
+          error: `External ${chartType} data not found for ${tokenName} with for ${timeFrame}`,
+        };
 
         cacheNotFound.set(cacheKeyNotFound, cachedNotFoundData);
         res.status(404).json(cachedNotFoundData);
@@ -143,10 +131,9 @@ export async function fetchExternalChart(req: Request, res: Response): Promise<v
 
     cache.set(cacheKey, parsed);
     res.json(parsed);
-
   } catch (err) {
     await logErrorEmbed(`Error serving external chart: ${err}`);
     res.status(500).json({ error: ErrorCodes.BAD_REQUEST });
     return;
   }
-};
+}

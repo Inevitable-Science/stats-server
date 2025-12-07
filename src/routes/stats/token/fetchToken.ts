@@ -36,7 +36,9 @@ export async function fetchTokenData(req: Request, res: Response): Promise<void>
     const { tokenName } = req.params;
     const parsedToken = z.string().nonempty().parse(tokenName);
 
-    const passedToken = daos.find(d => d.native_token.name.toLowerCase() === parsedToken.toLowerCase())?.native_token;
+    const passedToken = daos.find(
+      (d) => d.native_token.name.toLowerCase() === parsedToken.toLowerCase()
+    )?.native_token;
     if (!passedToken) {
       res.status(404).json({ error: ErrorCodes.ELEMENT_NOT_FOUND });
       return;
@@ -49,7 +51,7 @@ export async function fetchTokenData(req: Request, res: Response): Promise<void>
 
       await TreasuryModel.findOne({
         dao_name: passedToken.parent_dao.toLowerCase(),
-      })
+      }),
     ]);
 
     if (!tokenEntry) throw new Error(`Token entry not found in database`);
@@ -95,4 +97,4 @@ export async function fetchTokenData(req: Request, res: Response): Promise<void>
     res.status(500).json({ error: ErrorCodes.SERVER_ERROR });
     return;
   }
-};
+}

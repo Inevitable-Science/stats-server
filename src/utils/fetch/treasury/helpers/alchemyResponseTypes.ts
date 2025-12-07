@@ -7,9 +7,7 @@ export const AlchemyChainSubdomain = {
   42161: "arb-mainnet",
 };
 
-export const genericAlchemyResponse = <T extends z.ZodTypeAny>(
-  resultSchema: T
-) =>
+export const genericAlchemyResponse = <T extends z.ZodTypeAny>(resultSchema: T) =>
   z.object({
     id: z.number(),
     jsonrpc: z.string(),
@@ -32,9 +30,7 @@ export const AlchemyEthPriceResponseZ = z.object({
     })
   ),
 });
-export type AlchemyEthPriceResponseType = z.infer<
-  typeof AlchemyEthPriceResponseZ
->;
+export type AlchemyEthPriceResponseType = z.infer<typeof AlchemyEthPriceResponseZ>;
 
 export const AlchemyTokenBalanceResponseSchemaZ = genericAlchemyResponse(
   z.object({
@@ -62,9 +58,7 @@ export const AlchemyTokenBalancesSchemaZ = genericAlchemyResponse(
     ),
   })
 );
-export type AlchemyTokenBalancesSchemaType = z.infer<
-  typeof AlchemyTokenBalancesSchemaZ
->;
+export type AlchemyTokenBalancesSchemaType = z.infer<typeof AlchemyTokenBalancesSchemaZ>;
 
 export const AlchemyTokenMetadataSchemaZ = genericAlchemyResponse(
   z.object({
@@ -74,9 +68,7 @@ export const AlchemyTokenMetadataSchemaZ = genericAlchemyResponse(
     logo: z.string().nullable(),
   })
 );
-export type AlchemyTokenMetadataSchemaType = z.infer<
-  typeof AlchemyTokenMetadataSchemaZ
->;
+export type AlchemyTokenMetadataSchemaType = z.infer<typeof AlchemyTokenMetadataSchemaZ>;
 
 export const AlchemyTokenPriceSchemaZ = z.object({
   data: z.array(
@@ -92,6 +84,4 @@ export const AlchemyTokenPriceSchemaZ = z.object({
     })
   ),
 });
-export type AlchemyTokenPriceSchemaType = z.infer<
-  typeof AlchemyTokenPriceSchemaZ
->;
+export type AlchemyTokenPriceSchemaType = z.infer<typeof AlchemyTokenPriceSchemaZ>;

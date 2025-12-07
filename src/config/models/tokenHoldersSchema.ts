@@ -16,9 +16,7 @@ export interface TokenHoldersDocument extends Document {
 }
 
 export interface TokenHoldersModel extends Model<TokenHoldersDocument> {
-  findByTokenAddress(
-    token_address: Address
-  ): Promise<TokenHoldersDocument | null>;
+  findByTokenAddress(token_address: Address): Promise<TokenHoldersDocument | null>;
 }
 
 const TokenHoldersSchema: Schema<TokenHoldersDocument> = new Schema({
@@ -39,14 +37,12 @@ const TokenHoldersSchema: Schema<TokenHoldersDocument> = new Schema({
   ],
 });
 
-TokenHoldersSchema.statics.findByTokenAddress = function (
-  token_address: Address
-) {
+TokenHoldersSchema.statics.findByTokenAddress = function (token_address: Address) {
   return this.findOne({ token_address: token_address.toLowerCase() });
 };
 
-const TokenHoldersModel = mongoose.model<
-  TokenHoldersDocument,
-  TokenHoldersModel
->("token_holders_collections", TokenHoldersSchema);
+const TokenHoldersModel = mongoose.model<TokenHoldersDocument, TokenHoldersModel>(
+  "token_holders_collections",
+  TokenHoldersSchema
+);
 export default TokenHoldersModel;

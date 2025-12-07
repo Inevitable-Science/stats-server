@@ -58,10 +58,7 @@ interface TreasuryResponse {
   }[];
 }
 
-function getClosestValue(
-  historicalData: HistoricalTreasury[],
-  targetTime: number
-): number | null {
+function getClosestValue(historicalData: HistoricalTreasury[], targetTime: number): number | null {
   if (!historicalData || historicalData.length === 0) {
     console.warn("historicalData is empty or invalid");
     return null;
@@ -97,20 +94,17 @@ function getClosestValue(
     `Closest entry for ${targetTime} (${new Date(targetTime)}): ${closestEntry.date}, Balance: ${balance}`
   );
   return balance;
-};
-
-
+}
 
 export async function fetchTreasuryData(req: Request, res: Response): Promise<void> {
   const { daoName } = req.params;
   const parsedDao = z.string().nonempty().parse(daoName).toLowerCase();
 
-  const foundDao = daos.find(dao =>
-    dao.name.toLowerCase() === parsedDao ||
-    dao.ticker.toLowerCase() === parsedDao ||
-    dao.alternative_names?.some(
-      (altName) => altName.toLowerCase() === parsedDao
-    )
+  const foundDao = daos.find(
+    (dao) =>
+      dao.name.toLowerCase() === parsedDao ||
+      dao.ticker.toLowerCase() === parsedDao ||
+      dao.alternative_names?.some((altName) => altName.toLowerCase() === parsedDao)
   );
 
   if (!foundDao) {
@@ -133,7 +127,6 @@ export async function fetchTreasuryData(req: Request, res: Response): Promise<vo
     const treasuryValue = parseFloat(treasuryEntry.total_treasury_value) ?? 0;
     const assetsValue = parseFloat(treasuryEntry.total_assets) ?? 0;
     const assetsUnderManagement = treasuryValue + assetsValue;
-
 
     // Calculate historical treasury returns
     const now = new Date().getTime();
@@ -161,8 +154,7 @@ export async function fetchTreasuryData(req: Request, res: Response): Promise<vo
       }
 
       const dollarReturn = treasuryValue - pastValue;
-      const percentReturn =
-        pastValue > 0 ? ((dollarReturn / pastValue) * 100).toFixed(2) : "N/A";
+      const percentReturn = pastValue > 0 ? ((dollarReturn / pastValue) * 100).toFixed(2) : "N/A";
 
       const formattedDollarReturn =
         dollarReturn < 0
@@ -207,4 +199,4 @@ export async function fetchTreasuryData(req: Request, res: Response): Promise<vo
     await logErrorEmbed(`Error serving treasury data: ${err}`);
     res.status(500).json({ error: ErrorCodes.SERVER_ERROR });
   }
-};
+}
