@@ -64,13 +64,24 @@ export async function fetchLegacyActivity(req: Request, res: Response): Promise<
           startIndex,
           startIndex + limit
         );
+        
+        const mappedPageData = paginatedData.map(tx => {
+          return {
+            date: tx.Date,
+            eth_paid: tx["ETH paid"],
+            usd_value: tx["USD value of ETH paid"],
+            payer_address: tx.Payer,
+            beneficiary: tx.Beneficiary,
+            transaction_hash: tx["Transaction hash"]
+          }
+        });
 
         res.json({
           page,
           limit,
           totalItems,
           totalPages,
-          data: paginatedData,
+          data: mappedPageData,
         });
         return;
       })

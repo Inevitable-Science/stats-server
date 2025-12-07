@@ -46,7 +46,7 @@ export async function fetchTokenData(req: Request, res: Response): Promise<void>
       }),
 
       await TreasuryModel.findOne({
-        dao_name: passedToken.name.toLowerCase(),
+        dao_name: passedToken.parent_dao.toLowerCase(),
       })
     ]);
 
@@ -55,6 +55,7 @@ export async function fetchTokenData(req: Request, res: Response): Promise<void>
     // Calculate assets under management
     let assetsUnderManagement: number | null = null;
 
+    console.log(treasuryEntry);
     const totalTreasuryValue = Number(treasuryEntry?.total_treasury_value);
     const totalAssets = Number(treasuryEntry?.total_assets);
 

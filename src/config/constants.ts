@@ -181,7 +181,8 @@ export const daos: DAO[] = [
   {
     name: 'HydraDAO',
     alternative_names: [
-      "daohydra"
+      "daohydra",
+      "hydra"
     ],
     id: 2,
     ticker: 'HYDRA',

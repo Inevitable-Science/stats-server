@@ -118,7 +118,7 @@ export async function fetchTreasuryData(req: Request, res: Response): Promise<vo
   try {
     // Fetch treasury data
     const treasuryEntry: TreasuryDocument | null = await TreasuryModel.findOne({
-      dao_name: parsedDao,
+      dao_name: foundDao.name.toLowerCase(),
     });
 
     if (!treasuryEntry) {

@@ -11,6 +11,9 @@ import { RateLimiterMemory } from "rate-limiter-flexible";
 // Database
 import mongoose from "mongoose";
 
+import { ENV } from "./utils/env";
+import { ErrorCodes } from "./utils/errors";
+
 import TreasuryModel from "./config/models/treasurySchema";
 import TokenModel from "./config/models/tokenSchema";
 
@@ -20,8 +23,7 @@ import dailyRefresh from "./utils/schedule/dailyRefresh";
 
 import tokenListRouter from "./routes/web3/tokenlist/token_list";
 import fetchAndUpdateTwitterFollowers from "./utils/schedule/handlers/twitterRefresh";
-import { ENV } from "./utils/env";
-import { ErrorCodes } from "./utils/errors";
+
 
 import tokenRouter from "./routes/stats/token/tokenRouter";
 import daoRouter from "./routes/stats/dao/daoRouter";

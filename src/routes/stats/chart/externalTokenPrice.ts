@@ -47,9 +47,9 @@ const MarketChartResponseZ = z.object({
 });
 
 const ParamsSchemaZ = z.object({
-  chartType: z.string().nonempty().lowercase(),
-  tokenName: z.string().nonempty().lowercase(),
-  timeFrame: z.string().nonempty().lowercase(),
+  chartType: z.string().nonempty().transform((val) => val.toLowerCase()),
+  tokenName: z.string().nonempty().transform((val) => val.toLowerCase()),
+  timeFrame: z.string().nonempty().transform((val) => val.toLowerCase()),
 });
 
 export async function fetchExternalChart(req: Request, res: Response): Promise<void> {
@@ -111,7 +111,7 @@ export async function fetchExternalChart(req: Request, res: Response): Promise<v
 
     // Use static CoinGecko API URL
     // - 'max' timeframe is not allowed here need paid plan
-    const COIN_GECKO_ENDPOINT = `https://api.coingecko.com/api/v3/coins/${tokenName}/${chartType}?vs_currency=usd&days=${timeFrame}`;
+    const COIN_GECKO_ENDPOINT = `https://api.coingecko.com/api/v3/coins/${tokenTicker}/${chartType}?vs_currency=usd&days=${timeFrame}`;
     console.log(`Fetching data from API: ${COIN_GECKO_ENDPOINT}`);
 
     const response = await fetch(COIN_GECKO_ENDPOINT);
