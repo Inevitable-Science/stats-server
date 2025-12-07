@@ -6,7 +6,6 @@ import { daos } from "../../../../config/constants";
 import type { TreasuryDocument } from "../../../../config/models/treasurySchema";
 import TreasuryModel from "../../../../config/models/treasurySchema";
 import logAction, { logErrorEmbed } from "../../../../utils/coms/logAction";
-import sendDiscordMessage from "../../../../utils/coms/send_message";
 import { ErrorCodes } from "../../../../utils/errors";
 import getAssetsManaged from "../../../../utils/fetch/treasury/assetsManaged";
 import type { TreasuryHoldingsResponse } from "../../../../utils/fetch/treasury/treasuryHoldings";
@@ -44,9 +43,10 @@ export async function refreshTreasuryData(req: Request, res: Response): Promise<
       const lastUpdated = treasuryEntry.last_updated;
       const timeDifference = (date.getTime() - lastUpdated.getTime()) / 1000 / 60;
       if (timeDifference < 15) {
-        await sendDiscordMessage(
-          `**REJECTED request to refresh treasury for ${foundDao.name} at ${new Date().toLocaleString()}: 15 minute grace period**`
-        );
+        await logAction({
+          action: "logAction",
+          message: `**REJECTED request to refresh treasury for ${foundDao.name} ${generateDiscordTimestamp(new Date(), "R")}: 15 minute grace period**`,
+        });
         res.status(400).json({
           error: "Please wait 15 minutes before requesting a data update again.",
         });

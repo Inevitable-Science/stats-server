@@ -1,6 +1,6 @@
-import dotenv from "dotenv";
-import type { NextFunction, Request, Response } from "express";
 import express from "express";
+import type { NextFunction, Request, Response } from "express";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -18,11 +18,14 @@ import TreasuryModel from "./config/models/treasurySchema";
 import daoRouter from "./routes/stats/dao/daoRouter";
 import tokenRouter from "./routes/stats/token/tokenRouter";
 import tokenListRouter from "./routes/web3/tokenlist/token_list";
-import sendDiscordMessage from "./utils/coms/send_message";
-import { ENV } from "./utils/env";
-import { ErrorCodes } from "./utils/errors";
+
 import dailyRefresh from "./utils/schedule/dailyRefresh";
 import fetchAndUpdateTwitterFollowers from "./utils/schedule/handlers/twitterRefresh";
+import logAction from "./utils/coms/logAction";
+import { generateDiscordTimestamp } from "./utils/utils";
+import { ENV } from "./utils/env";
+import { ErrorCodes } from "./utils/errors";
+
 
 const app = express();
 app.use(express.json());
@@ -76,15 +79,10 @@ const connectDB = async () => {
   }
 };
 
-app.get("/", (_req, res) => {
-  res.send("200");
-});
-
 cron.schedule("20 0 * * *", dailyRefresh); // Refresh treasury stats daily @ 00:20
 
 app.use("/token", tokenRouter);
 app.use("/dao", daoRouter);
-
 app.use("/web3", tokenListRouter);
 
 app.get("/schema", async (req: Request, res: Response) => {
@@ -117,9 +115,10 @@ app.post("/refreshFollowers/:password", async (req: Request, res: Response) => {
   }
 
   try {
-    await sendDiscordMessage(
-      `**Request received to refresh followers stats at ${new Date().toLocaleString()}**`
-    );
+    await logAction({
+      action: "logAction",
+      message: `**Request received to refresh followers stats at ${generateDiscordTimestamp(new Date(), "R")}**`
+    });
     res.status(202).json({ message: "Processing request in the background" });
 
     setImmediate(async () => {
@@ -140,9 +139,10 @@ app.post("/refreshAll/:password", async (req: Request, res: Response): Promise<v
   }
 
   try {
-    await sendDiscordMessage(
-      `**Request received to refresh all stats at ${new Date().toLocaleString()}**`
-    );
+    await logAction({
+      action: "logAction",
+      message: `**Request received to refresh all stats at ${generateDiscordTimestamp(new Date(), "R")}**`
+    });
     res.status(202).json({ message: "Processing request in the background" });
 
     // Set isRunning to true and process in the background
@@ -151,17 +151,19 @@ app.post("/refreshAll/:password", async (req: Request, res: Response): Promise<v
         await dailyRefresh();
       } catch (error) {
         console.error("Error initiating token refresh:", error);
-        await sendDiscordMessage(
-          `**Request to refresh all stats FAILED at ${new Date().toLocaleString()}**`
-        );
+        await logAction({
+          action: "logAction",
+          message: `**Request to refresh all stats FAILED at ${generateDiscordTimestamp(new Date(), "R")}**`
+        });
         res.status(500).json({ error: "Internal server error" });
       }
     });
   } catch (error) {
     console.error("Error initiating token refresh:", error);
-    await sendDiscordMessage(
-      `**Request to refresh all stats FAILED at ${new Date().toLocaleString()}**`
-    );
+    await logAction({
+      action: "logAction",
+      message: `**Request to refresh all stats FAILED at ${generateDiscordTimestamp(new Date(), "R")}**`
+    });
     res.status(500).json({ error: "Internal server error" });
   }
 });
