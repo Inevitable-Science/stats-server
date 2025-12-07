@@ -1,7 +1,7 @@
 // collection used to cache token holders
-import mongoose, { Schema, Document, Model } from "mongoose";
-import { Address } from "viem";
-import z from "zod";
+import type { Document, Model } from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import type { Address } from "viem";
 
 export interface HolderEntry {
   address: string;

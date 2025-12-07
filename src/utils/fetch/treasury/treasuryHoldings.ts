@@ -1,12 +1,15 @@
-import { Address, zeroAddress } from "viem";
-import { ChainId } from "../../../config/constants";
+import type { Address} from "viem";
+import { zeroAddress } from "viem";
+
+import type { ChainId } from "../../../config/constants";
 import { logErrorEmbed } from "../../coms/logAction";
-import { fetchEthHoldings } from "./helpers/ethAccountHelper";
+
 import {
   fetchAllTokenBalances,
   fetchTokenMetadata,
   fetchTokenPrice,
 } from "./helpers/erc20TokenHelper";
+import { fetchEthHoldings } from "./helpers/ethAccountHelper";
 
 // Interface for wallet data entry
 export interface TokenData {

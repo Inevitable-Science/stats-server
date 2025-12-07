@@ -1,15 +1,19 @@
+import axios from "axios";
+import type { Address } from "viem";
+
+import type { ChainId } from "../../../../config/constants";
 import { logErrorEmbed } from "../../../../utils/coms/logAction";
-import { fetchWithRetry } from "./fetchWithRetry";
+import { ENV } from "../../../../utils/env";
+import { decodeHexBalance } from "../treasuryHoldings";
+
 import {
   AlchemyChainSubdomain,
   AlchemyEthBalResponseZ,
   AlchemyEthPriceResponseZ,
 } from "./alchemyResponseTypes";
-import { Address } from "viem";
-import { ChainId } from "../../../../config/constants";
-import axios from "axios";
-import { decodeHexBalance } from "../treasuryHoldings";
-import { ENV } from "../../../../utils/env";
+import { fetchWithRetry } from "./fetchWithRetry";
+
+
 
 const ALCHEMY_API_KEY = ENV.ALCHEMY_KEY;
 

@@ -1,9 +1,11 @@
-import { ENV } from "../../env";
-import { logErrorEmbed } from "../../coms/logAction";
-import { ChainId } from "@/config/constants";
 import request, { gql } from "graphql-request";
-import { Address } from "viem";
+import type { Address } from "viem";
 import z from "zod";
+
+import { logErrorEmbed } from "../../coms/logAction";
+import { ENV } from "../../env";
+
+import type { ChainId } from "@/config/constants";
 
 const PortfolioSchemaZ = z.object({
   portfolioV2: z.object({

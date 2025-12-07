@@ -1,11 +1,13 @@
-// src/utils/cron/token_refresh.ts
-import TokenModel, { TokenDocument } from "../../../config/models/tokenSchema";
+import type { Address } from "viem";
+
 import { daos } from "../../../config/constants";
-import getTokenStats, {
+import type { TokenDocument } from "../../../config/models/tokenSchema";
+import TokenModel from "../../../config/models/tokenSchema";
+import logAction, { logErrorEmbed } from "../../coms/logAction";
+import type {
   TokenStatsResponse,
 } from "../../fetch/token/tokenStats";
-import { Address } from "viem";
-import logAction, { logErrorEmbed } from "../../coms/logAction";
+import getTokenStats from "../../fetch/token/tokenStats";
 import { generateDiscordTimestamp } from "../../utils";
 
 async function fetchAndUpdateAllTokenStats(): Promise<void> {

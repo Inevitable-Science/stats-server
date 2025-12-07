@@ -1,32 +1,28 @@
-import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
+import type { NextFunction, Request, Response } from "express";
+import express from "express";
+
 dotenv.config();
 
 // Dependencies
 import cors from "cors";
-import cron from "node-cron";
 import rateLimit from "express-rate-limit";
+import mongoose from "mongoose";
+import cron from "node-cron";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
 // Database
-import mongoose from "mongoose";
 
+import TokenModel from "./config/models/tokenSchema";
+import TreasuryModel from "./config/models/treasurySchema";
+import daoRouter from "./routes/stats/dao/daoRouter";
+import tokenRouter from "./routes/stats/token/tokenRouter";
+import tokenListRouter from "./routes/web3/tokenlist/token_list";
+import sendDiscordMessage from "./utils/coms/send_message";
 import { ENV } from "./utils/env";
 import { ErrorCodes } from "./utils/errors";
-
-import TreasuryModel from "./config/models/treasurySchema";
-import TokenModel from "./config/models/tokenSchema";
-
-import sendDiscordMessage from "./utils/coms/send_message";
-
 import dailyRefresh from "./utils/schedule/dailyRefresh";
-
-import tokenListRouter from "./routes/web3/tokenlist/token_list";
 import fetchAndUpdateTwitterFollowers from "./utils/schedule/handlers/twitterRefresh";
-
-
-import tokenRouter from "./routes/stats/token/tokenRouter";
-import daoRouter from "./routes/stats/dao/daoRouter";
 
 
 

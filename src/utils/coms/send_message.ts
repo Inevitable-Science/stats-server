@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { ENV } from "../env";
 
 const sendDiscordMessage = async (message: string) => {

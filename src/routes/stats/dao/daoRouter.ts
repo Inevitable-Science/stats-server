@@ -1,9 +1,11 @@
 import { Router } from "express";
+
+import { fetchHistoricalTreasuryChart } from "../chart/databaseCharts";
+
 import { fetchDao, fetchDaosPreview } from "./fetchDao";
 import { fetchLegacyActivity } from "./legacy/fetchActivity";
 import { fetchTreasuryData } from "./treasury/fetchTreasury";
 import { refreshTreasuryData } from "./treasury/refreshTreasury";
-import { fetchHistoricalTreasuryChart } from "../chart/databaseCharts";
 
 // /dao/<ROUTER>
 const router = Router();

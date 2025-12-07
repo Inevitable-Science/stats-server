@@ -1,9 +1,13 @@
-import { Request, Response } from "express";
 import fs from "fs";
 import path from "path";
+
 import { parse } from "csv-parse";
-import { daos, DAO } from "../../../../config/constants";
+import type { Request, Response } from "express";
 import z from "zod";
+
+import type { DAO } from "../../../../config/constants";
+import { daos } from "../../../../config/constants";
+
 
 interface Transaction {
   Date: string;

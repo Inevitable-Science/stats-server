@@ -1,13 +1,17 @@
 // src/routes/holders_chart.ts
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
+import z from "zod";
+
+import { daos } from "../../../config/constants";
 import TokenModel from "../../../config/models/tokenSchema";
-import TreasuryModel, {
+import type {
   TreasuryDocument,
 } from "../../../config/models/treasurySchema";
-import { daos } from "../../../config/constants";
-import { ErrorCodes } from "../../../utils/errors";
-import z from "zod";
+import TreasuryModel from "../../../config/models/treasurySchema";
 import { logErrorEmbed } from "../../../utils/coms/logAction";
+import { ErrorCodes } from "../../../utils/errors";
+
+
 
 export async function fetchTokenHoldersChart(req: Request, res: Response): Promise<void> {
   try {
@@ -65,7 +69,7 @@ const removeDuplicates = (data: [number, number][]): [number, number][] => {
       map.set(date, value);
     }
   });
-  return Array.from(map.entries()) as [number, number][];
+  return Array.from(map.entries());
 };
 
 export async function fetchHistoricalTreasuryChart(req: Request, res: Response): Promise<void> {

@@ -1,13 +1,14 @@
+import type { Request, Response } from "express";
+import z from "zod";
+
 import { daos } from "../../../config/constants";
 import TokenModel, { TokenDocument } from "../../../config/models/tokenSchema";
 import logAction, { logErrorEmbed } from "../../../utils/coms/logAction";
 import { ErrorCodes } from "../../../utils/errors";
 import getTokenStats from "../../../utils/fetch/token/tokenStats";
 import { generateDiscordTimestamp } from "../../../utils/utils";
-import { Request, Response } from "express";
-import z from "zod";
 
-let isRunning: boolean;
+let isRunning: boolean = false;
 
 export async function refreshTokenStats(req: Request, res: Response): Promise<void> {
   try {

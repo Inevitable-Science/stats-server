@@ -1,7 +1,9 @@
-import { Request, Response } from "express";
-import { daos, DAO } from "../../../config/constants";
-import TreasuryModel from "../../../config/models/treasurySchema";
+import type { Request, Response } from "express";
+
+import type { DAO } from "../../../config/constants";
+import { daos } from "../../../config/constants";
 import TokenModel from "../../../config/models/tokenSchema";
+import TreasuryModel from "../../../config/models/treasurySchema";
 
 // Interface for the detailed DAO response
 interface DaoResponse {

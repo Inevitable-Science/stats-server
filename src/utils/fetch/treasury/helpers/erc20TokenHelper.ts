@@ -1,17 +1,21 @@
-import { ChainId } from "../../../../config/constants";
+import type { Address } from "viem";
+
+import type { ChainId } from "../../../../config/constants";
+import { logErrorEmbed } from "../../../../utils/coms/logAction";
 import { ENV } from "../../../../utils/env";
-import { Address } from "viem";
+
+import type {
+  AlchemyTokenBalancesSchemaType,
+  AlchemyTokenMetadataSchemaType,
+  AlchemyTokenPriceSchemaType} from "./alchemyResponseTypes";
 import {
   AlchemyChainSubdomain,
-  AlchemyTokenBalancesSchemaType,
   AlchemyTokenBalancesSchemaZ,
-  AlchemyTokenMetadataSchemaType,
   AlchemyTokenMetadataSchemaZ,
-  AlchemyTokenPriceSchemaType,
   AlchemyTokenPriceSchemaZ,
 } from "./alchemyResponseTypes";
 import { fetchWithRetry } from "./fetchWithRetry";
-import { logErrorEmbed } from "../../../../utils/coms/logAction";
+
 
 const ALCHEMY_API_KEY = ENV.ALCHEMY_KEY;
 

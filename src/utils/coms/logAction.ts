@@ -1,4 +1,5 @@
 import z from "zod";
+
 import { ENV } from "../env";
 
 export const EmbedZ = z.object({

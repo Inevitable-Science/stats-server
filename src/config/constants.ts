@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import type { Address } from "viem";
 
 export type ChainId = 1 | 8453 | 10 | 42161;
 

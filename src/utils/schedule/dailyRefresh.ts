@@ -1,7 +1,8 @@
+import logAction, { logErrorEmbed } from "../coms/logAction";
+
 import fetchAndUpdateTokenStats from "./handlers/tokenRefresh";
 import fetchAndUpdateTreasuries from "./handlers/treasuryRefresh";
 import fetchAndUpdateTwitterFollowers from "./handlers/twitterRefresh";
-import logAction, { logErrorEmbed } from "../coms/logAction";
 
 async function dailyRefresh() {
   try {

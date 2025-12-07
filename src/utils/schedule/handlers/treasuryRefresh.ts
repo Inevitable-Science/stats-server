@@ -1,13 +1,15 @@
-import TreasuryModel, {
-  TreasuryDocumentSchemaZ,
-  TreasuryDocumentType,
-} from "../../../config/models/treasurySchema";
 import { daos } from "../../../config/constants";
+import type {
+  TreasuryDocumentType} from "../../../config/models/treasurySchema";
+import TreasuryModel, {
+  TreasuryDocumentSchemaZ
+} from "../../../config/models/treasurySchema";
+import logAction, { logErrorEmbed } from "../../coms/logAction";
 import getAssetsManaged from "../../fetch/treasury/assetsManaged";
-import getTreasuryHoldings, {
+import type {
   TreasuryHoldingsResponse,
 } from "../../fetch/treasury/treasuryHoldings";
-import logAction, { logErrorEmbed } from "../../coms/logAction";
+import getTreasuryHoldings from "../../fetch/treasury/treasuryHoldings";
 import { generateDiscordTimestamp } from "../../utils";
 
 async function fetchAndUpdateTreasuries(): Promise<void> {

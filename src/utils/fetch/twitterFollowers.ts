@@ -1,7 +1,7 @@
-// rfc
-import { ENV } from "../env";
-import { logErrorEmbed } from "../coms/logAction";
 import z from "zod";
+
+import { logErrorEmbed } from "../coms/logAction";
+import { ENV } from "../env";
 
 async function getTwitterFollowers(username: string): Promise<number | null> {
   try {

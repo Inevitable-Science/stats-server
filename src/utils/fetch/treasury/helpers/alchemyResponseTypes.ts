@@ -95,21 +95,3 @@ export const AlchemyTokenPriceSchemaZ = z.object({
 export type AlchemyTokenPriceSchemaType = z.infer<
   typeof AlchemyTokenPriceSchemaZ
 >;
-
-/*
-{
-  "data": [
-    {
-      "network": "eth-mainnet",
-      "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-      "prices": [
-        {
-          "currency": "usd",
-          "value": "0.9997012921",
-          "lastUpdatedAt": "2025-12-02T05:24:31Z"
-        }
-      ]
-    }
-  ]
-}
-  */

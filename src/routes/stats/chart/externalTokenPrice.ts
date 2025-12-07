@@ -1,11 +1,10 @@
-import { Request, Response } from "express";
-import axios, { AxiosResponse } from "axios";
+import type { Request, Response } from "express";
 import NodeCache from "node-cache";
 import z from "zod";
 
 import { daos } from "../../../config/constants";
-import { ErrorCodes } from "../../../utils/errors";
 import { logErrorEmbed } from "../../../utils/coms/logAction";
+import { ErrorCodes } from "../../../utils/errors";
 
 // Cache instances
 const cache = new NodeCache({ stdTTL: 600, checkperiod: 60 }); // live for 10 min, checked every 60 seconds

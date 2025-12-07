@@ -1,8 +1,7 @@
-// rfc
-import FollowersModel from "../../../config/models/followersSchema";
-import getTwitterFollowers from "../../fetch/twitterFollowers";
 import { daos, trackFollowersArray } from "../../../config/constants";
+import FollowersModel from "../../../config/models/followersSchema";
 import logAction, { logErrorEmbed } from "../../coms/logAction";
+import getTwitterFollowers from "../../fetch/twitterFollowers";
 import { generateDiscordTimestamp } from "../../utils";
 
 function sleep(ms: number) {

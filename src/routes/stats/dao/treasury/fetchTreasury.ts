@@ -1,14 +1,17 @@
 // src/routes/treasury.ts
-import { Request, Response } from "express";
-import { daos, ManagedAccount } from "../../../../config/constants";
-import TreasuryModel, {
+import type { Request, Response } from "express";
+import type { Address } from "viem";
+import z from "zod";
+
+import type { ManagedAccount } from "../../../../config/constants";
+import { daos } from "../../../../config/constants";
+import type {
   TreasuryDocument,
   HistoricalTreasury,
 } from "../../../../config/models/treasurySchema";
-import { Address } from "viem";
-import z from "zod";
-import { ErrorCodes } from "../../../../utils/errors";
+import TreasuryModel from "../../../../config/models/treasurySchema";
 import { logErrorEmbed } from "../../../../utils/coms/logAction";
+import { ErrorCodes } from "../../../../utils/errors";
 
 // Interface for the treasury response
 interface TreasuryResponse {

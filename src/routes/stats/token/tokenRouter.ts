@@ -1,8 +1,10 @@
 import { Router } from "express";
+
+import { fetchTokenHoldersChart } from "../chart/databaseCharts";
+import { fetchExternalChart } from "../chart/externalTokenPrice";
+
 import { fetchTokenData } from "./fetchToken";
 import { refreshTokenStats } from "./refreshToken";
-import { fetchExternalChart } from "../chart/externalTokenPrice";
-import { fetchTokenHoldersChart } from "../chart/databaseCharts";
 
 
 const router = Router();

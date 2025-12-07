@@ -1,13 +1,17 @@
 import { ethers } from "ethers";
-import { Address, erc20Abi, formatUnits } from "viem";
+import type { Address} from "viem";
+import { erc20Abi, formatUnits } from "viem";
 import z from "zod";
-import TokenHoldersModel, {
+
+import type {
   TokenHoldersDocument,
 } from "../../../../config/models/tokenHoldersSchema";
-import { Holder } from "../tokenStats";
-import { ENV } from "../../../../utils/env";
+import TokenHoldersModel from "../../../../config/models/tokenHoldersSchema";
 import { logErrorEmbed } from "../../../../utils/coms/logAction";
-import { TopHolder } from "@/config/models/tokenSchema";
+import { ENV } from "../../../../utils/env";
+import type { Holder } from "../tokenStats";
+
+import type { TopHolder } from "@/config/models/tokenSchema";
 
 const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));

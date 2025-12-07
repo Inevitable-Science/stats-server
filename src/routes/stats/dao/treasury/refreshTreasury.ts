@@ -1,18 +1,21 @@
 // src/routes/treasury.ts
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
+import z from "zod";
+
 import { daos } from "../../../../config/constants";
-import TreasuryModel, {
+import type {
   TreasuryDocument,
 } from "../../../../config/models/treasurySchema";
+import TreasuryModel from "../../../../config/models/treasurySchema";
+import logAction, { logErrorEmbed } from "../../../../utils/coms/logAction";
 import sendDiscordMessage from "../../../../utils/coms/send_message";
+import { ErrorCodes } from "../../../../utils/errors";
 import getAssetsManaged from "../../../../utils/fetch/treasury/assetsManaged";
-import getTreasuryHoldings, {
+import type {
   TreasuryHoldingsResponse,
 } from "../../../../utils/fetch/treasury/treasuryHoldings";
-import z from "zod";
-import logAction, { logErrorEmbed } from "../../../../utils/coms/logAction";
+import getTreasuryHoldings from "../../../../utils/fetch/treasury/treasuryHoldings";
 import { generateDiscordTimestamp } from "../../../../utils/utils";
-import { ErrorCodes } from "../../../../utils/errors";
 
 let isRunning = false;
 

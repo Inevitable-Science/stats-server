@@ -1,10 +1,12 @@
-import { Request, Response } from "express";
-import { daos } from "../../../config/constants";
-import TreasuryModel from "../../../config/models/treasurySchema";
-import TokenModel, { TokenDistribution, TopHolder } from "../../../config/models/tokenSchema";
+import type { Request, Response } from "express";
 import z from "zod";
-import { ErrorCodes } from "../../../utils/errors";
+
+import { daos } from "../../../config/constants";
+import type { TokenDistribution, TopHolder } from "../../../config/models/tokenSchema";
+import TokenModel from "../../../config/models/tokenSchema";
+import TreasuryModel from "../../../config/models/treasurySchema";
 import { logErrorEmbed } from "../../../utils/coms/logAction";
+import { ErrorCodes } from "../../../utils/errors";
 
 // Interface for the token response
 interface TokenResponse {

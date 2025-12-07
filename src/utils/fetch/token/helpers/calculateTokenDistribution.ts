@@ -1,6 +1,7 @@
-import { TokenDistribution } from "@/config/models/tokenSchema";
 import { logErrorEmbed } from "../../../../utils/coms/logAction";
-import { Holder } from "../tokenStats";
+import type { Holder } from "../tokenStats";
+
+import type { TokenDistribution } from "@/config/models/tokenSchema";
 
 /*export interface PercentileStat {
   range: string;

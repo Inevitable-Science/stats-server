@@ -1,10 +1,12 @@
-import { Address } from "viem";
+import type { Address } from "viem";
 
-import fetchMarketCap from "./helpers/tokenMarketCap";
+import type { TokenDistribution, TopHolder } from "../../../config/models/tokenSchema";
+import { logErrorEmbed } from "../../coms/logAction";
+
 import calculateTokenDistribution from "./helpers/calculateTokenDistribution";
 import fetchTokenHolders from "./helpers/fetchTokenHolders";
-import { logErrorEmbed } from "../../coms/logAction";
-import { TokenDistribution, TopHolder } from "../../../config/models/tokenSchema";
+import fetchMarketCap from "./helpers/tokenMarketCap";
+
 
 // Interface for holder data
 export interface Holder {

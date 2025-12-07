@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
-import { Address } from "viem";
+import type { Document, Model } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { z } from "zod";
 
 const TopHolderSchema = z.object({
