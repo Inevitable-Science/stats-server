@@ -1,0 +1,12 @@
+// errors.ts
+export const ErrorCodes = {
+  BAD_REQUEST: "BAD_REQUEST",
+  SERVER_ERROR: "SERVER_ERROR",
+  JOB_ALREADY_RUNNING: "JOB_ALREADY_RUNNING",
+  GRACE_PERIOD: "REFRESH_GRACE_PERIOD",
+  ELEMENT_NOT_FOUND: "ELEMENT_NOT_FOUND",
+  RATE_LIMIT: "RATE_LIMIT_EXCEEDED",
+  ENTRY_NOT_FOUND: "ENTRY_NOT_FOUND",
+} as const;
+
+export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
