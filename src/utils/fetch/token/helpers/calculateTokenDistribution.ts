@@ -3,12 +3,6 @@ import type { Holder } from "../tokenStats";
 
 import type { TokenDistribution } from "@/config/models/tokenSchema";
 
-/*export interface PercentileStat {
-  range: string;
-  accounts: number;
-  percent_tokens_held: number;
-  amount_tokens_held: number;
-}*/
 
 interface CalculateStatsResponse {
   totalHolders: number;

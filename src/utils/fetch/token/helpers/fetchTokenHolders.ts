@@ -25,12 +25,6 @@ interface TransferEventArgs {
   value: ethers.BigNumberish;
 }
 
-/*export interface TopHolder {
-  address: Address;
-  token_amount: number;
-  account_type: "wallet" | "contract" | "unknown";
-}*/
-
 interface FetchHoldersResponse {
   totalSupply: number;
   allHolders: Holder[];
@@ -42,7 +36,7 @@ export default async function fetchTokenHolders(
   tokenAddress: Address,
   initialBlock: number
 ): Promise<FetchHoldersResponse | null> {
-  const batchSize = 100_000; // Process events in batches of 100,000 blocks reduce to 50,000 soon
+  const batchSize = 50_000; // Process events in batches of 50,000
   const minBalanceThreshold = 0.01; // Only include accounts with >0.01 tokens
 
   try {
@@ -137,11 +131,11 @@ export default async function fetchTokenHolders(
       holders: holdersArray,
     };
 
-    /*await TokenHoldersModel.updateOne(
+    await TokenHoldersModel.updateOne(
       { token_address: tokenAddress },
       { $set: constructedEntry },
       { upsert: true }
-    );*/ // uncomment in prod, comment in dev for testing
+    );
 
     // Get top 10 holders and identify wallet/contract
     const topHolders: TopHolder[] = await Promise.all(

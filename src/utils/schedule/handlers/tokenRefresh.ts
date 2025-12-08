@@ -22,7 +22,6 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
       };
     });
 
-    //tokens.length = 1; // rm later on for testing atm
 
     for (const token of tokens) {
       try {
@@ -42,7 +41,7 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
         console.log("Refreshing Stats For:", token.token_name);
 
         const date = new Date();
-        /*if (entry) {
+        if (entry) {
           // difference in ms -> sec -> min
           const timeDifference =
             (date.getTime() - entry.last_updated.getTime()) / 1000 / 60;
@@ -53,7 +52,7 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
             });
             continue;
           }
-        }*/
+        }
 
         const tokenStats: TokenStatsResponse | null = await getTokenStats(
           foundDao.native_token.mc_ticker,

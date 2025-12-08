@@ -19,11 +19,6 @@ export default async function fetchMarketCap(tokenSymbol: string): Promise<numbe
     const COIN_GECKO_ENDPOINT = `https://api.coingecko.com/api/v3/coins/${tokenSymbol}`;
 
     const response = await getWithRetry<CoinGeckoResponseType>(COIN_GECKO_ENDPOINT);
-    /*const response = await axios.get(COIN_GECKO_ENDPOINT, {
-      timeout: 5000,
-    });*/
-
-    //if (response.status !== 200) throw new Error(`Unexpected response status: ${response.status}`);
     const parsed = CoinGeckoResponseSchemaZ.parse(response);
 
     const marketCap = parsed.market_data.market_cap.usd;
