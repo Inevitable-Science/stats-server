@@ -39,6 +39,7 @@ export async function fetchTokenData(req: Request, res: Response): Promise<void>
     const passedToken = daos.find(
       (d) => d.native_token.name.toLowerCase() === parsedToken.toLowerCase()
     )?.native_token;
+
     if (!passedToken) {
       res.status(404).json({ error: ErrorCodes.ELEMENT_NOT_FOUND });
       return;
