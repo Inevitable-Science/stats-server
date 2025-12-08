@@ -123,7 +123,7 @@ export default async function fetchTokenHolders(
     }));
 
     const constructedEntry = {
-      token_address: tokenAddress,
+      token_address: tokenAddress.toLowerCase(),
       initial_block_fetched: tokenHoldersEntry
         ? tokenHoldersEntry.initial_block_fetched
         : initialBlock,
@@ -132,7 +132,7 @@ export default async function fetchTokenHolders(
     };
 
     await TokenHoldersModel.updateOne(
-      { token_address: tokenAddress },
+      { token_address: tokenAddress.toLowerCase() },
       { $set: constructedEntry },
       { upsert: true }
     );

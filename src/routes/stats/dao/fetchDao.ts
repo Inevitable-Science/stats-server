@@ -67,7 +67,7 @@ export async function fetchDao(req: Request, res: Response): Promise<void> {
     }
 
     const [tokenEntry, treasuryEntry] = await Promise.all([
-      await TokenModel.findOne({ token_address: foundDao.native_token.token_address }),
+      await TokenModel.findOne({ token_address: foundDao.native_token.token_address.toLowerCase() }),
       await TreasuryModel.findOne({
         dao_name: foundDao.name.toLowerCase(),
       }),
