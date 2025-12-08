@@ -55,7 +55,10 @@ export async function fetchTokenData(req: Request, res: Response): Promise<void>
       }),
     ]);
 
-    if (!tokenEntry) throw new Error(`Token entry not found in database`);
+    if (!tokenEntry) {
+      res.status(404).json({ error: ErrorCodes.ELEMENT_NOT_FOUND });
+      return;
+    };
 
     // Calculate assets under management
     let assetsUnderManagement: number | null = null;

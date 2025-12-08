@@ -97,22 +97,28 @@ function getClosestValue(historicalData: HistoricalTreasury[], targetTime: numbe
 }
 
 export async function fetchTreasuryData(req: Request, res: Response): Promise<void> {
-  const { daoName } = req.params;
-  const parsedDao = z.string().nonempty().parse(daoName).toLowerCase();
-
-  const foundDao = daos.find(
-    (dao) =>
-      dao.name.toLowerCase() === parsedDao ||
-      dao.ticker.toLowerCase() === parsedDao ||
-      dao.alternative_names?.some((altName) => altName.toLowerCase() === parsedDao)
-  );
-
-  if (!foundDao) {
-    res.status(404).json({ error: ErrorCodes.ELEMENT_NOT_FOUND });
-    return;
-  }
-
   try {
+    const { daoName } = req.params;
+    const parsedDao = z.string().nonempty().safeParse(daoName);
+
+    if (!parsedDao.success) {
+      res.status(400).json({ error: ErrorCodes.BAD_REQUEST });
+      return;
+    }
+    const passedDaoName = parsedDao.data;
+
+    const foundDao = daos.find(
+      (dao) =>
+        dao.name.toLowerCase() === passedDaoName ||
+        dao.ticker.toLowerCase() === passedDaoName ||
+        dao.alternative_names?.some((altName) => altName.toLowerCase() === passedDaoName)
+    );
+
+    if (!foundDao) {
+      res.status(404).json({ error: ErrorCodes.ELEMENT_NOT_FOUND });
+      return;
+    }
+
     // Fetch treasury data
     const treasuryEntry: TreasuryDocument | null = await TreasuryModel.findOne({
       dao_name: foundDao.name.toLowerCase(),
