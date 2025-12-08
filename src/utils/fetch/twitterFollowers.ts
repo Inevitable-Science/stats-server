@@ -3,6 +3,12 @@ import z from "zod";
 import { logErrorEmbed } from "../coms/logAction";
 import { ENV } from "../env";
 
+const FollowerResponseZ = z.object({
+  data: z.object({
+    followers: z.number()
+  })
+});
+
 async function getTwitterFollowers(username: string): Promise<number | null> {
   try {
     const response = await fetch(
@@ -20,10 +26,11 @@ async function getTwitterFollowers(username: string): Promise<number | null> {
     }
 
     const data = await response.json();
-    const followerCount = data.data.followers;
-    const parsedFollowers = z.number().parse(followerCount);
+    console.log(data);
+    const parsedData = FollowerResponseZ.parse(data);
+    const followers =  parsedData.data.followers;
 
-    return parsedFollowers;
+    return followers;
   } catch (err) {
     await logErrorEmbed(`**Unable to fetch twitter followers for @${username} - ${err}**`);
     return null;
