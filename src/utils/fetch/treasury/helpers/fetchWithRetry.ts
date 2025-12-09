@@ -1,7 +1,7 @@
+import { sleep } from "../../../../utils/utils";
 import type { AxiosResponse } from "axios";
 import axios from "axios";
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function fetchWithRetry<T>(
   url: string,

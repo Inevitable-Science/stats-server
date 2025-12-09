@@ -9,8 +9,8 @@ import { logErrorEmbed } from "../../../../utils/coms/logAction";
 import { ENV } from "../../../../utils/env";
 import type { Holder } from "../tokenStats";
 
-import type { TopHolder } from "@/config/models/tokenSchema";
-import { sleep } from "@/utils/utils";
+import type { TopHolder } from "../../../../config/models/tokenSchema";
+import { sleep } from "../../../../utils/utils";
 
 
 const TransferArgsSchema = z.tuple([

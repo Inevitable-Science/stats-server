@@ -5,7 +5,7 @@ import z from "zod";
 import { logErrorEmbed } from "../../coms/logAction";
 import { ENV } from "../../env";
 
-import type { ChainId } from "@/config/constants";
+import type { ChainId } from "../../../config/constants";
 
 const PortfolioSchemaZ = z.object({
   portfolioV2: z.object({

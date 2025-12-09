@@ -1,6 +1,6 @@
 import type { Address } from "viem";
 
-import { daos } from "@/config/constants";
+import { daos } from "../../../config/constants";
 import type { TokenDocument } from "../../../config/models/tokenSchema";
 import TokenModel from "../../../config/models/tokenSchema";
 import logAction, { logErrorEmbed } from "../../coms/logAction";

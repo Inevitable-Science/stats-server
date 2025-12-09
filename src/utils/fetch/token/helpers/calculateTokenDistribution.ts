@@ -1,7 +1,7 @@
 import { logErrorEmbed } from "../../../../utils/coms/logAction";
 import type { Holder } from "../tokenStats";
 
-import type { TokenDistribution } from "@/config/models/tokenSchema";
+import type { TokenDistribution } from "../../../../config/models/tokenSchema";
 
 
 interface CalculateStatsResponse {
