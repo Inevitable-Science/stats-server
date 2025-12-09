@@ -10,8 +10,8 @@ import { ENV } from "../../../../utils/env";
 import type { Holder } from "../tokenStats";
 
 import type { TopHolder } from "@/config/models/tokenSchema";
+import { sleep } from "@/utils/utils";
 
-const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 const TransferArgsSchema = z.tuple([
   z.string(), // from

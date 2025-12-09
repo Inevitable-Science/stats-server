@@ -11,10 +11,6 @@ import mongoose from "mongoose";
 import cron from "node-cron";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
-// Database
-import TokenModel from "./config/models/tokenSchema";
-import TreasuryModel from "./config/models/treasurySchema";
-
 import daoRouter from "./routes/stats/dao/daoRouter";
 import tokenRouter from "./routes/stats/token/tokenRouter";
 import tokenListRouter from "./routes/web3/tokenlist/token_list";
@@ -84,27 +80,6 @@ cron.schedule("20 0 * * *", dailyRefresh); // Refresh treasury stats daily @ 00:
 app.use("/token", tokenRouter);
 app.use("/dao", daoRouter);
 app.use("/web3", tokenListRouter);
-
-app.get("/schema", async (req: Request, res: Response) => {
-  try {
-    const data = await TreasuryModel.find();
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    res.status(500).send("Something went wrong.");
-  }
-});
-
-// GET /schemaToken
-app.get("/schemaToken", async (req: Request, res: Response) => {
-  try {
-    const data = await TokenModel.find();
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    res.status(500).send("Something went wrong.");
-  }
-});
 
 app.post("/refreshFollowers/:password", async (req: Request, res: Response) => {
   const { password } = req.params;

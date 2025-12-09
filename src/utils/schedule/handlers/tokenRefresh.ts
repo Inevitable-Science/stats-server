@@ -1,12 +1,12 @@
 import type { Address } from "viem";
 
-import { daos } from "../../../config/constants";
+import { daos } from "@/config/constants";
 import type { TokenDocument } from "../../../config/models/tokenSchema";
 import TokenModel from "../../../config/models/tokenSchema";
 import logAction, { logErrorEmbed } from "../../coms/logAction";
 import type { TokenStatsResponse } from "../../fetch/token/tokenStats";
 import getTokenStats from "../../fetch/token/tokenStats";
-import { generateDiscordTimestamp } from "../../utils";
+import { generateDiscordTimestamp, sleep } from "../../utils";
 
 async function fetchAndUpdateAllTokenStats(): Promise<void> {
   try {
@@ -53,6 +53,8 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
             continue;
           }
         }
+        
+        await sleep(500);
 
         const tokenStats: TokenStatsResponse | null = await getTokenStats(
           foundDao.native_token.mc_ticker,
