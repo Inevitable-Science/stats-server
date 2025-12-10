@@ -135,7 +135,10 @@ export async function fetchTreasuryData(req: Request, res: Response): Promise<vo
     const assetsUnderManagement = treasuryValue + assetsValue;
 
     // Calculate historical treasury returns
-    const now = new Date().getTime();
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    const now = date.getTime();
+
     const timeOffsets: { [key: string]: number } = {
       "24h": now - 24 * 60 * 60 * 1000,
       "48h": now - 48 * 60 * 60 * 1000,
