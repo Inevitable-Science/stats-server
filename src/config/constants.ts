@@ -39,7 +39,7 @@ export interface NativeToken {
   creation_block: number;
   decimals: number;
   token_address: Address;
-  networks: string[];
+  networks: ChainId[];
 }
 
 export interface DAO {
@@ -173,7 +173,7 @@ export const daos: DAO[] = [
       creation_block: 17137838,
       decimals: 18,
       token_address: '0xf4308b0263723b121056938c2172868e408079d0',
-      networks: ['eth', 'base'],
+      networks: [1, 8453],
     },
   },
   {
@@ -232,7 +232,7 @@ export const daos: DAO[] = [
       creation_block: 21365038,
       decimals: 18,
       token_address: '0xaF04f0912E793620824F4442b03F4d984Af29853',
-      networks: ['eth'],
+      networks: [1],
     },
   },
   {
@@ -286,7 +286,7 @@ export const daos: DAO[] = [
       creation_block: 21307633,
       decimals: 18,
       token_address: '0xFdc9D2A3cae56e484a85de3C2e812784a8184d0D',
-      networks: ['eth'],
+      networks: [1],
     },
   },
   {
@@ -342,7 +342,7 @@ export const daos: DAO[] = [
       creation_block: 21314017,
       decimals: 18,
       token_address: '0x4cd1B2874e020C5bf08c4bE18Ab69ca86EC25fEf',
-      networks: ['eth'],
+      networks: [1],
     },
   },
 ];
