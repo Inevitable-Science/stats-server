@@ -54,13 +54,13 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
           }
         }
         
-        await sleep(500);
-
         const tokenStats: TokenStatsResponse | null = await getTokenStats(
           foundDao.native_token.mc_ticker,
           token.token_address.toLowerCase() as Address,
           foundDao.native_token.creation_block
         );
+
+        await sleep(5000);
 
         if (!tokenStats) {
           throw new Error("No token stats returned");

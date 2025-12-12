@@ -1,8 +1,7 @@
 import z from "zod";
 
 import { logErrorEmbed } from "../../../../utils/coms/logAction";
-//import axios from "axios";
-import { fetchWithRetry, getWithRetry } from "../../treasury/helpers/fetchWithRetry";
+import { getWithRetry } from "../../treasury/helpers/fetchWithRetry";
 
 const CoinGeckoResponseSchemaZ = z.object({
   market_data: z.object({

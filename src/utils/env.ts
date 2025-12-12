@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 const EnvSchema = z.object({
-  INFURA_KEY: z.string(),
+  INFURA_PROJECT_ID: z.string(),
+  INFURA_SECRET: z.string(),
   ALCHEMY_KEY: z.string(),
   ZAPPER_KEY: z.string(),
   APP_PASSWORD: z.string(),

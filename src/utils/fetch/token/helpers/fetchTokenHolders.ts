@@ -10,7 +10,6 @@ import { ENV } from "../../../../utils/env";
 import type { Holder } from "../tokenStats";
 
 import type { TopHolder } from "../../../../config/models/tokenSchema";
-import { sleep } from "../../../../utils/utils";
 
 
 const TransferArgsSchema = z.tuple([
@@ -40,7 +39,11 @@ export default async function fetchTokenHolders(
   const minBalanceThreshold = 0.01; // Only include accounts with >0.01 tokens
 
   try {
-    const provider = new ethers.JsonRpcProvider(`https://mainnet.infura.io/v3/${ENV.INFURA_KEY}`);
+    const provider = new ethers.InfuraProvider(
+      "mainnet",
+      ENV.INFURA_PROJECT_ID,
+      ENV.INFURA_SECRET
+    );
     if (!provider) throw new Error(`Couldn't initialize provider contract in fetchHolders`);
 
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, provider);
@@ -73,8 +76,6 @@ export default async function fetchTokenHolders(
       try {
         const toBlock = Math.min(fromBlock + batchSize - 1, currentBlock);
         console.log(`Fetching events from block ${fromBlock} to ${toBlock}...`);
-
-        await sleep(500);
 
         const events = await tokenContract.queryFilter(
           tokenContract.filters.Transfer(),
