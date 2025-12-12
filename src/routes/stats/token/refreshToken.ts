@@ -34,7 +34,7 @@ export async function refreshTokenStats(req: Request, res: Response): Promise<vo
     // Determine token stats from either native_token or ipt
     const nativeToken = foundDao.native_token;
 
-    if (!nativeToken.networks.includes("eth")) {
+    if (!nativeToken.networks.includes(1)) {
       // review this allow for omnichain tokens
       res.status(400).json({
         error: "Token must be on the Ethereum network to refresh stats.",

@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import z from "zod";
 
-import { daos } from "../../../config/constants";
+import { ChainId, daos } from "../../../config/constants";
 import type { TokenDistribution, TopHolder } from "../../../config/models/tokenSchema";
 import TokenModel from "../../../config/models/tokenSchema";
 import TreasuryModel from "../../../config/models/treasurySchema";
@@ -20,7 +20,7 @@ interface TokenResponse {
     ticker: string;
     name: string;
     parentDao: string;
-    networks: string[];
+    networks: ChainId[];
     totalSupply: number;
     marketCap: number;
     averageBal: number;
