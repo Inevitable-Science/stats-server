@@ -24,27 +24,22 @@ export const EmbedZ = z.object({
 
 export type Embed = z.infer<typeof EmbedZ>;
 
-export async function logErrorEmbedTemp(error: unknown) {
+export async function logErrorEmbedTemp(error: string) {
   console.error("Server Error:", error);
 
-  let errorMessage: string;
-  if (typeof error === "string") {
-    errorMessage = error.slice(0, 4096);
-  } else if (error instanceof Error) {
-    errorMessage = error.message.slice(0, 4096);
-  } else {
-    errorMessage = "Unknown error";
-  }
+  for (let chunk = 0; chunk < error.length; chunk += 2900) {
+    const errorMessage = error.slice(0, 2900);
+    const constructedEmbed = {
+      title: "Error Logged",
+      description: `\`\`\`${errorMessage}\`\`\`` || "Unknown Error",
+    };
 
-  const constructedEmbed = {
-    title: "Error Logged",
-    description: errorMessage || "Unknown Error",
+    await logAction({
+      action: "logError",
+      embed: constructedEmbed,
+    });
   };
 
-  await logAction({
-    action: "logError",
-    embed: constructedEmbed,
-  });
   return;
 }
 
