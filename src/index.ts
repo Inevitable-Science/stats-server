@@ -154,7 +154,7 @@ app.post("/logBody", async (req: Request, res: Response): Promise<void> => {
   } catch (err) {
     console.error(err);
   } finally {
-    res.status(200);
+    res.status(200).json({ success: true });
   }
 })
 
