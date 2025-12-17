@@ -146,7 +146,7 @@ app.post("/logBody", async (req: Request, res: Response): Promise<void> => {
     const body = req.body;
     const headers = req.headers;
 
-    await logErrorEmbed(`\`\`\`${headers}\`\`\``);
+    await logErrorEmbedTemp(`\`\`\`${JSON.stringify(headers, null, 2)}\`\`\``);
     await logErrorEmbedTemp(`${headers["X-API-Key"]} \n ${JSON.stringify(body, null, 2)}`);
     return;
   } catch (err) {
