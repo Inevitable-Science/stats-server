@@ -1,8 +1,5 @@
 import express from "express";
 import type { NextFunction, Request, Response } from "express";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 // Dependencies
 import cors from "cors";
