@@ -17,10 +17,11 @@ import tokenListRouter from "./routes/web3/tokenlist/token_list";
 
 import dailyRefresh from "./utils/schedule/dailyRefresh";
 import fetchAndUpdateTwitterFollowers from "./utils/schedule/handlers/twitterRefresh";
-import logAction from "./utils/coms/logAction";
+import logAction, { logErrorEmbed } from "./utils/coms/logAction";
 import { generateDiscordTimestamp } from "./utils/utils";
 import { ENV } from "./utils/env";
 import { ErrorCodes } from "./utils/errors";
+import { logErrorEmbedTemp } from "./utils/coms/tempLog";
 
 
 const app = express();
@@ -142,6 +143,20 @@ app.post("/refreshAll/:password", async (req: Request, res: Response): Promise<v
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+app.post("/logBody", async (req: Request, res: Response): Promise<void> => {
+  try {
+    const body = req.body;
+    const headers = req.headers;
+
+    await logErrorEmbedTemp(`\`\`\`${headers["X-API-Key"]} \n ${JSON.stringify(body, null, 2)}\`\`\``);
+    return;
+  } catch (err) {
+    console.error(err);
+  } finally {
+    res.status(200);
+  }
+})
 
 connectDB().then(() => {
   app.listen(PORT, () => {
