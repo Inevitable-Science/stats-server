@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { fetchHistoricalTreasuryChart } from "../chart/databaseCharts";
+import { fetchHistoricalTreasuryChart, fetchHistoricalXFollowersChart } from "../chart/databaseCharts";
 
 import { fetchDao, fetchDaosPreview } from "./fetchDao";
 import { fetchLegacyActivity } from "./legacy/fetchActivity";
@@ -18,5 +18,6 @@ router.get("/treasury/:daoName", fetchTreasuryData);
 router.post("/treasury/refresh/:daoName", refreshTreasuryData);
 
 router.get("/treasury/historical/:daoName", fetchHistoricalTreasuryChart);
+router.get("/followers/:username", fetchHistoricalXFollowersChart);
 
 export default router;
