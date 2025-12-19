@@ -375,7 +375,7 @@ const TweetSchema = z.object({
   //inReplyToUsername: z.string(),
   author: AuthorSchema,
   extendedEntities: z.object({
-    media: z.array(MediaItemSchema)
+    media: z.array(MediaItemSchema).optional()
   }),
   /*card: z.null(),
   place: z.object({}),
@@ -420,7 +420,7 @@ app.post("/logBody", async (req: Request, res: Response): Promise<void> => {
         //continue;
       };
 
-      const mediaUrls = tweet.extendedEntities.media.map(m => m.media_url_https);
+      const mediaUrls = tweet.extendedEntities.media?.map(m => m.media_url_https);
 
       const constructedEmbed = {
         author: {
@@ -430,7 +430,7 @@ app.post("/logBody", async (req: Request, res: Response): Promise<void> => {
         },
         title: "Error Logged",
         description: tweet.text,
-        ...(mediaUrls[0] && {
+        ...((mediaUrls && mediaUrls.length > 0)&& {
           image: {
             url: mediaUrls[0],
           },
