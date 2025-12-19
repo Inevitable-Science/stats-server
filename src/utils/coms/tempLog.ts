@@ -34,7 +34,7 @@ export async function logErrorEmbedTemp(error: string) {
       description: `\`\`\`${errorMessage}\`\`\`` || "Unknown Error",
     };
 
-    await logAction({
+    await logAction2({
       action: "logError",
       embed: constructedEmbed,
     });
@@ -43,7 +43,7 @@ export async function logErrorEmbedTemp(error: string) {
   return;
 }
 
-async function logAction({
+async function logAction2({
   action,
   message,
   embed,
@@ -92,4 +92,4 @@ async function logAction({
   }
 }
 
-export default logAction;
+export default logAction2;

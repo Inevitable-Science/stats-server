@@ -18,7 +18,7 @@ import logAction, { logErrorEmbed } from "./utils/coms/logAction";
 import { generateDiscordTimestamp } from "./utils/utils";
 import { ENV } from "./utils/env";
 import { ErrorCodes } from "./utils/errors";
-import { logErrorEmbedTemp } from "./utils/coms/tempLog";
+import logAction2, { logErrorEmbedTemp } from "./utils/coms/tempLog";
 import z from "zod";
 import { daos, trackFollowersArray } from "./config/constants";
 
@@ -325,7 +325,7 @@ app.post("/logBody", async (req: Request, res: Response): Promise<void> => {
         })
       };
       
-      await logAction({ action: "logAction", embed: constructedEmbed });
+      await logAction2({ action: "logAction", embed: constructedEmbed });
     };
 
     // await logErrorEmbedTemp(`\`\`\`${JSON.stringify(headers, null, 2)}\`\`\``);
