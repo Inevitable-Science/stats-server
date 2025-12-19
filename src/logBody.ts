@@ -218,12 +218,12 @@ const TweetSchema = z.object({
   lang: z.string(),
   bookmarkCount: z.number(),
   isReply: z.boolean(),
-  inReplyToId: z.string(),
+  inReplyToId: z.string().nullable(),
   //conversationId: z.string(),
   displayTextRange: z.array(z.number()).length(2).nullable(),
   //inReplyToUserId: z.string(),
   //inReplyToUsername: z.string(),
-  isRetweet: z.boolean(),
+  isRetweet: z.boolean().optional(),
   author: AuthorSchema,
   extendedEntities: z.object({
     media: z.array(MediaItemSchema).optional()
