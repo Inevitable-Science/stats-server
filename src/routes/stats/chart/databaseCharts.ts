@@ -166,9 +166,9 @@ export async function fetchHistoricalXFollowersChart(req: Request, res: Response
       foundUsernameDaoArray :
       trackFollowersArray.find(
         u =>
-          u.username.toLowerCase() ===
+          u.toLowerCase() ===
           passedUsername.toLowerCase()
-    )?.username;
+    );
 
     if (!foundUsername) {
       res.status(404).json({ error: ErrorCodes.ELEMENT_NOT_FOUND });

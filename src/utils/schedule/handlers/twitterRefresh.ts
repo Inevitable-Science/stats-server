@@ -18,9 +18,8 @@ async function fetchAndUpdateTwitterFollowers(): Promise<void> {
     const mappedTwitterUsername = daos
       .map((dao) => dao.socials.x)
       .filter((username) => typeof username === "string");
-    const mappedTrackArray = trackFollowersArray.map((username) => username.username);
     const combinedArrays: string[] = Array.from(
-      new Set([...mappedTwitterUsername, ...mappedTrackArray])
+      new Set([...mappedTwitterUsername, ...trackFollowersArray])
     );
 
     for (const username of combinedArrays) {

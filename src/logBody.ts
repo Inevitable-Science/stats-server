@@ -273,7 +273,7 @@ export async function logXResponse(req: Request, res: Response) {
       const tweetAuthor = tweet.author.userName;
       const userExsists = 
         daos.some(d => d.socials.x?.toLowerCase() === tweetAuthor.toLocaleLowerCase()) || 
-        trackFollowersArray.some(u => u.username.toLowerCase() === tweetAuthor.toLowerCase());
+        trackFollowersArray.some(u => u.toLowerCase() === tweetAuthor.toLowerCase());
 
       if (!userExsists) {
         await logErrorEmbedTemp(`User not within array found: ${tweetAuthor} - ${tweet.url}`);

@@ -66,10 +66,15 @@ export interface TwitterAccount {
   username: string;
 }
 
-export const trackFollowersArray: TwitterAccount[] = [
+/*export const trackFollowersArray: TwitterAccount[] = [
   {
     username: "inevitablesci"
   }
+]*/
+
+export const trackFollowersArray: string[] = [
+  "inevitablesci",
+  "abfndn"
 ]
 
 // Define and export the daos array
