@@ -279,6 +279,7 @@ export async function logXResponse(req: Request, res: Response) {
         await logErrorEmbedTemp(`User not within array found: ${tweetAuthor} - ${tweet.url}`);
         //continue;
       };
+      console.log(tweet);
 
       const mediaUrls = tweet.extendedEntities.media?.map(m => m.media_url_https);
 
