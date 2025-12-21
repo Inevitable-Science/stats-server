@@ -163,7 +163,8 @@ const UserEntitiesSchema = z.object({
   url: z.object({}),
 });*/
 
-const AuthorSchema = z.object({
+const AuthorSchema = z.union([
+  z.object({
   type: z.literal('user'),
   userName: z.string(),
   url: z.string(),
@@ -197,7 +198,9 @@ const AuthorSchema = z.object({
   profile_bio: ProfileBioSchema,
   isAutomated: z.boolean(),
   automatedBy: z.null(),*/
-});
+}),
+z.object({})
+]);
 
 const MediaItemSchema = z.object({
   display_url: z.string(),
@@ -264,7 +267,7 @@ export async function logXResponse(req: Request, res: Response) {
     const body = req.body;
     const headers = req.headers;
 
-    if (headers["x-api-key"] !== ENV.X_API_KEY) return;
+    //if (headers["x-api-key"] !== ENV.X_API_KEY) return;
     console.log(body.tweets);
     const parsedBody = logZod.parse(body);
 
@@ -285,18 +288,19 @@ export async function logXResponse(req: Request, res: Response) {
       const mediaUrls = tweet.extendedEntities.media?.map(m => m.media_url_https);
 
       const quotedTweet = tweet.quoted_tweet;
-      const quoteTweetText = `
-      > [Quoting](${quotedTweet?.url}) ${quotedTweet?.author.name} ([@${quotedTweet?.author.userName}](${quotedTweet?.author.url}))\n\n${
-        tweet.quoted_tweet?.text.slice(
+      const quoteTweetText = `> [Quoting](${quotedTweet?.url}) ${quotedTweet?.author.name} ([@${quotedTweet?.author.userName}](${quotedTweet?.author.url}))\n\n${
+        quotedTweet?.text.slice(
           quotedTweet?.displayTextRange?.[0] ?? 0,
           quotedTweet?.displayTextRange?.[1] ?? 400
         ) ?? ""}
       `;
 
-      const tweetText = tweet.displayTextRange ? tweet.text.slice(tweet.displayTextRange[0], tweet.displayTextRange[0]) : tweet.text;
+      const tweetText = tweet.displayTextRange?.length === 2 ? tweet.text.slice(tweet.displayTextRange[0], tweet.displayTextRange[1]) : tweet.text;
       const description = `${tweetText} ${
-        tweet.isQuote ? `\n\n${quoteTweetText}` : ""
-      }`
+        tweet.quoted_tweet?.type === "tweet" ? `\n\n${quoteTweetText.replace(/\n/g, '\n> ')
+  .replace(/>$/, '')}` : ""
+      }`;
+      console.log(description);
 
       const constructedEmbed = {
         author: {
