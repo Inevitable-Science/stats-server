@@ -265,6 +265,7 @@ export async function logXResponse(req: Request, res: Response) {
     const headers = req.headers;
 
     if (headers["x-api-key"] !== ENV.X_API_KEY) return;
+    console.log(body.tweets);
     const parsedBody = logZod.parse(body);
 
     const tweets = parsedBody.tweets;
@@ -279,7 +280,7 @@ export async function logXResponse(req: Request, res: Response) {
         await logErrorEmbedTemp(`User not within array found: ${tweetAuthor} - ${tweet.url}`);
         //continue;
       };
-      console.log(tweet);
+      
 
       const mediaUrls = tweet.extendedEntities.media?.map(m => m.media_url_https);
 
@@ -291,8 +292,10 @@ export async function logXResponse(req: Request, res: Response) {
           quotedTweet?.displayTextRange?.[1] ?? 400
         ) ?? ""}
       `;
-      const description = `${tweet.text} ${
-        tweet.isQuote && `\n\n${quoteTweetText}`
+
+      const tweetText = tweet.displayTextRange ? tweet.text.slice(tweet.displayTextRange[0], tweet.displayTextRange[0]) : tweet.text;
+      const description = `${tweetText} ${
+        tweet.isQuote ? `\n\n${quoteTweetText}` : ""
       }`
 
       const constructedEmbed = {
