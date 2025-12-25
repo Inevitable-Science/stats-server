@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import z from "zod";
-import logAction2, { logErrorEmbedTemp } from "./utils/coms/tempLog";
 import { ENV } from "./utils/env";
 import { daos, trackFollowersArray } from "./config/constants";
+import logAction from "./utils/coms/logAction";
 
 
 /*const UserMentionSchema = z.object({
@@ -222,32 +222,16 @@ const TweetSchema = z.object({
   bookmarkCount: z.number(),
   isReply: z.boolean(),
   inReplyToId: z.string().nullable(),
-  //conversationId: z.string(),
   displayTextRange: z.array(z.number()).length(2).nullable(),
-  //inReplyToUserId: z.string(),
-  //inReplyToUsername: z.string(),
   isRetweet: z.boolean().optional(),
   author: AuthorSchema,
   extendedEntities: z.object({
     media: z.array(MediaItemSchema).optional()
   }),
   isQuote: z.boolean().optional(),
-  /*quoted_tweet: z.object({
-    get quoted_tweet() {
-      return TweetSchema.optional(); // or Example if required
-    },
-    // ... other nested properties here
-  }).optional().nullable(),*/
   get quoted_tweet() {
     return TweetSchema.optional().nullable(); // or Example if required
   },
-  /*card: z.null(),
-  place: z.object({}),
-  entities: EntitiesSchema,
-  quoted_tweet: z.null(),
-  retweeted_tweet: z.null(),
-  isLimitedReply: z.boolean(),
-  article: z.null(),*/
 });
 
 // TEMP
@@ -267,10 +251,10 @@ export async function logXResponse(req: Request, res: Response) {
     const body = req.body;
     const headers = req.headers;
 
-    //if (headers["x-api-key"] !== ENV.X_API_KEY) return;
-    console.log(body.tweets);
+    if (headers["x-api-key"] !== ENV.X_API_KEY) return;
     const parsedBody = logZod.parse(body);
-
+    
+    if (parsedBody.rule_id !== "0fc10b102b7c437a867619680108980d") return;
     const tweets = parsedBody.tweets;
 
     for (const tweet of tweets) {
@@ -280,49 +264,13 @@ export async function logXResponse(req: Request, res: Response) {
         trackFollowersArray.some(u => u.toLowerCase() === tweetAuthor.toLowerCase());
 
       if (!userExsists) {
-        await logErrorEmbedTemp(`User not within array found: ${tweetAuthor} - ${tweet.url}`);
-        //continue;
-      };
-      
-
-      const mediaUrls = tweet.extendedEntities.media?.map(m => m.media_url_https);
-
-      const quotedTweet = tweet.quoted_tweet;
-      const quoteTweetText = `> [Quoting](${quotedTweet?.url}) ${quotedTweet?.author.name} ([@${quotedTweet?.author.userName}](${quotedTweet?.author.url}))\n\n${
-        quotedTweet?.text.slice(
-          quotedTweet?.displayTextRange?.[0] ?? 0,
-          quotedTweet?.displayTextRange?.[1] ?? 400
-        ) ?? ""}
-      `;
-
-      const tweetText = tweet.displayTextRange?.length === 2 ? tweet.text.slice(tweet.displayTextRange[0], tweet.displayTextRange[1]) : tweet.text;
-      const description = `${tweetText} ${
-        tweet.quoted_tweet?.type === "tweet" ? `\n\n${quoteTweetText.replace(/\n/g, '\n> ')
-  .replace(/>$/, '')}` : ""
-      }`;
-      console.log(description);
-
-      const constructedEmbed = {
-        author: {
-          name: `${tweet.author.name} (@${tweetAuthor}) Just Posted`,
-          icon_url: tweet.author.profilePicture,
-          url: tweet.url
-        },
-        title: "",
-        description,
-        ...((mediaUrls && mediaUrls.length > 0)&& {
-          image: {
-            url: mediaUrls[0],
-          },
-        })
+        continue;
       };
 
-      
-      await logAction2({ action: "logAction", embed: constructedEmbed });
+      const message = `New Post from ${tweet.author.name} [@${tweetAuthor}](${tweet.url.replace("https://x.com", "https://fixupx.com")})`
+      await logAction({ action: "logAction", message });
     };
 
-    // await logErrorEmbedTemp(`\`\`\`${JSON.stringify(headers, null, 2)}\`\`\``);
-    // await logErrorEmbedTemp(`${headers["X-API-Key"]} \n ${JSON.stringify(body, null, 2)}`);
   } catch (err) {
     console.error(err);
   } finally {
