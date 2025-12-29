@@ -66,12 +66,6 @@ export interface TwitterAccount {
   username: string;
 }
 
-/*export const trackFollowersArray: TwitterAccount[] = [
-  {
-    username: "inevitablesci"
-  }
-]*/
-
 export const trackFollowersArray: string[] = [
   "inevitablesci",
   "abfndn"
@@ -100,8 +94,8 @@ export const daos: DAO[] = [
       discord: 'https://discord.gg/cryodao',
     },
     projects: 5,
-    logo_url: 'https://ipfs.banny.eth.sucks/ipfs/QmVPuGhmVzGb2z9Lpa9J6She4fWr5GV5DsR3doQzWvvkq6',
-    backdrop_url: 'https://juicebox.money/_next/image?url=https%3A%2F%2Fipfs.banny.eth.sucks%2Fipfs%2FQmbtfkWtVocZnakQucppwBEFxdnJsRoMpFKbjtDbkQbapc&w=3840&q=75&dpl=dpl_DwdnNEjtzZVd1P6fuDHSTKEyako1',
+    logo_url: 'https://cdn.inevitable.science/static/img/daos/logos/cryodao.webp',
+    backdrop_url: 'https://cdn.inevitable.science/static/img/daos/backdrops/cryodao.webp',
     treasury: {
       address: '0xcfaB782fc6DEE9F381f29586aD25BbE6D8F84c7a',
       ens_name: 'cryodao.eth',
@@ -174,7 +168,7 @@ export const daos: DAO[] = [
       chain_id: 1,
       parent_dao: 'CryoDAO',
       mc_ticker: 'cryodao',
-      logo_url: 'https://www.profiler.bio/external/logos/cryodao.png',
+      logo_url: 'https://cdn.inevitable.science/static/img/daos/logos/cryodao.webp',
       creation_block: 17137838,
       decimals: 18,
       token_address: '0xf4308b0263723b121056938c2172868e408079d0',
@@ -202,8 +196,8 @@ export const daos: DAO[] = [
       discord: 'https://discord.gg/hydradao',
     },
     projects: 0,
-    logo_url: 'https://ipfs.banny.eth.sucks/ipfs/QmWGd5hZ2vxR1PLwoQAPARo8StoiA7KRo4R4qM8YHzH4Ya',
-    backdrop_url: 'https://juicebox.money/_next/image?url=https%3A%2F%2Fipfs.banny.eth.sucks%2Fipfs%2FQmbDq5zdUECGrSgYPj5AbCSC8KjDAd8RmTwcbZPPgscuti&w=3840&q=75&dpl=dpl_DwdnNEjtzZVd1P6fuDHSTKEyako1',
+    logo_url: 'https://cdn.inevitable.science/static/img/daos/logos/hydradao.webp',
+    backdrop_url: 'https://cdn.inevitable.science/static/img/daos/backdrops/hydradao.webp',
     treasury: {
       address: '0xE27fBfED8f446684D1fF042E41604a0785EF3508',
       ens_name: 'daohydra.eth',
@@ -233,7 +227,7 @@ export const daos: DAO[] = [
       chain_id: 1,
       parent_dao: 'HydraDAO',
       mc_ticker: 'hydradao',
-      logo_url: 'https://www.profiler.bio/external/logos/cryodao.png',
+      logo_url: 'https://cdn.inevitable.science/static/img/daos/logos/hydradao.webp',
       creation_block: 21365038,
       decimals: 18,
       token_address: '0xaF04f0912E793620824F4442b03F4d984Af29853',
@@ -257,8 +251,8 @@ export const daos: DAO[] = [
       discord: 'https://discord.com/invite/Hp4cGDMF9B',
     },
     projects: 0,
-    logo_url: 'https://ipfs.banny.eth.sucks/ipfs/QmTyYZNfxBs33BA3RyTQAm6jfcckAGjPepsAPoKDeL7E2x',
-    backdrop_url: 'https://juicebox.money/_next/image?url=https%3A%2F%2Fipfs.banny.eth.sucks%2Fipfs%2FQmT8H46PbdH59m29ZuJPdH9HJhGQGp4Y6Rx3tJnJTHak6j&w=3840&q=75&dpl=dpl_DwdnNEjtzZVd1P6fuDHSTKEyako1',
+    logo_url: 'https://cdn.inevitable.science/static/img/daos/logos/erectusdao.webp',
+    backdrop_url: 'https://cdn.inevitable.science/static/img/daos/backdrops/erectusdao.webp',
     treasury: {
       address: '0x65AF8Af9E39921d5ec9700E646B8300f76139101',
       ens_name: 'erectusdao.eth',
@@ -287,7 +281,7 @@ export const daos: DAO[] = [
       chain_id: 1,
       parent_dao: 'ErectusDAO',
       mc_ticker: 'erectusdao',
-      logo_url: 'https://www.profiler.bio/external/logos/erectusdao.png',
+      logo_url: 'https://cdn.inevitable.science/static/img/daos/tokenLogos/yugeAlt.webp',
       creation_block: 21307633,
       decimals: 18,
       token_address: '0xFdc9D2A3cae56e484a85de3C2e812784a8184d0D',
@@ -311,8 +305,8 @@ export const daos: DAO[] = [
       discord: 'https://discord.gg/cryodao',
     },
     projects: 1,
-    logo_url: 'https://ipfs.banny.eth.sucks/ipfs/QmPbBwjhLM7Sqn6Hn6Suygdn1epAKKmxidpuqERBfxC3bK',
-    backdrop_url: 'https://juicebox.money/_next/image?url=https%3A%2F%2Fipfs.banny.eth.sucks%2Fipfs%2FQmSJ1fQ4NftWtZyk9qeC8dqLKZr6fThtU32dXB5oJUVvKg&w=3840&q=75&dpl=dpl_DhkYHFsmMK6zoZC2iPo7rpm2jn1S',
+    logo_url: 'https://cdn.inevitable.science/static/img/daos/cryorat.webp',
+    backdrop_url: 'https://cdn.inevitable.science/static/img/daos/backdrops/cryorat.webp',
     treasury: {
       address: '0xa9115C830A3d13BEccF9B3166c2B3c00F51F69A6',
       ens_name: 'cryorat.eth',
@@ -343,7 +337,7 @@ export const daos: DAO[] = [
       chain_id: 1,
       parent_dao: 'CryoDAO',
       mc_ticker: 'cryorat',
-      logo_url: 'https://www.profiler.bio/external/logos/cryodao.png',
+      logo_url: 'https://cdn.inevitable.science/static/img/daos/tokenLogos/cryorat.webp',
       creation_block: 21314017,
       decimals: 18,
       token_address: '0x4cd1B2874e020C5bf08c4bE18Ab69ca86EC25fEf',
