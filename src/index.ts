@@ -33,10 +33,10 @@ app.use(
   })
 );
 
-// ----- IP RATE LIMIT: 10 req/sec -----
+// ----- IP RATE LIMIT: 100 req/min -----
 const ipLimiter = rateLimit({
-  windowMs: 1000,
-  max: 10,
+  windowMs: 60 * 1000, // 1 minute
+  max: 100,            // limit each IP to 100 requests per window
   standardHeaders: true,
   legacyHeaders: false,
 });
