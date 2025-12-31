@@ -7,6 +7,7 @@ const EnvSchema = z.object({
   INFURA_SECRET: z.string(),
   ALCHEMY_KEY: z.string(),
   ZAPPER_KEY: z.string(),
+  SUBGRAPH_KEY: z.string(),
   APP_PASSWORD: z.string(),
   MONGO_URI: z.string(),
   DISCORD_WEBHOOK_URL: z.string(),

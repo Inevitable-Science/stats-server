@@ -1,3 +1,4 @@
+import { fetchUniV4PoolHoldings } from "@/utils/fetch/treasury/uniswapV4Pool";
 import { daos } from "../../../config/constants";
 import type { TreasuryDocumentType } from "../../../config/models/treasurySchema";
 import TreasuryModel, { TreasuryDocumentSchemaZ } from "../../../config/models/treasurySchema";
@@ -52,15 +53,34 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
             getAssetsManaged(managedAccounts, chainIds),
           ]);
 
+        
+        let poolsValue = 0;
+        for (const pool of foundDao.v4Pools) {
+          const poolId = pool.pool_id;
+          const chainId = pool.chain_id;
+
+          const poolValue = await fetchUniV4PoolHoldings(poolId, chainId);
+
+          await logAction({
+            action: "logAction",
+            message: `**Fetched v4 pool value for ${foundDao.name}: $${poolValue} - ${generateDiscordTimestamp(new Date(), "R")}**`,
+          });
+
+          poolsValue += poolValue ?? 0;
+        }
+
         if (!treasuryHoldings) throw new Error("No treasury holdings passed from handler function");
         console.log(treasuryHoldings, "treasury holdings");
+        console.log(poolsValue, "pools value");
+        
+        const totalAssets = (assetsManaged + poolsValue).toFixed(4);
 
         const treasuryData: TreasuryDocumentType = {
           dao_name: foundDao.name.toLowerCase(),
           date_added: entry ? entry.date_added : date,
           last_updated: new Date(),
           total_treasury_value: treasuryHoldings.usdBalance,
-          total_assets: String(assetsManaged),
+          total_assets: totalAssets,
           tokens: treasuryHoldings.tokens.map((token) => ({
             contractAddress: token.contractAddress,
             metadata: {
@@ -79,14 +99,14 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
                 {
                   date,
                   balance: treasuryHoldings.usdBalance,
-                  assets: String(assetsManaged),
+                  assets: totalAssets,
                 },
               ]
             : [
                 {
                   date,
                   balance: treasuryHoldings.usdBalance,
-                  assets: String(assetsManaged),
+                  assets: totalAssets,
                 },
               ],
         };

@@ -29,6 +29,10 @@ export interface ManagedAccount {
   chain_id: ChainId;
 }
 
+export interface V4Pool {
+  pool_id: string;
+  chain_id: ChainId;
+}
 
 export interface NativeToken {
   name: string;
@@ -59,6 +63,7 @@ export interface DAO {
   treasury: Treasury;
   signers: Signers;
   managed_accounts: ManagedAccount[]; //ManagedAccounts;
+  v4Pools: V4Pool[];
   native_token: NativeToken;
 }
 
@@ -163,6 +168,7 @@ export const daos: DAO[] = [
         chain_id: 8453,
       },
     ],
+    v4Pools: [],
     native_token: {
       name: 'CRYO',
       chain_id: 1,
@@ -222,6 +228,12 @@ export const daos: DAO[] = [
         chain_id: 1,
       },
     ],
+    v4Pools: [
+      {
+        pool_id: "0xa2564ba74d9edfe2d14c4585bf268349af1d9f41831b2cfbe429c1ff3f659659",
+        chain_id: 1
+      }
+    ],
     native_token: {
       name: 'HYDRA',
       chain_id: 1,
@@ -275,6 +287,12 @@ export const daos: DAO[] = [
         chain: 'eth',
         chain_id: 1,
       },
+    ],
+    v4Pools: [
+      {
+        pool_id: "0x970d87879670ce2cab3e991259e391d677ce6eb2c9b80a968031f346c6d98402",
+        chain_id: 1
+      }
     ],
     native_token: {
       name: 'YUGE',
@@ -331,6 +349,12 @@ export const daos: DAO[] = [
         chain: 'eth',
         chain_id: 1,
       },
+    ],
+    v4Pools: [
+      {
+        pool_id: "0xfa999aab993a291899198fd4b5e07bcda69605c814fb530a239d49c1a52273cd",
+        chain_id: 1
+      }
     ],
     native_token: {
       name: 'CryoRat',

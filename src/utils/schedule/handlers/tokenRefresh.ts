@@ -60,7 +60,7 @@ async function fetchAndUpdateAllTokenStats(): Promise<void> {
           foundDao.native_token.creation_block
         );
 
-        await sleep(5000);
+        await sleep(3500);
 
         if (!tokenStats) {
           throw new Error("No token stats returned");

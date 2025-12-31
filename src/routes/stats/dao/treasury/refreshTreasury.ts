@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 import z from "zod";
 
 import { daos } from "../../../../config/constants";
-import type { TreasuryDocument } from "../../../../config/models/treasurySchema";
+import type { TreasuryDocument, TreasuryDocumentType } from "../../../../config/models/treasurySchema";
 import TreasuryModel from "../../../../config/models/treasurySchema";
 import logAction, { logErrorEmbed } from "../../../../utils/coms/logAction";
 import { ErrorCodes } from "../../../../utils/errors";
@@ -11,6 +11,7 @@ import getAssetsManaged from "../../../../utils/fetch/treasury/assetsManaged";
 import type { TreasuryHoldingsResponse } from "../../../../utils/fetch/treasury/treasuryHoldings";
 import getTreasuryHoldings from "../../../../utils/fetch/treasury/treasuryHoldings";
 import { generateDiscordTimestamp } from "../../../../utils/utils";
+import { fetchUniV4PoolHoldings } from "@/utils/fetch/treasury/uniswapV4Pool";
 
 let isRunning = false;
 
@@ -73,31 +74,47 @@ export async function refreshTreasuryData(req: Request, res: Response): Promise<
             getTreasuryHoldings(foundDao.treasury.address, foundDao.treasury.chain_id),
           ]);
 
+        
+        let poolsValue = 0;
+        for (const pool of foundDao.v4Pools) {
+
+          const poolValue = await fetchUniV4PoolHoldings(pool.pool_id, pool.chain_id);
+
+          await logAction({
+            action: "logAction",
+            message: `**Fetched v4 pool value for ${foundDao.name}: $${poolValue} - ${generateDiscordTimestamp(new Date(), "R")}**`,
+          });
+
+          poolsValue += poolValue ?? 0;
+        };
+
         if (!treasuryHoldings) throw new Error("Couldn't fetch treasuryHoldings");
         console.log(assetsManaged, "ASSETS");
         console.log(treasuryHoldings, "TREASURY");
 
-        const constructedEntry = {
+        const totalAssets = (assetsManaged + poolsValue).toFixed(4);
+
+        const constructedEntry: TreasuryDocumentType = {
           dao_name: foundDao.name.toLowerCase(),
           date_added: treasuryEntry ? treasuryEntry.date_added : date,
           last_updated: date,
-          total_treasury_value: Number(treasuryHoldings.usdBalance),
-          total_assets: assetsManaged,
+          total_treasury_value: treasuryHoldings.usdBalance,
+          total_assets: totalAssets,
           tokens: treasuryHoldings.tokens,
           historical_treasury: treasuryEntry
             ? [
                 ...treasuryEntry.historical_treasury,
                 {
                   date,
-                  balance: Number(treasuryHoldings.usdBalance),
-                  assets: assetsManaged,
+                  balance: treasuryHoldings.usdBalance,
+                  assets: totalAssets,
                 },
               ]
             : [
                 {
                   date,
-                  balance: Number(treasuryHoldings.usdBalance),
-                  assets: assetsManaged,
+                  balance: treasuryHoldings.usdBalance,
+                  assets: totalAssets,
                 },
               ],
         };
