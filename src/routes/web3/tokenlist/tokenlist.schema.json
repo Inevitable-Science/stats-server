@@ -1,15 +1,15 @@
 {
     "name": "Inevitable Sciences Token List",
     "timestamp": "2025-03-08T12:34:09Z",
+    "logoURI": "https://cdn.inevitable.science/static/img/branding/manifest/android-chrome-192x192.png",
     "version": {
         "major": 0,
         "minor": 0,
         "patch": 1
     },
-    "logoURI": "https://inevitable.science/assets/img/branding/manifest/android-chrome-192x192.png",
     "keywords": [
-        "default",
-        "list"
+      "DeSci",
+      "Inevitable"
     ],
     "tokens": [
       {
@@ -18,7 +18,7 @@
         "name": "CryoDAO",
         "decimals": 18,
         "symbol": "CRYO",
-        "logoURI": "https://www.profiler.bio/web3/tokenlistAssets/cryo_token.png"
+        "logoURI": "https://cdn.inevitable.science/static/img/daos/logos/cryodao.webp"
       },
       {
         "chainId": 1,
@@ -26,7 +26,7 @@
         "name": "CryoRat",
         "decimals": 18,
         "symbol": "CRYORAT",
-        "logoURI": "https://coin-images.coingecko.com/coins/images/52533/large/cryorat-tp.png?1733583635"
+        "logoURI": "https://cdn.inevitable.science/static/img/daos/tokenLogos/cryorat.webp"
       },
       {
         "chainId": 1,
@@ -34,7 +34,7 @@
         "name": "HydraDAO",
         "decimals": 18,
         "symbol": "HYDRA",
-        "logoURI": "https://assets.coingecko.com/coins/images/54421/large/hydra-icon.png?1739603226"
+        "logoURI": "https://cdn.inevitable.science/static/img/daos/logos/hydradao.webp"
       },
       {
         "chainId": 1,
@@ -42,7 +42,7 @@
         "name": "ErectusDAO",
         "decimals": 18,
         "symbol": "YUGE",
-        "logoURI": "https://www.profiler.bio/web3/tokenlistAssets/yuge_token.png"
+        "logoURI": "https://cdn.inevitable.science/static/img/daos/tokenLogos/yugeAlt.webp"
       }
     ]
 }

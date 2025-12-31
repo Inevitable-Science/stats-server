@@ -63,7 +63,7 @@ async function fetchAndUpdateTreasuries(): Promise<void> {
 
           await logAction({
             action: "logAction",
-            message: `**Fetched v4 pool value for ${foundDao.name}: $${poolValue} - ${generateDiscordTimestamp(new Date(), "R")}**`,
+            message: `**Fetched v4 pool value for ${foundDao.name}: $${poolValue?.toFixed(2)} - ${generateDiscordTimestamp(new Date(), "R")}**`,
           });
 
           poolsValue += poolValue ?? 0;

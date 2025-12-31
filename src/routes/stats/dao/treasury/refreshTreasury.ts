@@ -82,7 +82,7 @@ export async function refreshTreasuryData(req: Request, res: Response): Promise<
 
           await logAction({
             action: "logAction",
-            message: `**Fetched v4 pool value for ${foundDao.name}: $${poolValue} - ${generateDiscordTimestamp(new Date(), "R")}**`,
+            message: `**Fetched v4 pool value for ${foundDao.name}: $${poolValue?.toFixed(2)} - ${generateDiscordTimestamp(new Date(), "R")}**`,
           });
 
           poolsValue += poolValue ?? 0;
