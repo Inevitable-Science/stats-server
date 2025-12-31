@@ -10,7 +10,7 @@ import { RateLimiterMemory } from "rate-limiter-flexible";
 
 import daoRouter from "./routes/stats/dao/daoRouter";
 import tokenRouter from "./routes/stats/token/tokenRouter";
-import tokenListRouter from "./routes/web3/tokenlist/token_list";
+import tokenListRouter from "./routes/web3/router";
 
 import dailyRefresh from "./utils/schedule/dailyRefresh";
 import fetchAndUpdateTwitterFollowers from "./utils/schedule/handlers/twitterRefresh";
