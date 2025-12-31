@@ -1,6 +1,6 @@
-import { ChainId } from "@/config/constants";
-import { logErrorEmbed } from "@/utils/coms/logAction";
-import { ENV } from "@/utils/env";
+import { ChainId } from "../../../config/constants";
+import { logErrorEmbed } from "../../../utils/coms/logAction";
+import { ENV } from "../../../utils/env";
 import request, { gql } from "graphql-request";
 import z from "zod";
 

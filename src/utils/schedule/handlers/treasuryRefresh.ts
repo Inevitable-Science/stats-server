@@ -1,4 +1,4 @@
-import { fetchUniV4PoolHoldings } from "@/utils/fetch/treasury/uniswapV4Pool";
+import { fetchUniV4PoolHoldings } from "../../fetch/treasury/uniswapV4Pool";
 import { daos } from "../../../config/constants";
 import type { TreasuryDocumentType } from "../../../config/models/treasurySchema";
 import TreasuryModel, { TreasuryDocumentSchemaZ } from "../../../config/models/treasurySchema";

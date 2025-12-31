@@ -11,7 +11,7 @@ import getAssetsManaged from "../../../../utils/fetch/treasury/assetsManaged";
 import type { TreasuryHoldingsResponse } from "../../../../utils/fetch/treasury/treasuryHoldings";
 import getTreasuryHoldings from "../../../../utils/fetch/treasury/treasuryHoldings";
 import { generateDiscordTimestamp } from "../../../../utils/utils";
-import { fetchUniV4PoolHoldings } from "@/utils/fetch/treasury/uniswapV4Pool";
+import { fetchUniV4PoolHoldings } from "../../../../utils/fetch/treasury/uniswapV4Pool";
 
 let isRunning = false;
 
