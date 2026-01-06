@@ -46,11 +46,11 @@ export async function fetchTokenData(req: Request, res: Response): Promise<void>
     }
 
     const [tokenEntry, treasuryEntry] = await Promise.all([
-      await TokenModel.findOne({
+      TokenModel.findOne({
         token_address: passedToken.token_address.toLowerCase(),
       }),
 
-      await TreasuryModel.findOne({
+      TreasuryModel.findOne({
         dao_name: passedToken.parent_dao.toLowerCase(),
       }),
     ]);

@@ -31,8 +31,8 @@ async function getTokenStats(
 ): Promise<TokenStatsResponse | null> {
   try {
     const [holdersStats, marketCap] = await Promise.all([
-      await fetchTokenHolders(tokenAddress, startBlock),
-      await fetchMarketCap(tokenSymbol),
+      fetchTokenHolders(tokenAddress, startBlock),
+      fetchMarketCap(tokenSymbol),
     ]);
 
     if (!holdersStats) throw new Error("Failed to fetch holders stats, fetchHolders returned null");

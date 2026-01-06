@@ -55,9 +55,9 @@ export default async function fetchTokenHolders(
       bigint,
       TokenHoldersDocument | null,
     ] = await Promise.all([
-      await tokenContract.totalSupply(),
-      await tokenContract.decimals(),
-      await TokenHoldersModel.findByTokenAddress(tokenAddress),
+      tokenContract.totalSupply(),
+      tokenContract.decimals(),
+      TokenHoldersModel.findByTokenAddress(tokenAddress),
     ]);
 
     const parsedTotalSupply = Math.round(parseFloat(formatUnits(totalSupply, Number(decimals))));
